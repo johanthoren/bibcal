@@ -50,6 +50,19 @@ current gregorian year.
 
 Use `bibcal -h` to see a list of options and arguments.
 
+## Configuration file
+
+To save your timezone, latitude and longitude, create a file
+`~/.config/bibcal/config.edn`. If you are running Windows, the file would be
+`C:\Users\USERNAME\AppData\Roaming\bibcal\config.edn`. In it, save all or some
+of the following key-value pairs:
+
+``` edn
+{:timezone "Asia/Jerusalem"
+ :latitude 31.77.81161
+ :longitude 35.233804}
+```
+
 ## Project status
 
 The project is pre-release and will move quickly. Don't expect options to be

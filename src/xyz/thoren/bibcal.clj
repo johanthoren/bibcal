@@ -80,7 +80,10 @@
 
 (defn- config-file
   []
-  (str (System/getProperty "user.home") "/.config/bibcal/config.edn"))
+  (if (str/starts-with? (System/getProperty "os.name") "Windows")
+    (str (System/getProperty "user.home")
+         "\\AppData\\Roaming\\bibcal\\config.edn")
+    (str (System/getProperty "user.home") "/.config/bibcal/config.edn")))
 
 (defn- read-config
   ([k]
