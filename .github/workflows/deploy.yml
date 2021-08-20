@@ -1,0 +1,414 @@
+name: Deployment
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build_jar:
+    name: Build JAR
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - all.jar
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Lein
+        run: lein make-uberjars
+
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      - name: Move and rename JAR
+        run: mv target/uberjar/bibcal-${{ steps.tag.outputs.tag }}-standalone.jar bibcal-${{ matrix.target }}
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}
+          path: bibcal-${{ matrix.target }}
+
+
+  build_linux:
+    name: Build Linux
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - linux-x86_64
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Make
+        run: make
+
+      - name: Move and rename binary
+        run: mv target/bibcal bibcal-${{ matrix.target }}
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}
+          path: bibcal-${{ matrix.target }}
+
+  build_macos:
+    name: Build macOS
+
+    needs:
+      - build_jar
+
+    runs-on: macos-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - apple-darwin-x86_64
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-all.jar
+
+      - name: Setup GraalVM Environment
+        uses: DeLaGuardo/setup-graalvm@4.0
+        with:
+          graalvm-version: '21.2.0.java11'
+
+      - name: Install Native Image Plugin
+        run: gu install native-image
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Build Native Image
+        run: |
+          native-image \
+          --no-fallback \
+          --initialize-at-build-time \
+          --report-unsupported-elements-at-runtime \
+          -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json \
+          -H:+ReportExceptionStackTraces \
+          --allow-incomplete-classpath \
+          -jar bibcal-all.jar \
+          -H:Name=bibcal-${{ matrix.target }}
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}
+          path: bibcal-${{ matrix.target }}
+
+  build_windows:
+    name: Build Windows
+
+    needs:
+      - build_jar
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - windows-x86_64
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-all.jar
+
+      - name: Add developer command prompt for Microsoft Visual C++
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup GraalVM Environment
+        uses: DeLaGuardo/setup-graalvm@4.0
+        with:
+          graalvm-version: '21.2.0.java11'
+
+      - name: Install Native Image Plugin
+        run: gu.cmd install native-image
+
+      - name: Print the current state of the directory
+        shell: powershell
+        run: dir
+
+      - name: Build Native Image
+        shell: cmd
+        run: native-image --no-fallback --initialize-at-build-time --report-unsupported-elements-at-runtime -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json -H:+ReportExceptionStackTraces --allow-incomplete-classpath -jar bibcal-all.jar -H:Name=bibcal-${{ matrix.target }}
+
+      - name: Print the current state of the directory
+        shell: powershell
+        run: dir
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.exe
+          path: bibcal-${{ matrix.target }}.exe
+
+  create_release:
+    name: Create Release
+
+    needs:
+      - build_jar
+      - build_linux
+      - build_macos
+      - build_windows
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_tag: ${{ steps.tag.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.1.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          release_name: Release ${{github.ref}}
+          draft: false
+          prerelease: false
+
+  upload_release_assets:
+    name: Upload Release Assets
+
+    needs:
+      - create_release
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - all.jar
+          - linux-x86_64
+          - apple-darwin-x86_64
+          - windows-x86_64
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download artifact (JAR)
+        if: contains(matrix.target, 'all')
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-${{ matrix.target }}
+
+      - name: Download artifact (UNIX)
+        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-${{ matrix.target }}
+
+      - name: Download artifact (WINDOWS)
+        if: contains(matrix.target, 'windows')
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-${{ matrix.target }}.exe
+
+      - name: Sign artifact
+        uses: tristan-weil/ghaction-checksum-sign-artifact@v1.0.1
+        with:
+          checksum_output: 'artifact_one_file_per_digest'
+          path: 'bibcal-*'
+          sign_key: '${{ secrets.SIGN_KEY }}'
+          sign_key_passphrase: '${{ secrets.SIGN_KEY_PASSPHRASE }}'
+          sign_key_fingerprint: '${{ secrets.SIGN_KEY_FINGERPRINT }}'
+          sign_keyserver: '${{ secrets.SIGN_KEY_KEYSERVER }}'
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Release executable (JAR)
+        if: contains(matrix.target, 'all')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}
+          asset_name: bibcal-${{ matrix.target }}
+          asset_content_type: application/java-archive
+
+      - name: Release executable checksum (JAR)
+        if: contains(matrix.target, 'all')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256
+          asset_name: bibcal-${{ matrix.target }}.sha256
+          asset_content_type: text/plain
+
+      - name: Release executable signature (JAR)
+        if: contains(matrix.target, 'all')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256.asc
+          asset_name: bibcal-${{ matrix.target }}.sha256.asc
+          asset_content_type: text/plain
+
+      - name: Release executable (UNIX)
+        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}
+          asset_name: bibcal-${{ matrix.target }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload checksum artifact
+        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.sha256
+          path: bibcal-${{ matrix.target }}.sha256
+
+      - name: Release executable checksum (UNIX)
+        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256
+          asset_name: bibcal-${{ matrix.target }}.sha256
+          asset_content_type: text/plain
+
+      - name: Release executable signature (UNIX)
+        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256.asc
+          asset_name: bibcal-${{ matrix.target }}.sha256.asc
+          asset_content_type: text/plain
+
+      - name: Release executable (WINDOWS)
+        if: contains(matrix.target, 'windows')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.exe
+          asset_name: bibcal-${{ matrix.target }}.exe
+          asset_content_type: application/octet-stream
+
+      - name: Release executable checksum (WINDOWS)
+        if: contains(matrix.target, 'windows')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.exe.sha256
+          asset_name: bibcal-${{ matrix.target }}.exe.sha256
+          asset_content_type: text/plain
+
+      - name: Release executable signature (WINDOWS)
+        if: contains(matrix.target, 'windows')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.exe.sha256.asc
+          asset_name: bibcal-${{ matrix.target }}.exe.sha256.asc
+          asset_content_type: text/plain
+
+  publish_aur_package:
+    name: Publish AUR package
+
+    needs:
+      - build_linux
+      - create_release
+      - upload_release_assets
+
+    # if: needs.create_release.outputs.release_type == 'official'
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        target:
+          - linux-x86_64
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Download checksum
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-${{ matrix.target }}.sha256
+
+      - name: Print the current state of the directory
+        run: ls -alh
+
+      - name: Generate PKGBUILD
+        env:
+          TARGET: ${{ matrix.target }}
+          RELEASE_TAG: ${{ needs.create_release.outputs.release_tag }}
+        run: ./ci/github-actions/generate-pkgbuild.py3
+
+      - name: Print resulting PKGBUILD
+        run: cat ./pkgbuild/bibcal-bin/PKGBUILD
+
+      - name: Publish bibcal-bin to the AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v2.2.5
+        with:
+          pkgname: bibcal-bin
+          pkgbuild: ./pkgbuild/bibcal-bin/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: ${{ needs.create_release.outputs.release_tag }}

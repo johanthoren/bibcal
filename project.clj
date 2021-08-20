@@ -1,0 +1,29 @@
+(defproject xyz.thoren/bibcal "0.1.0-SNAPSHOT"
+  :description (str "A command-line tool for calculating dates based on the "
+                    "Bible and the 1st Book of Enoch.")
+  :url "https://github.com/johanthoren/bibcal"
+  :license {:name "ISC"
+            :url "https://choosealicense.com/licenses/isc"
+            :comment "ISC License"
+            :year 2021
+            :key "isc"}
+  :dependencies [[org.clojure/clojure "1.10.3"]
+                 [org.clojure/tools.cli "1.0.206"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [clj-logging-config "1.9.12"]
+                 [say-cheez "0.2.0"]
+                 [tick "0.5.0-RC1"]
+                 [xyz.thoren/luminary "0.6.4"]]
+  :main xyz.thoren.bibcal
+  :target-path "target/%s"
+  :aliases
+  {"make-uberjars"
+   ["do" ["test"] ["clean"] ["uberjar"]]}
+  :release-tasks [["test"]
+                  ["vcs" "assert-committed"]
+                  ["change" "version" "leiningen.release/bump-version" "release"]
+                  ["vcs" "commit"]
+                  ["vcs" "tag"]
+                  ["change" "version" "leiningen.release/bump-version"]
+                  ["vcs" "commit"]
+                  ["vcs" "push"]])

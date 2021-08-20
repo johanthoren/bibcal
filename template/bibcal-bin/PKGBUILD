@@ -1,0 +1,20 @@
+# This PKGBUILD is not a full PKGBUILD
+# pkgname, pkgver, source, and sha1sums are to be generated
+pkgdesc='CLI tool to calculating dates based on the Bible and the 1st Book of Enoch.'
+pkgrel=1
+arch=(x86_64)
+license=(ISC)
+url='https://github.com/johanthoren/bibcal'
+provides=(bibcal)
+conflicts=(bibcal)
+sha256sums=(
+  "$_checksum"                  # for the bibcal binary
+  SKIP                          # for the readme file
+  SKIP                          # for the license file
+)
+
+package() {
+  install -Dm755 "bibcal-$_checksum" "$pkgdir/usr/bin/bibcal"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
