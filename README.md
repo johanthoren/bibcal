@@ -45,6 +45,11 @@ options following.
 
 Note to Windows users: double clicking bibcal.exe will do nothing useful.
 
+Running bibcal without any options or arguments will print all feast days in the
+current gregorian year.
+
+Use `bibcal -h` to see a list of options and arguments.
+
 ## Project status
 
 The project is pre-release and will move quickly. Don't expect options to be

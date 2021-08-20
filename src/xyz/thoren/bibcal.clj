@@ -37,7 +37,7 @@
 
 (def exit-messages
   "Exit messages used by `exit`."
-  {:64 "ERROR: You can't use both -f and -F at the same time."})
+  {:64 "Placeholder message."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -52,7 +52,7 @@
     (doseq [d (l/list-of-feast-days-in-year y)]
       (println d))
     (do
-      (println "Calculating feast days in" y ". Please wait...")
+      (println (str "Calculating feast days in " y ". Please wait..."))
       (let [days (l/list-of-feast-days-in-year y)]
         (doseq [d days]
           (println d))))))
@@ -101,14 +101,7 @@
   ;; and positional.
   []
   (let [config (read-config)]
-    [["-f" "--print-feast-days YEAR"
-      "Print a list of feast days in a gregorian YEAR"
-      :parse-fn #(read-string %)
-      :validate [#(get l/feast-days %)
-                 #(str % " is not a pre-calculated year, use \"-F\""
-                         " instead of \"-f\"")]
-      :id :year-to-print-feast-days]
-     ["-F" "--calculate-feast-days YEAR"
+    [["-f" "--calculate-feast-days YEAR"
       "Calculate and print a list of feast days in a gregorian YEAR"
       :parse-fn #(read-string %)
       :validate [#(and (int? %) (<= 1584 % 2100))
@@ -162,10 +155,10 @@
     "Usage: bibcal [options]"
     ""
     "Options (short, long, [type], [default], description):"
-    options-summary
-    ""
-    "Example output:"
-    "FIXME: Examples..."]))
+    options-summary]))
+    ;; ""]))
+    ;; "Example output:"
+    ;; "FIXME: Examples..."]))
 
 (defn validate-args
   [args]
@@ -178,20 +171,15 @@
       {:exit-message version-number :ok? true}
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
-      (and (:year-to-calculate-feast-days options)
-           (:year-to-print-feast-days options))
-      (exit 64 (:64 exit-messages))
       :else
       (select-keys options [:latitude :longitude :check-sabbath :timezone
-                            :verbosity :year-to-calculate-feast-days
-                            :year-to-print-feast-days]))))
+                            :verbosity :year-to-calculate-feast-days]))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
   (let [{:keys [latitude longitude check-sabbath timezone verbosity
-                year-to-calculate-feast-days year-to-print-feast-days
-                exit-message ok?]}
+                year-to-calculate-feast-days exit-message ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
@@ -206,9 +194,6 @@
       ;;
       year-to-calculate-feast-days
       (print-feast-days-in-year year-to-calculate-feast-days)
-      ;;
-      year-to-print-feast-days
-      (print-feast-days-in-year year-to-print-feast-days)
       ;;
       :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
   (System/exit 0))
