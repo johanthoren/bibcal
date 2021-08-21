@@ -259,6 +259,34 @@ jobs:
       - name: Print the current state of the directory
         run: ls -alh
 
+      - name: Upload executable checksum artifact (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.sha256
+          path: bibcal-${{ matrix.target }}.sha256
+
+      - name: Upload signature artifact (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.sha256.asc
+          path: bibcal-${{ matrix.target }}.sha256.asc
+
+      - name: Upload executable checksum artifact (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.exe.sha256
+          path: bibcal-${{ matrix.target }}.exe.sha256
+
+      - name: Upload signature artifact (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}.exe.sha256.asc
+          path: bibcal-${{ matrix.target }}.exe.sha256.asc
+
       - name: Release executable (JAR)
         if: contains(matrix.target, 'all')
         uses: actions/upload-release-asset@v1.0.2
@@ -269,28 +297,6 @@ jobs:
           asset_path: ./bibcal-${{ matrix.target }}
           asset_name: bibcal-${{ matrix.target }}
           asset_content_type: application/java-archive
-
-      - name: Release executable checksum (JAR)
-        if: contains(matrix.target, 'all')
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ matrix.target }}.sha256
-          asset_name: bibcal-${{ matrix.target }}.sha256
-          asset_content_type: text/plain
-
-      - name: Release executable signature (JAR)
-        if: contains(matrix.target, 'all')
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ matrix.target }}.sha256.asc
-          asset_name: bibcal-${{ matrix.target }}.sha256.asc
-          asset_content_type: text/plain
 
       - name: Release executable (UNIX)
         if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
@@ -303,35 +309,6 @@ jobs:
           asset_name: bibcal-${{ matrix.target }}
           asset_content_type: application/octet-stream
 
-      - name: Upload checksum artifact
-        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
-        uses: actions/upload-artifact@v2
-        with:
-          name: bibcal-${{ matrix.target }}.sha256
-          path: bibcal-${{ matrix.target }}.sha256
-
-      - name: Release executable checksum (UNIX)
-        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ matrix.target }}.sha256
-          asset_name: bibcal-${{ matrix.target }}.sha256
-          asset_content_type: text/plain
-
-      - name: Release executable signature (UNIX)
-        if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ matrix.target }}.sha256.asc
-          asset_name: bibcal-${{ matrix.target }}.sha256.asc
-          asset_content_type: text/plain
-
       - name: Release executable (WINDOWS)
         if: contains(matrix.target, 'windows')
         uses: actions/upload-release-asset@v1.0.2
@@ -343,6 +320,17 @@ jobs:
           asset_name: bibcal-${{ matrix.target }}.exe
           asset_content_type: application/octet-stream
 
+      - name: Release executable checksum (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256
+          asset_name: bibcal-${{ matrix.target }}.sha256
+          asset_content_type: text/plain
+
       - name: Release executable checksum (WINDOWS)
         if: contains(matrix.target, 'windows')
         uses: actions/upload-release-asset@v1.0.2
@@ -352,6 +340,17 @@ jobs:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ./bibcal-${{ matrix.target }}.exe.sha256
           asset_name: bibcal-${{ matrix.target }}.exe.sha256
+          asset_content_type: text/plain
+
+      - name: Release executable signature (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./bibcal-${{ matrix.target }}.sha256.asc
+          asset_name: bibcal-${{ matrix.target }}.sha256.asc
           asset_content_type: text/plain
 
       - name: Release executable signature (WINDOWS)
@@ -391,23 +390,55 @@ jobs:
         with:
           name: bibcal-${{ matrix.target }}.sha256
 
+      - name: Download signature
+        uses: actions/download-artifact@v2.0.5
+        with:
+          name: bibcal-${{ matrix.target }}.sha256.asc
+
       - name: Print the current state of the directory
         run: ls -alh
 
-      - name: Generate PKGBUILD
-        env:
-          TARGET: ${{ matrix.target }}
-          RELEASE_TAG: ${{ needs.create_release.outputs.release_tag }}
-        run: ./ci/github-actions/generate-pkgbuild.py3
+      - name: Copy PKGBUILD template
+        run: cp template/PKGBUILD .
+
+      - name: Insert pkgver into PKGBUILD
+        run: |
+          sed -i \
+          "s/RELEASE_TAG/${{ needs.create_release.outputs.release_tag }}/g" \
+          PKGBUILD
+
+      - name: Insert executable checksum into PKGBUILD
+        run: |
+          sed -i \
+          "s/BINARY_CHECKSUM/$(awk '{print $1}' bibcal-${{ matrix.target }}.sha256)/g" \
+          PKGBUILD
+
+      - name: Insert checksum of checksum into PKGBUILD
+        run: |
+          sed -i \
+          "s/CHECKSUM_CHECKSUM/$(sha256sum bibcal-${{ matrix.target }}.sha256 | \
+          awk '{print $1}')/g" PKGBUILD
+
+      - name: Insert LICENSE checksum into PKGBUILD
+        run: |
+          sed -i \
+          "s/LICENSE_CHECKSUM/$(sha256sum LICENSE | awk '{print $1}')/g" \
+          PKGBUILD
+
+      - name: Insert README checksum into PKGBUILD
+        run: |
+          sed -i \
+          "s/README_CHECKSUM/$(sha256sum README.md | awk '{print $1}')/g" \
+          PKGBUILD
 
       - name: Print resulting PKGBUILD
-        run: cat ./pkgbuild/bibcal-bin/PKGBUILD
+        run: cat ./PKGBUILD
 
       - name: Publish bibcal-bin to the AUR
         uses: KSXGitHub/github-actions-deploy-aur@v2.2.5
         with:
           pkgname: bibcal-bin
-          pkgbuild: ./pkgbuild/bibcal-bin/PKGBUILD
+          pkgbuild: ./PKGBUILD
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
