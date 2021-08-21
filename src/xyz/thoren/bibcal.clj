@@ -158,12 +158,6 @@
      ["-s" "--check-sabbath"
       "Check Sabbath status. Silent by default."
       :default false]
-     ["-t" "--timezone STRING"
-      "The timezone of the location."
-      :default (or (:timezone config)
-                   "Asia/Jerusalem")
-      :validate [#(valid-zone? %)
-                 #(str % " is not a valid zone id string")]]
      ["-v" nil
       "Verbosity level; specify multiple times to increase value."
       :id :verbosity
@@ -185,7 +179,13 @@
       :default (or (:latitude config)
                    l/jerusalem-lat)
       :validate [#(and (number? %) (<= -90 % 90))
-                 #(str % " is not a number between -90 and 90.")]]]))
+                 #(str % " is not a number between -90 and 90.")]]
+     ["-z" "--timezone STRING"
+      "The timezone of the location."
+      :default (or (:timezone config)
+                   "Asia/Jerusalem")
+      :validate [#(valid-zone? %)
+                 #(str % " is not a valid zone id string")]]]))
 
 (defn usage
   "Print a brief description and a short list of available options."
