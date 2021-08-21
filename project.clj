@@ -1,4 +1,4 @@
-(defproject xyz.thoren/bibcal "0.1.2-SNAPSHOT"
+(defproject xyz.thoren/bibcal "0.2.0-SNAPSHOT"
   :description (str "A command-line tool for calculating dates based on the "
                     "Bible and the 1st Book of Enoch.")
   :url "https://github.com/johanthoren/bibcal"
@@ -13,6 +13,7 @@
                  [clj-logging-config "1.9.12"]
                  [say-cheez "0.2.0"]
                  [tick "0.5.0-RC1"]
+                 [doric "0.9.0"]
                  [xyz.thoren/luminary "0.6.4"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"

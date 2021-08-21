@@ -5,6 +5,7 @@
             [clojure.string :as str]
             [clojure.edn :as edn]
             [tick.core :as tick]
+            [doric.core :refer [table]]
             [say-cheez.core :refer [current-build-env]]
             [xyz.thoren.luminary :as l])
   (:gen-class))
@@ -46,6 +47,31 @@
   (println message)
   (System/exit status))
 
+(defn- valid-zone?
+  [s]
+  (log/debug "Validating zone:" s)
+  (l/valid-zone? s))
+
+(defn- config-file
+  []
+  (let [os (System/getProperty "os.name")
+        home (System/getProperty "user.home")]
+    (if (str/starts-with? os "Windows")
+      (str home "\\AppData\\Roaming\\bibcal\\config.edn")
+      (str home "/.config/bibcal/config.edn"))))
+
+
+(defn- read-config
+  ([k]
+   (try
+     (let [config (edn/read-string (slurp (config-file)))]
+       (get config k))
+     (catch java.io.FileNotFoundException _e nil)))
+  ([]
+   (try
+     (edn/read-string (slurp (config-file)))
+     (catch java.io.FileNotFoundException _e nil))))
+
 (defn print-feast-days-in-year
   [y]
   (if (l/feast-days y)
@@ -73,30 +99,44 @@
   (log/info (if s "It's Sabbath!" "It's not Sabbath."))
   (System/exit (if s 0 1)))
 
-(defn- valid-zone?
-  [s]
-  (log/debug "Validating zone:" s)
-  (l/valid-zone? s))
+(defn- feast-day-name
+  [n day-of-feast days-in-feast]
+  (if (< days-in-feast 3)
+    n
+    (if (= days-in-feast 8)
+      (str (l/day-numbers (dec day-of-feast)) " day of " n)
+      (str (l/day-numbers (dec day-of-feast)) " day of the " n))))
 
-(defn- config-file
-  []
-  (let [os (System/getProperty "os.name")
-        home (System/getProperty "user.home")]
-    (if (str/starts-with? os "Windows")
-      (str home "\\AppData\\Roaming\\bibcal\\config.edn")
-      (str home "/.config/bibcal/config.edn"))))
+(defn- feast-or-false
+  [feast]
+  (if feast
+    (feast-day-name (:name feast) (:day-of-feast feast) (:days-in-feast feast))
+    false))
 
-
-(defn- read-config
-  ([k]
-   (try
-     (let [config (edn/read-string (slurp (config-file)))]
-       (get config k))
-     (catch java.io.FileNotFoundException _e nil)))
-  ([]
-   (try
-     (edn/read-string (slurp (config-file)))
-     (catch java.io.FileNotFoundException _e nil))))
+(defn print-date
+  [lat lon time]
+  (let [d (l/date lat lon time)
+        h (:hebrew d)
+        n (:names h)
+        t (:time d)]
+    (println (table
+              [:key :value]
+              [{:key "Configuration file"
+                :value (when (read-config) (config-file))}
+               {:key "Current location" :value (str lat "," lon)}
+               {:key "Current timezone" :value (str (tick/zone time))}
+               {:key "Month" :value (:month-of-year h)}
+               {:key "Day of month" :value (:day-of-month h)}
+               {:key "Day of week" :value (:day-of-week h)}
+               {:key "Sabbath" :value (:sabbath h)}
+               {:key "Major feast day"
+                :value (feast-or-false (:major-feast-day h))}
+               {:key "Minor feast day"
+                :value (feast-or-false (:minor-feast-day h))}
+               {:key "Start of current day"
+                :value (str (get-in t [:day :start]))}
+               {:key "End of current day"
+                :value (str (get-in t [:day :end]))}]))))
 
 ;; Beginning of command line parsing.
 
@@ -200,5 +240,5 @@
       year-to-calculate-feast-days
       (print-feast-days-in-year year-to-calculate-feast-days)
       ;;
-      :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
+      :else (print-date latitude longitude (l/in-zone timezone (l/now)))))
   (System/exit 0))
