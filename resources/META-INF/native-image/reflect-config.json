@@ -105,6 +105,10 @@
   "name":"clojure.asm.commons.Method"
 },
 {
+  "name":"clojure.core$eval146",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"clojure.core.ArrayChunk"
 },
 {
@@ -358,7 +362,8 @@
   "name":"clojure.lang.Fn"
 },
 {
-  "name":"clojure.lang.IChunk"
+  "name":"clojure.lang.IChunk",
+  "allPublicMethods":true
 },
 {
   "name":"clojure.lang.IChunkedSeq"
@@ -420,7 +425,8 @@
   "name":"clojure.lang.LazilyPersistentVector"
 },
 {
-  "name":"clojure.lang.LazySeq"
+  "name":"clojure.lang.LazySeq",
+  "allPublicConstructors":true
 },
 {
   "name":"clojure.lang.LineNumberingPushbackReader"
@@ -437,6 +443,10 @@
 },
 {
   "name":"clojure.lang.Namespace",
+  "allPublicMethods":true
+},
+{
+  "name":"clojure.lang.Numbers",
   "allPublicMethods":true
 },
 {
@@ -524,9 +534,6 @@
   "name":"clojure.pprint__init"
 },
 {
-  "name":"clojure.set__init"
-},
-{
   "name":"clojure.spec.alpha.Spec"
 },
 {
@@ -573,6 +580,21 @@
   "name":"clojure.walk__init"
 },
 {
+  "name":"doric.core__init"
+},
+{
+  "name":"doric.org$eval148",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"doric.org$eval152",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"doric.org$render",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
   "name":"double[]"
 },
 {
@@ -580,9 +602,6 @@
 },
 {
   "name":"int[]"
-},
-{
-  "name":"jansi_clj.core__init"
 },
 {
   "name":"java.io.BufferedInputStream"
@@ -657,7 +676,8 @@
   "name":"java.lang.Boolean"
 },
 {
-  "name":"java.lang.Character"
+  "name":"java.lang.Character",
+  "allPublicMethods":true
 },
 {
   "name":"java.lang.Class",
@@ -688,9 +708,6 @@
 },
 {
   "name":"java.lang.Object[]"
-},
-{
-  "name":"java.lang.Runnable"
 },
 {
   "name":"java.lang.StackTraceElement"
@@ -1044,18 +1061,6 @@
   "name":"org.apache.log4j.spi.RootLogger"
 },
 {
-  "name":"org.fusesource.jansi.Ansi"
-},
-{
-  "name":"org.fusesource.jansi.Ansi$Attribute"
-},
-{
-  "name":"org.fusesource.jansi.Ansi$Color"
-},
-{
-  "name":"org.fusesource.jansi.AnsiConsole"
-},
-{
   "name":"org.shredzone.commons.suncalc.MoonPhase"
 },
 {
@@ -1075,9 +1080,6 @@
 },
 {
   "name":"short[]"
-},
-{
-  "name":"spinner.core__init"
 },
 {
   "name":"sun.security.provider.NativePRNG",
