@@ -80,10 +80,12 @@
 
 (defn- config-file
   []
-  (if (str/starts-with? (System/getProperty "os.name") "Windows")
-    (str (System/getProperty "user.home")
-         "\\AppData\\Roaming\\bibcal\\config.edn")
-    (str (System/getProperty "user.home") "/.config/bibcal/config.edn")))
+  (let [os (System/getProperty "os.name")
+        home (System/getProperty "user.home")]
+    (if (str/starts-with? os "Windows")
+      (str home "\\AppData\\Roaming\\bibcal\\config.edn")
+      (str home "/.config/bibcal/config.edn"))))
+
 
 (defn- read-config
   ([k]
@@ -187,7 +189,7 @@
     (when exit-message
       (exit (if ok? 0 1) exit-message))
     (set-log-level! verbosity)
-    (log/debug "Configuration file:" (config-file))
+    (log/debug "Configuration file:" (if (read-config) (config-file) "None"))
     (log/debug "Latitude:" latitude)
     (log/debug "Longitude:" longitude)
     (log/debug "TimeZone:" timezone)
