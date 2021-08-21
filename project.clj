@@ -1,4 +1,4 @@
-(defproject xyz.thoren/bibcal "0.2.0"
+(defproject xyz.thoren/bibcal "0.2.1-SNAPSHOT"
   :description (str "A command-line tool for calculating dates based on the "
                     "Bible and the 1st Book of Enoch.")
   :url "https://github.com/johanthoren/bibcal"
