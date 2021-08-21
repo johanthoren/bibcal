@@ -370,7 +370,6 @@ jobs:
     needs:
       - build_linux
       - create_release
-      - upload_release_assets
 
     # if: needs.create_release.outputs.release_type == 'official'
 
