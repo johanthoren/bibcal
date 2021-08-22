@@ -261,7 +261,22 @@ jobs:
         shell: bash
         run: bats -r .
 
-      - name: Just run the executable (WINDOWS)
+      - name: Run the executable with -c, -x, -y, and -z (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash
-        run: ./bibcal.exe
+        run: ./bibcal.exe -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
+
+      - name: Run the executable with -h (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe -f 2021
+
+      - name: Run the executable with -f 2021 (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe -f 2021
+
+      - name: Run the executable with -f 2051 (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe -f 2021
