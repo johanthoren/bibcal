@@ -25,12 +25,13 @@ jobs:
       - name: Lein
         run: lein make-uberjars
 
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
+      # - name: Get tag
+      #   id: tag
+      #   uses: dawidd6/action-get-tag@v1
 
       - name: Move and rename JAR
-        run: mv target/uberjar/bibcal-${{ steps.tag.outputs.tag }}-standalone.jar bibcal-${{ matrix.target }}
+        run: mv "target/uberjar/bibcal-*-standalone.jar" bibcal-${{ matrix.target }}
+        # run: mv target/uberjar/bibcal-${{ steps.tag.outputs.tag }}-standalone.jar bibcal-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
