@@ -196,8 +196,8 @@ jobs:
           name: bibcal-${{ matrix.target }}.exe
           path: bibcal-${{ matrix.target }}.exe
 
-  bats_test:
-    name: Run bats tests
+  integration_tests:
+    name: Run integration tests
 
     needs:
       - build_linux
