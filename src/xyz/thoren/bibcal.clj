@@ -4,6 +4,7 @@
             [clj-logging-config.log4j]
             [clojure.string :as str]
             [clojure.edn :as edn]
+            [me.raynes.fs :as fs]
             [tick.core :as tick]
             [table.core :refer [table]]
             [say-cheez.core :refer [current-build-env]]
@@ -36,9 +37,25 @@
   ;; Note that this is evaluated at build time by native-image.
   (:version build-env))
 
+(defn- config-dir
+  []
+  (let [os (System/getProperty "os.name")
+        home (System/getProperty "user.home")]
+    (if (str/starts-with? os "Windows")
+      (str home "\\AppData\\Roaming\\bibcal\\")
+      (str home "/.config/bibcal/"))))
+
+(defn- config-file
+  []
+  (str (config-dir) "config.edn"))
+
 (def exit-messages
   "Exit messages used by `exit`."
-  {:64 "Placeholder message."})
+  {:64 "The configuration file already exists. Use -F to overwrite."
+   :65 (str "Something went wrong while validating the saved configuration. "
+            "Inspect the file " (config-file) " for more details.")
+   :66 (str "--latitude and --longitude are both needed, either as options or "
+            "saved in the\nconfig file: " (config-file))})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -52,15 +69,6 @@
   (log/debug "Validating zone:" s)
   (l/valid-zone? s))
 
-(defn- config-file
-  []
-  (let [os (System/getProperty "os.name")
-        home (System/getProperty "user.home")]
-    (if (str/starts-with? os "Windows")
-      (str home "\\AppData\\Roaming\\bibcal\\config.edn")
-      (str home "/.config/bibcal/config.edn"))))
-
-
 (defn- read-config
   ([k]
    (try
@@ -71,6 +79,31 @@
    (try
      (edn/read-string (slurp (config-file)))
      (catch java.io.FileNotFoundException _e nil))))
+
+(defn- write-config
+  [config]
+  (log/debug "Will try to save configuration to" (config-file))
+  (when (not (fs/exists? (config-dir)))
+    (log/debug "Creating directory" (config-dir))
+    (fs/mkdirs (config-dir)))
+  (when (not (fs/exists? (config-file)))
+    (log/debug "Creating file" (config-file))
+    (fs/create (fs/file (config-file))))
+  (log/debug "Saving" config "to" (config-file))
+  (spit (config-file) config)
+  (if (= (read-config) config)
+    (println "The configuration file has been successfully saved.")
+    (exit 65 (:65 exit-messages))))
+
+(defn- save-config
+  [force & {:keys [lat lon z]}]
+  (let [config (->> {:latitude lat, :longitude lon, :timezone z}
+                    (remove #(nil? (second %)))
+                    (map #(apply hash-map %))
+                    (apply merge))]
+    (if (and (fs/exists? (config-file)) (not force))
+      (exit 64 (:64 exit-messages))
+      (write-config config))))
 
 (defn print-feast-days-in-year
   [y]
@@ -122,7 +155,7 @@
         tf (tick/formatter "yyy-MM-dd HH:MM")]
     (print (table
             [{"Key" "Configuration file"
-              "Value" (when (read-config) (config-file))}
+              "Value" (if (read-config) (config-file) "None")}
              {"Key" "Current location" "Value" (str lat "," lon)}
              {"Key" "Current timezone" "Value" (str (tick/zone time))}
              {"Key" "Month" "Value" (:month-of-year h)}
@@ -158,16 +191,22 @@
   ;; and positional.
   []
   (let [config (read-config)]
-    [["-f" "--calculate-feast-days YEAR"
+    [["-c" "--create-config"
+      "Save --latitude, --longitude, and --timezone to a configuration file."
+      :default false]
+     ["-f" "--feast-days YEAR"
       "Calculate and print a list of feast days in a gregorian YEAR"
       :parse-fn #(read-string %)
       :validate [#(and (int? %) (<= 1584 % 2100))
                  #(str % " is not an integer between 1584 and 2100")]
       :id :year-to-calculate-feast-days]
+     ["-F" "--force"
+      "Force saving of configuration file even if it already exists."
+      :default false]
      ["-h" "--help"
       "Print this help message."
       :default false]
-     ["-s" "--check-sabbath"
+     ["-s" "--sabbath"
       "Check Sabbath status. Silent by default."
       :default false]
      ["-v" nil
@@ -181,21 +220,18 @@
      ["-x" "--longitude NUMBER"
       "The longitude of the location."
       :parse-fn #(read-string %)
-      :default (or (:longitude config)
-                   l/jerusalem-lon)
-      :validate [#(and (number? %) (<= -180 % 180))
+      :default (:longitude config)
+      :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
                  #(str % " is not a number between -180 and 180.")]]
      ["-y" "--latitude NUMBER"
       "The latitude of the location."
       :parse-fn #(read-string %)
-      :default (or (:latitude config)
-                   l/jerusalem-lat)
-      :validate [#(and (number? %) (<= -90 % 90))
+      :default (:latitude config)
+      :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
                  #(str % " is not a number between -90 and 90.")]]
      ["-z" "--timezone STRING"
       "The timezone of the location."
-      :default (or (:timezone config)
-                   "Asia/Jerusalem")
+      :default (:timezone config)
       :validate [#(valid-zone? %)
                  #(str % " is not a valid zone id string")]]]))
 
@@ -226,16 +262,18 @@
       {:exit-message (usage summary) :ok? true}
       (:version options) ; version => exit OK with version number
       {:exit-message version-number :ok? true}
+      (or (nil? (:latitude options)) (nil? (:longitude options)))
+      (exit 66 (:66 exit-messages))
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
       :else
-      (select-keys options [:latitude :longitude :check-sabbath :timezone
-                            :verbosity :year-to-calculate-feast-days]))))
+      (select-keys options [:create-config :force :latitude :longitude :sabbath
+                            :timezone :verbosity :year-to-calculate-feast-days]))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [latitude longitude check-sabbath timezone verbosity
+  (let [{:keys [create-config force latitude longitude sabbath timezone verbosity
                 year-to-calculate-feast-days exit-message ok?]}
         (validate-args args)]
     (when exit-message
@@ -246,11 +284,15 @@
     (log/debug "Longitude:" longitude)
     (log/debug "TimeZone:" timezone)
     (cond
-      check-sabbath
+      sabbath
       (exit-with-sabbath (sabbath? latitude longitude timezone (l/now)))
+      ;;
+      create-config
+      (save-config force :lat latitude :lon longitude :z timezone)
       ;;
       year-to-calculate-feast-days
       (print-feast-days-in-year year-to-calculate-feast-days)
       ;;
-      :else (print-date latitude longitude (l/in-zone timezone (l/now)))))
+      :else (print-date latitude longitude (l/in-zone (or timezone (tick/zone))
+                                                      (l/now)))))
   (System/exit 0))

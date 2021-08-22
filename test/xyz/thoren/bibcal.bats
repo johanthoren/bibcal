@@ -62,4 +62,10 @@ verify_version_number() {
     [ "${lines[-1]}" = "2051-12-31 5th day of Hanukkah" ]
 }
 
+@test "invoking bibcal with argument -c -x -y and -z" {
+    run ./bibcal -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "The configuration file has been successfully saved." ]
+}
+
 ### End of main tests ###
