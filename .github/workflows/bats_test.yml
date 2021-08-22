@@ -126,56 +126,56 @@ jobs:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
 
-  build_windows:
-    name: Build Windows
+  # build_windows:
+  #   name: Build Windows
 
-    needs:
-      - build_jar
+  #   needs:
+  #     - build_jar
 
-    strategy:
-      fail-fast: true
-      matrix:
-        target:
-          - windows-x86_64
+  #   strategy:
+  #     fail-fast: true
+  #     matrix:
+  #       target:
+  #         - windows-x86_64
 
-    runs-on: windows-latest
+  #   runs-on: windows-latest
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Download artifact
-        uses: actions/download-artifact@v2.0.5
-        with:
-          name: bibcal-all.jar
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v2.0.5
+  #       with:
+  #         name: bibcal-all.jar
 
-      - name: Add developer command prompt for Microsoft Visual C++
-        uses: ilammy/msvc-dev-cmd@v1
+  #     - name: Add developer command prompt for Microsoft Visual C++
+  #       uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup GraalVM Environment
-        uses: DeLaGuardo/setup-graalvm@4.0
-        with:
-          graalvm-version: '21.2.0.java11'
+  #     - name: Setup GraalVM Environment
+  #       uses: DeLaGuardo/setup-graalvm@4.0
+  #       with:
+  #         graalvm-version: '21.2.0.java11'
 
-      - name: Install Native Image Plugin
-        run: gu.cmd install native-image
+  #     - name: Install Native Image Plugin
+  #       run: gu.cmd install native-image
 
-      - name: Print the current state of the directory
-        shell: powershell
-        run: dir
+  #     - name: Print the current state of the directory
+  #       shell: powershell
+  #       run: dir
 
-      - name: Build Native Image
-        shell: cmd
-        run: native-image --no-fallback --initialize-at-build-time --report-unsupported-elements-at-runtime -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json -H:+ReportExceptionStackTraces --allow-incomplete-classpath -jar bibcal-all.jar -H:Name=bibcal-${{ matrix.target }}
+  #     - name: Build Native Image
+  #       shell: cmd
+  #       run: native-image --no-fallback --initialize-at-build-time --report-unsupported-elements-at-runtime -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json -H:+ReportExceptionStackTraces --allow-incomplete-classpath -jar bibcal-all.jar -H:Name=bibcal-${{ matrix.target }}
 
-      - name: Print the current state of the directory
-        shell: powershell
-        run: dir
+  #     - name: Print the current state of the directory
+  #       shell: powershell
+  #       run: dir
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: bibcal-${{ matrix.target }}.exe
-          path: bibcal-${{ matrix.target }}.exe
+  #     - name: Upload build artifact
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: bibcal-${{ matrix.target }}.exe
+  #         path: bibcal-${{ matrix.target }}.exe
 
   test:
     name: Run bats tests
@@ -183,7 +183,7 @@ jobs:
     needs:
       - build_linux
       - build_macos
-      - build_windows
+      # - build_windows
 
     runs-on: ${{ matrix.os }}
 
@@ -193,14 +193,14 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          - windows-latest
+          # - windows-latest
         include:
           - os: ubuntu-latest
             target: linux-x86_64
           - os: macos-latest
             target: apple-darwin-x86_64
-          - os: windows-latest
-            target: windows-x86_64.exe
+          # - os: windows-latest
+          #   target: windows-x86_64.exe
 
     steps:
       - name: Setup BATS
@@ -223,6 +223,14 @@ jobs:
       - name: List directory
         if: "contains(matrix.target, 'windows')"
         run: dir
+
+      - name: Rename binary
+        if: "!contains(matrix.target, 'windows')"
+        run: mv bibcal-${{ matrix.target }} bibcal
+
+      - name: Rename binary
+        if: "contains(matrix.target, 'windows')"
+        run: mv bibcal-${{ matrix.target }} bibcal.exe
 
       - name: Run tests
         shell: bash
