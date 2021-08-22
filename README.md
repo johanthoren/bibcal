@@ -29,8 +29,9 @@ cd /path/of/bibcal
 $ chmod +x bibcal
 ```
 
-[Arch Linux](https://archlinux.org/) users may install the package `bibcal-bin`
-from the [AUR](https://aur.archlinux.org/):
+[Arch Linux](https://archlinux.org/) users may install [the package
+bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) from the
+[AUR](https://aur.archlinux.org/):
 
 ``` sh
 $ paru -S bibcal-bin
@@ -65,8 +66,8 @@ of the following key-value pairs:
 
 ## Project status
 
-The project is pre-release and will move quickly. Don't expect options to be
-stable until a 1.0 release has been tagged.
+The project is pre-alpha and will move quickly. Don't expect options or output
+to be stable until a 1.0 release has been tagged.
 
 ## Acknowledgements
 
