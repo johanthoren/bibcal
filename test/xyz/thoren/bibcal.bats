@@ -21,6 +21,9 @@ verify_version_number() {
 }
 
 @test "invoking bibcal -V" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
     run ./bibcal -V
     [ "$status" -eq 0 ]
     [ "$(verify_version_number "${lines[0]}")" ]
@@ -40,6 +43,9 @@ verify_version_number() {
 }
 
 @test "invoking bibcal -f 2021" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
     run ./bibcal -f 2021
     [ "$status" -eq 0 ]
     [ "${lines[0]}" = "2021-01-13 1st day of the 11th month" ]
@@ -47,6 +53,9 @@ verify_version_number() {
 }
 
 @test "invoking bibcal -f 2051" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
     run ./bibcal -f 2051
     [ "$status" -eq 0 ]
     [ "${lines[1]}" = "2051-01-13 1st day of the 11th month" ]
