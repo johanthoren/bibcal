@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Lein
-        run: lein make-uberjars
+        run: lein uberjar
 
       # - name: Get tag
       #   id: tag
@@ -196,7 +196,7 @@ jobs:
           name: bibcal-${{ matrix.target }}.exe
           path: bibcal-${{ matrix.target }}.exe
 
-  test:
+  bats_test:
     name: Run bats tests
 
     needs:

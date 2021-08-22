@@ -6,8 +6,24 @@ on:
       - '*.*.*'
 
 jobs:
+  lein_test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: lein deps
+
+    - name: Run tests
+      run: lein test
+
   build_jar:
     name: Build JAR
+
+    needs:
+      - lein_test
 
     runs-on: ubuntu-latest
 
@@ -22,14 +38,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Lein
-        run: lein make-uberjars
-
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
+        run: lein uberjar
 
       - name: Move and rename JAR
-        run: mv target/uberjar/bibcal-${{ steps.tag.outputs.tag }}-standalone.jar bibcal-${{ matrix.target }}
+        run: mv target/uberjar/bibcal-*-standalone.jar bibcal-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
@@ -40,9 +52,11 @@ jobs:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
 
-
   build_linux:
     name: Build Linux
+
+    needs:
+      - lein_test
 
     runs-on: ubuntu-latest
 
@@ -175,14 +189,87 @@ jobs:
           name: bibcal-${{ matrix.target }}.exe
           path: bibcal-${{ matrix.target }}.exe
 
+  bats_test:
+    name: Run bats tests
+
+    needs:
+      - lein_test
+      - build_linux
+      - build_macos
+      - build_windows
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        include:
+          - os: ubuntu-latest
+            target: linux-x86_64
+          - os: macos-latest
+            target: apple-darwin-x86_64
+          - os: windows-latest
+            target: windows-x86_64.exe
+
+    steps:
+      - name: Setup BATS (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.2.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: bibcal-${{ matrix.target }}
+
+      - name: Make artifact executable (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: chmod +x bibcal-${{ matrix.target }}
+
+      - name: List directory (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: ls -alh
+
+      - name: List directory (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        run: dir
+
+      - name: Rename binary (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: mv bibcal-${{ matrix.target }} bibcal
+
+      - name: Rename binary (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        run: mv bibcal-${{ matrix.target }} bibcal.exe
+
+      - name: Run tests (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        shell: bash
+        run: bats -r .
+
+      - name: Just run the executable (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe
+
   create_release:
     name: Create Release
 
     needs:
+      - lein_test
       - build_jar
       - build_linux
       - build_macos
       - build_windows
+      - bats_test
 
     runs-on: ubuntu-latest
 
@@ -368,7 +455,9 @@ jobs:
     name: Publish AUR package
 
     needs:
+      - lein_test
       - build_linux
+      - bats_test
       - create_release
 
     # if: needs.create_release.outputs.release_type == 'official'
