@@ -217,6 +217,10 @@ jobs:
         with:
           name: bibcal-${{ matrix.target }}
 
+      - name: Make artifact executable (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: chmod +x bibcal-${{ matrix.target }}
+
       - name: List directory (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
         run: ls -alh
