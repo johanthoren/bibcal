@@ -8,6 +8,15 @@ verify_version_number() {
 
 ### Begin main tests ###
 
+# Save the configuration options in the first command to avoid errors in later
+# tests.
+
+@test "invoking bibcal with argument -c -x -y and -z" {
+    run ./bibcal -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "The configuration file has been successfully saved." ]
+}
+
 @test "invoking bibcal without any arguments" {
     run ./bibcal
     [ "$status" -eq 0 ]
@@ -60,12 +69,6 @@ verify_version_number() {
     [ "$status" -eq 0 ]
     [ "${lines[1]}" = "2051-01-13 1st day of the 11th month" ]
     [ "${lines[-1]}" = "2051-12-31 5th day of Hanukkah" ]
-}
-
-@test "invoking bibcal with argument -c -x -y and -z" {
-    run ./bibcal -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
-    [ "$status" -eq 0 ]
-    [ "${lines[0]}" = "The configuration file has been successfully saved." ]
 }
 
 ### End of main tests ###
