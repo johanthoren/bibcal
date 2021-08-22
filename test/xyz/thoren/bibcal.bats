@@ -39,4 +39,18 @@ verify_version_number() {
     [ "${lines[0]}" = "Unknown option: \"--foo\"" ]
 }
 
+@test "invoking bibcal -f 2021" {
+    run ./bibcal -f 2021
+    [ "$status" -eq 0 ]
+    [ "${lines[0]}" = "2021-01-13 1st day of the 11th month" ]
+    [ "${lines[-1]}" = "2021-12-31 4th day of Hanukkah" ]
+}
+
+@test "invoking bibcal -f 2051" {
+    run ./bibcal -f 2051
+    [ "$status" -eq 0 ]
+    [ "${lines[1]}" = "2051-01-13 1st day of the 11th month" ]
+    [ "${lines[-1]}" = "2051-12-31 5th day of Hanukkah" ]
+}
+
 ### End of main tests ###
