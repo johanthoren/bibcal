@@ -13,7 +13,7 @@
                  [clj-logging-config "1.9.12"]
                  [say-cheez "0.2.0"]
                  [tick "0.5.0-RC1"]
-                 [doric "0.9.0"]
+                 [table "0.5.0"]
                  [xyz.thoren/luminary "0.6.4"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"

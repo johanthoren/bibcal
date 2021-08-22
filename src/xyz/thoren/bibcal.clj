@@ -5,7 +5,7 @@
             [clojure.string :as str]
             [clojure.edn :as edn]
             [tick.core :as tick]
-            [doric.core :refer [table]]
+            [table.core :refer [table]]
             [say-cheez.core :refer [current-build-env]]
             [xyz.thoren.luminary :as l])
   (:gen-class))
@@ -118,25 +118,37 @@
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
-        t (:time d)]
-    (println (table
-              [:key :value]
-              [{:key "Configuration file"
-                :value (when (read-config) (config-file))}
-               {:key "Current location" :value (str lat "," lon)}
-               {:key "Current timezone" :value (str (tick/zone time))}
-               {:key "Month" :value (:month-of-year h)}
-               {:key "Day of month" :value (:day-of-month h)}
-               {:key "Day of week" :value (:day-of-week h)}
-               {:key "Sabbath" :value (:sabbath h)}
-               {:key "Major feast day"
-                :value (feast-or-false (:major-feast-day h))}
-               {:key "Minor feast day"
-                :value (feast-or-false (:minor-feast-day h))}
-               {:key "Start of current day"
-                :value (str (get-in t [:day :start]))}
-               {:key "End of current day"
-                :value (str (get-in t [:day :end]))}]))))
+        t (:time d)
+        tf (tick/formatter "yyy-MM-dd HH:MM")]
+    (print (table
+            [{"Key" "Configuration file"
+              "Value" (when (read-config) (config-file))}
+             {"Key" "Current location" "Value" (str lat "," lon)}
+             {"Key" "Current timezone" "Value" (str (tick/zone time))}
+             {"Key" "Month" "Value" (:month-of-year h)}
+             {"Key" "Day of month" "Value" (:day-of-month h)}
+             {"Key" "Day of week" "Value" (:day-of-week h)}
+             {"Key" "Sabbath" "Value" (:sabbath h)}
+             {"Key" "Major feast day"
+              "Value" (feast-or-false (:major-feast-day h))}
+             {"Key" "Minor feast day"
+              "Value" (feast-or-false (:minor-feast-day h))}
+             {"Key" "Start of current day"
+              "Value" (tick/format tf (get-in t [:day :start]))}
+             {"Key" "End of current day"
+              "Value" (tick/format tf (get-in t [:day :end]))}
+             {"Key" "Start of current week"
+              "Value" (tick/format tf (get-in t [:week :start]))}
+             {"Key" "End of current week"
+              "Value" (tick/format tf (get-in t [:week :end]))}
+             {"Key" "Start of current month"
+              "Value" (tick/format tf (get-in t [:month :start]))}
+             {"Key" "End of current month"
+              "Value" (tick/format tf (get-in t [:month :end]))}
+             {"Key" "Start of current year"
+              "Value" (tick/format tf (get-in t [:year :start]))}
+             {"Key" "End of current year"
+              "Value" (tick/format tf (get-in t [:year :end]))}]))))
 
 ;; Beginning of command line parsing.
 

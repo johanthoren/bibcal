@@ -105,10 +105,6 @@
   "name":"clojure.asm.commons.Method"
 },
 {
-  "name":"clojure.core$eval146",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"clojure.core.ArrayChunk"
 },
 {
@@ -331,6 +327,9 @@
   "name":"clojure.java.io__init"
 },
 {
+  "name":"clojure.java.shell__init"
+},
+{
   "name":"clojure.lang.APersistentMap$KeySeq"
 },
 {
@@ -362,8 +361,7 @@
   "name":"clojure.lang.Fn"
 },
 {
-  "name":"clojure.lang.IChunk",
-  "allPublicMethods":true
+  "name":"clojure.lang.IChunk"
 },
 {
   "name":"clojure.lang.IChunkedSeq"
@@ -425,8 +423,7 @@
   "name":"clojure.lang.LazilyPersistentVector"
 },
 {
-  "name":"clojure.lang.LazySeq",
-  "allPublicConstructors":true
+  "name":"clojure.lang.LazySeq"
 },
 {
   "name":"clojure.lang.LineNumberingPushbackReader"
@@ -443,10 +440,6 @@
 },
 {
   "name":"clojure.lang.Namespace",
-  "allPublicMethods":true
-},
-{
-  "name":"clojure.lang.Numbers",
   "allPublicMethods":true
 },
 {
@@ -580,21 +573,6 @@
   "name":"clojure.walk__init"
 },
 {
-  "name":"doric.core__init"
-},
-{
-  "name":"doric.org$eval148",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"doric.org$eval152",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"doric.org$render",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"double[]"
 },
 {
@@ -670,14 +648,16 @@
   "name":"java.io.StringReader"
 },
 {
+  "name":"java.io.StringWriter"
+},
+{
   "name":"java.io.Writer"
 },
 {
   "name":"java.lang.Boolean"
 },
 {
-  "name":"java.lang.Character",
-  "allPublicMethods":true
+  "name":"java.lang.Character"
 },
 {
   "name":"java.lang.Class",
@@ -786,6 +766,9 @@
 },
 {
   "name":"java.net.URLEncoder"
+},
+{
+  "name":"java.nio.charset.Charset"
 },
 {
   "name":"java.nio.file.Files"
@@ -1088,6 +1071,12 @@
 {
   "name":"sun.security.provider.SHA",
   "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"table.core__init"
+},
+{
+  "name":"table.width__init"
 },
 {
   "name":"tick.core.AtomicClock"
