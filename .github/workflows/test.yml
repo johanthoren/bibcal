@@ -1,4 +1,4 @@
-name: Bats Test
+name: Test Suite
 
 on:
   push:
@@ -7,8 +7,24 @@ on:
     branches: [ master ]
 
 jobs:
+  lein_test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: lein deps
+
+    - name: Run tests
+      run: lein test
+
   build_jar:
     name: Build JAR
+
+    needs:
+      - lein_test
 
     runs-on: ubuntu-latest
 
@@ -45,6 +61,9 @@ jobs:
 
   build_linux:
     name: Build Linux
+
+    needs:
+      - lein_test
 
     runs-on: ubuntu-latest
 
