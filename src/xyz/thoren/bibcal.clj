@@ -161,7 +161,6 @@
   [lat lon time]
   (let [d (l/date lat lon time)
         h (:hebrew d)
-        n (:names h)
         t (:time d)
         tf (tick/formatter "yyy-MM-dd HH:MM")]
     (print (table
