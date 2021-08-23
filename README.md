@@ -60,27 +60,28 @@ $ bibcal -x -74.006111 -y 40.712778 -z America/New_York 2001 9 11 9 0
 ```
 Result:
 ```sh
-
-+------------------------+-----------------------------------------+
-| Key                    | Value                                   |
-+------------------------+-----------------------------------------+
-| Current location       | 40.712778,-74.006111                    |
-| Current timezone       | America/New_York                        |
-| Month                  | 6                                       |
-| Day of month           | 23                                      |
-| Day of week            | 3                                       |
-| Sabbath                | false                                   |
-| Major feast day        | false                                   |
-| Minor feast day        | false                                   |
-| Start of current day   | 2001-09-10 19:09                        |
-| End of current day     | 2001-09-11 19:09                        |
-| Start of current week  | 2001-09-08 19:09                        |
-| End of current week    | 2001-09-15 19:09                        |
-| Start of current month | 2001-08-19 19:08                        |
-| End of current month   | 2001-09-17 19:09                        |
-| Start of current year  | 2001-03-25 18:03                        |
-| End of current year    | 2002-04-13 19:04                        |
-+------------------------+-----------------------------------------+
++-----------------------+----------------------+
+| Key                   | Value                |
++-----------------------+----------------------+
+| Gregorian time        | 2021-09-11 09:00:00  |
+| Biblical month        | 6                    |
+| Biblical day of month | 4                    |
+| Biblical day of week  | 7                    |
+| Sabbath               | true                 |
+| Major feast day       | false                |
+| Minor feast day       | false                |
+| Start of year         | 2021-04-12 19:32:00  |
+| Start of month        | 2021-09-07 19:18:00  |
+| Start of week         | 2021-09-04 19:23:00  |
+| Start of day          | 2021-09-10 19:12:00  |
+| End of day            | 2021-09-11 19:10:59  |
+| End of week           | 2021-09-11 19:10:59  |
+| End of month          | 2021-10-06 18:28:59  |
+| End of year           | 2022-04-01 19:20:59  |
+| Location              | 40.712778,-74.006111 |
+| Timezone              | America/New_York     |
+| Config file           | None                 |
++-----------------------+----------------------+
 ```
 
 Use `bibcal -h` to see a list of options and arguments.
