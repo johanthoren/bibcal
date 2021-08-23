@@ -59,9 +59,16 @@ To save your timezone, latitude and longitude, create a file
 of the following key-value pairs:
 
 ``` edn
-{:timezone "Asia/Jerusalem"
- :latitude 31.77.81161
- :longitude 35.233804}
+{:zone "Asia/Jerusalem"
+ :lat 31.7781161
+ :lon 35.233804}
+```
+
+This file can be generated for you by using the option `-c` together with the
+options that you want to save. Example:
+
+``` sh
+$ bibcal -c --lat 31.7781161 --lon 35.233804 --zone Asia/Jerusalem
 ```
 
 ## Project status
