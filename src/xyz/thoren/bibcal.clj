@@ -259,7 +259,7 @@
     ""
     "Usage: bibcal [options]"
     ""
-    "Options (short, long, [type], [default], description):"
+    "Options:"
     options-summary]))
     ;; ""]))
     ;; "Example output:"
