@@ -51,11 +51,21 @@
 
 (def exit-messages
   "Exit messages used by `exit`."
-  {:64 "The configuration file already exists. Use -F to overwrite."
-   :65 (str "Something went wrong while validating the saved configuration. "
-            "Inspect the file " (config-file) " for more details.")
-   :66 (str "--latitude and --longitude are both needed, either as options or "
-            "saved in the\nconfig file: " (config-file))})
+  {:64 "ERROR: The configuration file already exists. Use -F to overwrite."
+   :65 (str "ERROR: Something went wrong while validating the saved config.\n"
+            "       Inspect the config file for more details:\n"
+            "       " (config-file))
+   :66 (str "ERROR:   The options --lat and --lon are both needed, and --zone\n"
+            "         is highly recommended. You can provide them either as\n"
+            "         options to the command or saved in the config file:\n"
+            "\n"
+            "         " (config-file) "\n"
+            "\n"
+            "         Use them with the option -c to save them to the\n"
+            "         config file.\n"
+            "\n"
+            "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
+            l/jerusalem-lon " --zone " l/jerusalem-zone)})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -97,7 +107,7 @@
 
 (defn- save-config
   [force & {:keys [lat lon z]}]
-  (let [config (->> {:latitude lat, :longitude lon, :timezone z}
+  (let [config (->> {:lat lat, :lon lon, :zone z}
                     (remove #(nil? (second %)))
                     (map #(apply hash-map %))
                     (apply merge))]
@@ -192,7 +202,7 @@
   []
   (let [config (read-config)]
     [["-c" "--create-config"
-      "Save --latitude, --longitude, and --timezone to a configuration file."
+      "Save --lat, --lon, and --zone to the configuration file."
       :default false]
      ["-f" "--feast-days YEAR"
       "Calculate and print a list of feast days in a gregorian YEAR"
@@ -217,21 +227,21 @@
      ["-V" "--version"
       "Print the current version number."
       :default false]
-     ["-x" "--longitude NUMBER"
+     ["-x" "--lon NUMBER"
       "The longitude of the location."
       :parse-fn #(read-string %)
-      :default (:longitude config)
+      :default (:lon config)
       :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
                  #(str % " is not a number between -180 and 180.")]]
-     ["-y" "--latitude NUMBER"
+     ["-y" "--lat NUMBER"
       "The latitude of the location."
       :parse-fn #(read-string %)
-      :default (:latitude config)
+      :default (:lat config)
       :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
                  #(str % " is not a number between -90 and 90.")]]
-     ["-z" "--timezone STRING"
+     ["-z" "--zone STRING"
       "The timezone of the location."
-      :default (:timezone config)
+      :default (:zone config)
       :validate [#(valid-zone? %)
                  #(str % " is not a valid zone id string")]]]))
 
@@ -262,37 +272,37 @@
       {:exit-message (usage summary) :ok? true}
       (:version options) ; version => exit OK with version number
       {:exit-message version-number :ok? true}
-      (or (nil? (:latitude options)) (nil? (:longitude options)))
+      (and (not (:year-to-calculate-feast-days options))
+           (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
       :else
-      (select-keys options [:create-config :force :latitude :longitude :sabbath
-                            :timezone :verbosity :year-to-calculate-feast-days]))))
+      (select-keys options [:create-config :force :lat :lon :sabbath :zone
+                            :verbosity :year-to-calculate-feast-days]))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [create-config force latitude longitude sabbath timezone verbosity
+  (let [{:keys [create-config force lat lon sabbath zone verbosity
                 year-to-calculate-feast-days exit-message ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
     (set-log-level! verbosity)
     (log/debug "Configuration file:" (if (read-config) (config-file) "None"))
-    (log/debug "Latitude:" latitude)
-    (log/debug "Longitude:" longitude)
-    (log/debug "TimeZone:" timezone)
+    (log/debug "Latitude:" lat)
+    (log/debug "Longitude:" lon)
+    (log/debug "TimeZone:" zone)
     (cond
-      sabbath
-      (exit-with-sabbath (sabbath? latitude longitude timezone (l/now)))
-      ;;
-      create-config
-      (save-config force :lat latitude :lon longitude :z timezone)
-      ;;
       year-to-calculate-feast-days
       (print-feast-days-in-year year-to-calculate-feast-days)
       ;;
-      :else (print-date latitude longitude (l/in-zone (or timezone (tick/zone))
-                                                      (l/now)))))
+      sabbath
+      (exit-with-sabbath (sabbath? lat lon zone (l/now)))
+      ;;
+      create-config
+      (save-config force :lat lat :lon lon :z zone)
+      ;;
+      :else (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))))
   (System/exit 0))
