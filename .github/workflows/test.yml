@@ -7,6 +7,24 @@ on:
     branches: [ master ]
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: DeLaGuardo/setup-clj-kondo@master
+
+      - uses: actions/checkout@latest
+
+      - name: clj-kondo
+        run: clj-kondo --lint src
+
+      - name: Install lein deps
+        run: lein deps
+
+      - name: Lein Kibit
+        run: lein kibit
+
   lein_test:
 
     runs-on: ubuntu-latest
@@ -24,6 +42,7 @@ jobs:
     name: Build JAR
 
     needs:
+      - lint
       - lein_test
 
     runs-on: ubuntu-latest
@@ -63,6 +82,7 @@ jobs:
     name: Build Linux
 
     needs:
+      - lint
       - lein_test
 
     runs-on: ubuntu-latest

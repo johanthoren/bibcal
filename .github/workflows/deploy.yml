@@ -6,6 +6,24 @@ on:
       - '*.*.*'
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: DeLaGuardo/setup-clj-kondo@master
+
+      - uses: actions/checkout@latest
+
+      - name: clj-kondo
+        run: clj-kondo --lint src
+
+      - name: Install lein deps
+        run: lein deps
+
+      - name: Lein Kibit
+        run: lein kibit
+
   lein_test:
 
     runs-on: ubuntu-latest
@@ -23,6 +41,7 @@ jobs:
     name: Build JAR
 
     needs:
+      - lint
       - lein_test
 
     runs-on: ubuntu-latest
@@ -56,6 +75,7 @@ jobs:
     name: Build Linux
 
     needs:
+      - lint
       - lein_test
 
     runs-on: ubuntu-latest
@@ -193,6 +213,7 @@ jobs:
     name: Run integration tests
 
     needs:
+      - lint
       - lein_test
       - build_linux
       - build_macos
@@ -291,6 +312,7 @@ jobs:
     name: Create Release
 
     needs:
+      - lint
       - lein_test
       - build_jar
       - build_linux
@@ -482,6 +504,7 @@ jobs:
     name: Publish AUR package
 
     needs:
+      - lint
       - lein_test
       - build_linux
       - integration_tests

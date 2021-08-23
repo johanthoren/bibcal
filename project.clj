@@ -16,6 +16,7 @@
                  [table "0.5.0"]
                  [clj-commons/fs "1.6.307"]
                  [xyz.thoren/luminary "0.6.4"]]
+  :plugins [[lein-kibit "0.1.8"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"
   :aliases
