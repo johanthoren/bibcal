@@ -298,6 +298,11 @@ jobs:
         shell: bash
         run: ./bibcal.exe -f 2021
 
+      - name: Run the executable with -x, -y, -z, and args (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
+
         # The command below saves a configuration file, which is needed
         # for the later commands to work.
       - name: Run the executable with -c, -x, -y, and -z (WINDOWS)
