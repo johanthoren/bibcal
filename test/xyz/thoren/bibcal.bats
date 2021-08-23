@@ -67,6 +67,9 @@ verify_version_number() {
 # tests.
 
 @test "invoking bibcal with argument -c -x -y and -z" {
+    if [ -f ~/.config/bibcal/config.edn ]; then
+        skip "Config file already exists"
+    fi
     run ./bibcal -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
     [ "$status" -eq 0 ]
     [ "${lines[0]}" = "The configuration file has been successfully saved." ]
