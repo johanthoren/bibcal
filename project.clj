@@ -15,7 +15,7 @@
                  [tick "0.5.0-RC1"]
                  [table "0.5.0"]
                  [clj-commons/fs "1.6.307"]
-                 [xyz.thoren/luminary "0.6.4"]]
+                 [xyz.thoren/luminary "0.6.5"]]
   :plugins [[lein-kibit "0.1.8"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"
