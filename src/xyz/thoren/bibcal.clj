@@ -65,7 +65,8 @@
             "         config file.\n"
             "\n"
             "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
-            l/jerusalem-lon " --zone " l/jerusalem-zone)})
+            l/jerusalem-lon " --zone " l/jerusalem-zone)
+   :67 "ERROR: You can't use option -F without option -c."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -272,6 +273,8 @@
       {:exit-message (usage summary) :ok? true}
       (:version options) ; version => exit OK with version number
       {:exit-message version-number :ok? true}
+      (and (:force options) (not (:create-config options)))
+      (exit 67 (:67 exit-messages))
       (and (not (:year-to-calculate-feast-days options))
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
