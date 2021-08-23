@@ -163,36 +163,37 @@
   (let [d (l/date lat lon time)
         h (:hebrew d)
         t (:time d)
-        tf (tick/formatter "yyy-MM-dd HH:MM")]
-    (print (table
-            [{"Key" "Configuration file"
-              "Value" (if (read-config) (config-file) "None")}
-             {"Key" "Current location" "Value" (str lat "," lon)}
-             {"Key" "Current timezone" "Value" (str (tick/zone time))}
-             {"Key" "Month" "Value" (:month-of-year h)}
-             {"Key" "Day of month" "Value" (:day-of-month h)}
-             {"Key" "Day of week" "Value" (:day-of-week h)}
-             {"Key" "Sabbath" "Value" (:sabbath h)}
-             {"Key" "Major feast day"
-              "Value" (feast-or-false (:major-feast-day h))}
-             {"Key" "Minor feast day"
-              "Value" (feast-or-false (:minor-feast-day h))}
-             {"Key" "Start of current day"
-              "Value" (tick/format tf (get-in t [:day :start]))}
-             {"Key" "End of current day"
-              "Value" (tick/format tf (get-in t [:day :end]))}
-             {"Key" "Start of current week"
-              "Value" (tick/format tf (get-in t [:week :start]))}
-             {"Key" "End of current week"
-              "Value" (tick/format tf (get-in t [:week :end]))}
-             {"Key" "Start of current month"
-              "Value" (tick/format tf (get-in t [:month :start]))}
-             {"Key" "End of current month"
-              "Value" (tick/format tf (get-in t [:month :end]))}
-             {"Key" "Start of current year"
-              "Value" (tick/format tf (get-in t [:year :start]))}
-             {"Key" "End of current year"
-              "Value" (tick/format tf (get-in t [:year :end]))}]))))
+        tf (tick/formatter "yyy-MM-dd HH:mm:ss")]
+    (table
+     [{:Key "Gregorian time" :Value (tick/format tf time)}
+      {:Key "Biblical Month" :Value (:month-of-year h)}
+      {:Key "Biblical Day of month" :Value (:day-of-month h)}
+      {:Key "Biblical Day of week" :Value (:day-of-week h)}
+      {:Key "Sabbath" :Value (:sabbath h)}
+      {:Key "Major feast day"
+       :Value (feast-or-false (:major-feast-day h))}
+      {:Key "Minor feast day"
+       :Value (feast-or-false (:minor-feast-day h))}
+      {:Key "Start of year"
+       :Value (tick/format tf (get-in t [:year :start]))}
+      {:Key "Start of month"
+       :Value (tick/format tf (get-in t [:month :start]))}
+      {:Key "Start of week"
+       :Value (tick/format tf (get-in t [:week :start]))}
+      {:Key "Start of day"
+       :Value (tick/format tf (get-in t [:day :start]))}
+      {:Key "End of day"
+       :Value (tick/format tf (get-in t [:day :end]))}
+      {:Key "End of week"
+       :Value (tick/format tf (get-in t [:week :end]))}
+      {:Key "End of month"
+       :Value (tick/format tf (get-in t [:month :end]))}
+      {:Key "End of year"
+       :Value (tick/format tf (get-in t [:year :end]))}
+      {:Key "Location" :Value (str lat "," lon)}
+      {:Key "Timezone" :Value (str (tick/zone time))}
+      {:Key "Config file"
+       :Value (if (read-config) (config-file) "None")}])))
 
 ;; Beginning of command line parsing.
 
