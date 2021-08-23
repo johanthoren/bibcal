@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: DeLaGuardo/setup-clj-kondo@master
+      - uses: DeLaGuardo/setup-clj-kondo@v1
 
       - uses: actions/checkout@v2
 
