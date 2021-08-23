@@ -66,7 +66,8 @@
             "\n"
             "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
             l/jerusalem-lon " --zone " l/jerusalem-zone)
-   :67 "ERROR: You can't use option -F without option -c."})
+   :67 "ERROR: You can't use option -F without option -c."
+   :68 "ERROR: Arguments can only be used together with -v, -x, -y, or -z."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -279,14 +280,22 @@
       (and (not (:year-to-calculate-feast-days options))
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
+      (and (seq arguments)
+           (->> (dissoc options :lat :lon :zone :verbosity)
+                (vals)
+                (remove #(or (false? %) (nil? %)))
+                (count)
+                (< 0)))
+      (exit 68 (:68 exit-messages))
       :else
-      (select-keys options [:create-config :force :lat :lon :sabbath :zone
-                            :verbosity :year-to-calculate-feast-days]))))
+      (-> (select-keys options [:create-config :force :lat :lon :sabbath :zone
+                                :verbosity :year-to-calculate-feast-days])
+          (assoc :arguments (map read-string arguments))))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [create-config force lat lon sabbath zone verbosity
+  (let [{:keys [arguments create-config force lat lon sabbath zone verbosity
                 year-to-calculate-feast-days exit-message ok?]}
         (validate-args args)]
     (when exit-message
@@ -296,7 +305,11 @@
     (log/debug "Latitude:" lat)
     (log/debug "Longitude:" lon)
     (log/debug "TimeZone:" zone)
+    (log/debug "Arguments:" arguments)
     (cond
+      arguments
+      (print-date lat lon (apply l/zdt (cons (or zone (tick/zone)) arguments)))
+      ;;
       year-to-calculate-feast-days
       (print-feast-days-in-year year-to-calculate-feast-days)
       ;;
