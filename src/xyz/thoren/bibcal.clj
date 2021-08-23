@@ -95,10 +95,10 @@
 (defn- write-config
   [config]
   (log/debug "Will try to save configuration to" (config-file))
-  (when (not (fs/exists? (config-dir)))
+  (when-not (fs/exists? (config-dir))
     (log/debug "Creating directory" (config-dir))
     (fs/mkdirs (config-dir)))
-  (when (not (fs/exists? (config-file)))
+  (when-not (fs/exists? (config-file))
     (log/debug "Creating file" (config-file))
     (fs/create (fs/file (config-file))))
   (log/debug "Saving" config "to" (config-file))
@@ -207,7 +207,7 @@
       :default false]
      ["-f" "--feast-days YEAR"
       "Calculate and print a list of feast days in a gregorian YEAR"
-      :parse-fn #(read-string %)
+      :parse-fn read-string
       :validate [#(and (int? %) (<= 1584 % 2100))
                  #(str % " is not an integer between 1584 and 2100")]
       :id :year-to-calculate-feast-days]
@@ -230,20 +230,20 @@
       :default false]
      ["-x" "--lon NUMBER"
       "The longitude of the location."
-      :parse-fn #(read-string %)
+      :parse-fn read-string
       :default (:lon config)
       :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
                  #(str % " is not a number between -180 and 180.")]]
      ["-y" "--lat NUMBER"
       "The latitude of the location."
-      :parse-fn #(read-string %)
+      :parse-fn read-string
       :default (:lat config)
       :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
                  #(str % " is not a number between -90 and 90.")]]
      ["-z" "--zone STRING"
       "The timezone of the location."
       :default (:zone config)
-      :validate [#(valid-zone? %)
+      :validate [valid-zone?
                  #(str % " is not a valid zone id string")]]]))
 
 (defn usage
@@ -288,9 +288,10 @@
                 (< 0)))
       (exit 68 (:68 exit-messages))
       :else
-      (-> (select-keys options [:create-config :force :lat :lon :sabbath :zone
-                                :verbosity :year-to-calculate-feast-days])
-          (assoc :arguments (map read-string arguments))))))
+      (assoc (select-keys options [:create-config :force :lat :lon :sabbath :zone
+                                   :verbosity :year-to-calculate-feast-days])
+             :arguments
+             (map read-string arguments)))))
 
 ;; End of command line parsing.
 
@@ -307,7 +308,7 @@
     (log/debug "TimeZone:" zone)
     (log/debug "Arguments:" arguments)
     (cond
-      arguments
+      (seq arguments)
       (print-date lat lon (apply l/zdt (cons (or zone (tick/zone)) arguments)))
       ;;
       year-to-calculate-feast-days
