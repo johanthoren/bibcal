@@ -166,9 +166,9 @@
         tf (tick/formatter "yyy-MM-dd HH:mm:ss")]
     (table
      [{:Key "Gregorian time" :Value (tick/format tf time)}
-      {:Key "Biblical Month" :Value (:month-of-year h)}
-      {:Key "Biblical Day of month" :Value (:day-of-month h)}
-      {:Key "Biblical Day of week" :Value (:day-of-week h)}
+      {:Key "Biblical month" :Value (:month-of-year h)}
+      {:Key "Biblical day of month" :Value (:day-of-month h)}
+      {:Key "Biblical day of week" :Value (:day-of-week h)}
       {:Key "Sabbath" :Value (:sabbath h)}
       {:Key "Major feast day"
        :Value (feast-or-false (:major-feast-day h))}

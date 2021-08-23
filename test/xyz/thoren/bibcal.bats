@@ -53,6 +53,16 @@ verify_version_number() {
     [ "$(verify_version_number "${lines[0]}")" ]
 }
 
+@test "invoking bibcal with argument -x -y and -z plus arguments" {
+    run ./bibcal -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
+    [ "$status" -eq 0 ]
+    [[ "${lines[3]}" =~ "2021-09-11 09:00:00" ]]
+    [[ "${lines[4]}" =~ "6" ]]
+    [[ "${lines[5]}" =~ "4" ]]
+    [[ "${lines[6]}" =~ "7" ]]
+    [[ "${lines[7]}" =~ "true" ]]
+}
+
 # Save the configuration options in the first command to avoid errors in later
 # tests.
 
