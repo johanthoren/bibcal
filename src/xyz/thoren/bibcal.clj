@@ -273,13 +273,13 @@
       {:exit-message (usage summary) :ok? true}
       (:version options) ; version => exit OK with version number
       {:exit-message version-number :ok? true}
+      errors ; errors => exit with description of errors
+      {:exit-message (str/join \newline errors)}
       (and (:force options) (not (:create-config options)))
       (exit 67 (:67 exit-messages))
       (and (not (:year-to-calculate-feast-days options))
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
-      errors ; errors => exit with description of errors
-      {:exit-message (str/join \newline errors)}
       :else
       (select-keys options [:create-config :force :lat :lon :sabbath :zone
                             :verbosity :year-to-calculate-feast-days]))))
