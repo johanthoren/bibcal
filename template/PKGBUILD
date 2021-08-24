@@ -10,8 +10,8 @@ conflicts=("${pkgname%-bin}")
 source=("${pkgname%-bin}-$pkgver::$url/releases/download/$pkgver/${pkgname%-bin}-linux-x86_64"
         "${pkgname%-bin}-$pkgver.sha256::$url/releases/download/$pkgver/${pkgname%-bin}-linux-x86_64.sha256"
         "${pkgname%-bin}-$pkgver.sha256.asc::$url/releases/download/$pkgver/${pkgname%-bin}-linux-x86_64.sha256.asc"
-        "https://raw.githubusercontent.com/johanthoren/bibcal/$pkgver/LICENSE"
-        "https://raw.githubusercontent.com/johanthoren/bibcal/$pkgver/README.md")
+        "${pkgname%-bin}-$pkgver.LICENSE::https://raw.githubusercontent.com/johanthoren/bibcal/$pkgver/LICENSE"
+        "${pkgname%-bin}-$pkgver.README.md::https://raw.githubusercontent.com/johanthoren/bibcal/$pkgver/README.md")
 sha256sums=(
   "BINARY_CHECKSUM"
   "CHECKSUM_CHECKSUM"
@@ -23,6 +23,6 @@ validpgpkeys=('2BEFDA8D830FA1E0C458915824EBD0202640D9B0') # Johan Thoren (GitHub
 
 package() {
   install -Dm755 "${pkgname%-bin}-$pkgver" "$pkgdir/usr/bin/${pkgname%-bin}"
-  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/${pkgname%-bin}"
-  install -Dm644 README.md -t "$pkgdir/usr/share/doc/${pkgname%-bin}"
+  install -Dm644 "${pkgname%-bin}-$pkgver.LICENSE" "$pkgdir/usr/share/licenses/${pkgname%-bin}/LICENSE"
+  install -Dm644 "${pkgname%-bin}-$pkgver.README.md" "$pkgdir/usr/share/doc/${pkgname%-bin}/README.md"
 }
