@@ -55,29 +55,28 @@ and second.
 
 Example:
 ``` sh
-$ bibcal -x -74.006111 -y 40.712778 -z America/New_York 2001 9 11 9 0
-
+$ bibcal -x -74.006111 -y 40.712778 -z America/New_York 2011 1 1 9 0
 ```
 Result:
 ```sh
 +-----------------------+----------------------+
 | Key                   | Value                |
 +-----------------------+----------------------+
-| Gregorian time        | 2021-09-11 09:00:00  |
-| Biblical month        | 6                    |
-| Biblical day of month | 4                    |
+| Gregorian time        | 2011-01-01 09:00:00  |
+| Biblical month        | 9                    |
+| Biblical day of month | 26                   |
 | Biblical day of week  | 7                    |
 | Sabbath               | true                 |
-| Major feast day       | false                |
+| Major feast day       | 2nd day of Hanukkah  |
 | Minor feast day       | false                |
-| Start of year         | 2021-04-12 19:32:00  |
-| Start of month        | 2021-09-07 19:18:00  |
-| Start of week         | 2021-09-04 19:23:00  |
-| Start of day          | 2021-09-10 19:12:00  |
-| End of day            | 2021-09-11 19:10:59  |
-| End of week           | 2021-09-11 19:10:59  |
-| End of month          | 2021-10-06 18:28:59  |
-| End of year           | 2022-04-01 19:20:59  |
+| Start of year         | 2010-04-14 19:34:00  |
+| Start of month        | 2010-12-06 16:28:00  |
+| Start of week         | 2010-12-25 16:34:00  |
+| Start of day          | 2010-12-31 16:38:00  |
+| End of day            | 2011-01-01 16:38:59  |
+| End of week           | 2011-01-01 16:38:59  |
+| End of month          | 2011-01-04 16:41:59  |
+| End of year           | 2011-04-03 19:21:59  |
 | Location              | 40.712778,-74.006111 |
 | Timezone              | America/New_York     |
 | Config file           | None                 |
