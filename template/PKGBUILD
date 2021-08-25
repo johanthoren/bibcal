@@ -1,6 +1,6 @@
 pkgname=bibcal-bin
 pkgver=RELEASE_TAG
-pkgdesc="CLI tool to calculating dates based on the Bible and the 1st Book of Enoch."
+pkgdesc="Calculate dates based on the Bible and the 1st Book of Enoch."
 pkgrel=1
 arch=(x86_64)
 license=(ISC)
