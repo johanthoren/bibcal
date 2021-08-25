@@ -17,3 +17,6 @@ TAGS
 /.lsp/
 /PKGBUILD
 /bibcal
+/*.rpm
+/bibcal-linux-x86_64
+/*.deb

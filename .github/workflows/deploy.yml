@@ -389,11 +389,33 @@ jobs:
         with:
           name: bibcal-${{ matrix.target }}.exe
 
+      - name: Build DEB Package
+        if: "contains(matrix.target, 'linux')"
+        id: build_deb
+        uses: kentik/pkg@v1.0.0-rc7
+        with:
+          name: bibcal
+          version: ${{ needs.create_release.outputs.release_tag }}
+          arch: x86_64
+          format: deb
+          package: package.yml
+
+      - name: Build RPM Package
+        if: "contains(matrix.target, 'linux')"
+        id: build_rpm
+        uses: kentik/pkg@v1.0.0-rc7
+        with:
+          name: bibcal
+          version: ${{ needs.create_release.outputs.release_tag }}
+          arch: x86_64
+          format: rpm
+          package: package.yml
+
       - name: Sign artifact
         uses: tristan-weil/ghaction-checksum-sign-artifact@v1.0.1
         with:
           checksum_output: 'artifact_one_file_per_digest'
-          path: 'bibcal-*'
+          path: 'bibcal*'
           sign_key: '${{ secrets.SIGN_KEY }}'
           sign_key_passphrase: '${{ secrets.SIGN_KEY_PASSPHRASE }}'
           sign_key_fingerprint: '${{ secrets.SIGN_KEY_FINGERPRINT }}'
@@ -401,6 +423,48 @@ jobs:
 
       - name: Print the current state of the directory
         run: ls -alh
+
+      - name: Upload DEB artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_deb.outputs.package }}
+          path: ${{ steps.build_deb.outputs.package }}
+
+      - name: Upload DEB checksum artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_deb.outputs.package }}.sha256
+          path: ${{ steps.build_deb.outputs.package }}.sha256
+
+      - name: Upload DEB signature artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_deb.outputs.package }}.sha256.asc
+          path: ${{ steps.build_deb.outputs.package }}.sha256.asc
+
+      - name: Upload RPM artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_rpm.outputs.package }}
+          path: ${{ steps.build_rpm.outputs.package }}
+
+      - name: Upload RPM checksum artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_rpm.outputs.package }}.sha256
+          path: ${{ steps.build_rpm.outputs.package }}.sha256
+
+      - name: Upload RPM signature artifact
+        if: "contains(matrix.target, 'linux')"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.build_rpm.outputs.package }}.sha256.asc
+          path: ${{ steps.build_rpm.outputs.package }}.sha256.asc
 
       - name: Upload executable checksum artifact (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
@@ -429,6 +493,28 @@ jobs:
         with:
           name: bibcal-${{ matrix.target }}.exe.sha256.asc
           path: bibcal-${{ matrix.target }}.exe.sha256.asc
+
+      - name: Release DEB
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_deb.outputs.package }}
+          asset_name: ${{ steps.build_deb.outputs.package }}
+          asset_content_type: application/x-deb
+
+      - name: Release RPM
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_rpm.outputs.package }}
+          asset_name: ${{ steps.build_rpm.outputs.package }}
+          asset_content_type: application/x-rpm
 
       - name: Release executable (JAR)
         if: contains(matrix.target, 'all')
@@ -463,6 +549,28 @@ jobs:
           asset_name: bibcal-${{ matrix.target }}.exe
           asset_content_type: application/octet-stream
 
+      - name: Release DEB checksum
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_deb.outputs.package }}.sha256
+          asset_name: ${{ steps.build_deb.outputs.package }}.sha256
+          asset_content_type: text/plain
+
+      - name: Release RPM checksum
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_rpm.outputs.package }}.sha256
+          asset_name: ${{ steps.build_rpm.outputs.package }}.sha256
+          asset_content_type: text/plain
+
       - name: Release executable checksum (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
         uses: actions/upload-release-asset@v1.0.2
@@ -483,6 +591,28 @@ jobs:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_path: ./bibcal-${{ matrix.target }}.exe.sha256
           asset_name: bibcal-${{ matrix.target }}.exe.sha256
+          asset_content_type: text/plain
+
+      - name: Release DEB signature
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_deb.outputs.package }}.sha256.asc
+          asset_name: ${{ steps.build_deb.outputs.package }}.sha256.asc
+          asset_content_type: text/plain
+
+      - name: Release RPM signature
+        if: contains(matrix.target, 'linux')
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.build_rpm.outputs.package }}.sha256.asc
+          asset_name: ${{ steps.build_rpm.outputs.package }}.sha256.asc
           asset_content_type: text/plain
 
       - name: Release executable signature (NON-WINDOWS)

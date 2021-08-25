@@ -1,0 +1,18 @@
+meta:
+  description: Calculate dates based on the Bible and the 1st Book of Enoch.
+  vendor: Johan Thorén <johan@thoren.xyz>
+  maintainer: Johan Thorén <johan@thoren.xyz>
+  license: ISC
+files:
+  "/usr/bin/bibcal":
+    file: bibcal-linux-x86_64
+    mode: "0755"
+    user: "root"
+  "/usr/share/doc/bibcal/README.md":
+    file: README.md
+    mode: "0644"
+    user: "root"
+  "/usr/share/licenses/bibcal/LICENSE":
+    file: LICENSE
+    mode: "0644"
+    user: "root"

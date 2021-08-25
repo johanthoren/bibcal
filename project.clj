@@ -1,6 +1,6 @@
 (defproject xyz.thoren/bibcal "0.3.3-SNAPSHOT"
-  :description (str "A command-line tool for calculating dates based on the "
-                    "Bible and the 1st Book of Enoch.")
+  :description (str "Calculate dates based on the Bible and the "
+                    "1st Book of Enoch.")
   :url "https://github.com/johanthoren/bibcal"
   :license {:name "ISC"
             :url "https://choosealicense.com/licenses/isc"
