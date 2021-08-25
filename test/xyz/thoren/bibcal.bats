@@ -86,6 +86,12 @@ verify_version_number() {
     [[ "${lines[3]}" =~ "Gregorian time" ]]
 }
 
+@test "invoking bibcal with option -T" {
+    run ./bibcal -T
+    [ "$status" -eq 0 ]
+    [[ "${lines[0]}" =~ ", " ]]
+}
+
 @test "invoking bibcal with option -vv" {
     run ./bibcal -vv
     [ "$status" -eq 0 ]

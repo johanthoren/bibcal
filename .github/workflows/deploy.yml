@@ -315,6 +315,11 @@ jobs:
         shell: bash
         run: ./bibcal.exe -t
 
+      - name: Run the executable with option -T (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe -T
+
       - name: Run the executable with -vv (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash

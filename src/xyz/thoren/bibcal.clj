@@ -68,9 +68,13 @@
             l/jerusalem-lon " --zone " l/jerusalem-zone)
    :67 "ERROR: You can't use option -f without option -c."
    :68 "ERROR: Arguments can only be used together with -v, -x, -y, or -z."
-   :69 "ERROR: Wrong number or wrong type of arguments."
-       "       Either use just one integer to print the feast days of a year,"
-       "       Or use between 3 and 7 integers to calculate a certain time."})
+   :69 (str "ERROR: Wrong number or wrong type of arguments."
+            "       Either use just one integer to print the feast days of a"
+            "       year, or use between 3 and 7 integers to calculate a "
+            "       certain time.")
+   :70 "ERROR: You can't use both options -t and -T at the same time."
+   :71 (str "ERROR: You can't use option -c with other options than -v, -x, -y,"
+            "       and -z.")})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -161,6 +165,24 @@
     (feast-day-name (:name feast) (:day-of-feast feast) (:days-in-feast feast))
     false))
 
+(defn- possible-year
+  [date]
+  (->> (get-in date [:time :year :start])
+       (tick/year)
+       (tick/int)
+       (+ 4000)))
+
+(defn print-brief-date
+  [lat lon time]
+  (let [d (l/date lat lon time)
+        h (:hebrew d)
+        n (:names h)]
+    (println (str (:day-of-month n)
+                  " of "
+                  (:traditional-month-of-year n)
+                  ", "
+                  (possible-year d)))))
+
 (defn print-date
   [lat lon time]
   (let [d (l/date lat lon time)
@@ -219,7 +241,10 @@
       "Check Sabbath status. Silent by default."
       :default false]
      ["-t" "--today"
-      "Show long summary of the current biblical date."
+      "Long summary of the current biblical date."
+      :default false]
+     ["-T" "--today-brief"
+      "Short summary of the current biblical date."
       :default false]
      ["-v" nil
       "Verbosity level; specify multiple times to increase value."
@@ -284,9 +309,16 @@
       {:exit-message (str/join \newline errors)}
       (and (:force options) (not (:create-config options)))
       (exit 67 (:67 exit-messages))
-      (and (not= (count arguments) 1)
+      (and (> (count arguments) 2)
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
+      (and (:create-config options)
+           (->> (dissoc options :lat :lon :zone :verbosity)
+                (vals)
+                (remove #(or (false? %) (nil? %)))
+                (count)
+                (< 0)))
+      (exit 71 (:71 exit-messages))
       (and (seq arguments)
            (->> (dissoc options :lat :lon :zone :verbosity)
                 (vals)
@@ -294,17 +326,19 @@
                 (count)
                 (< 0)))
       (exit 68 (:68 exit-messages))
+      (and (:today options) (:today-brief options))
+      (exit 70 (:70 exit-messages))
       :else
       (assoc (select-keys options [:create-config :force :lat :lon :sabbath
-                                   :today :verbosity :zone])
+                                   :today :today-brief :verbosity :zone])
              :arguments
              (map read-string arguments)))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [arguments create-config force lat lon sabbath today verbosity
-                zone exit-message ok?]}
+  (let [{:keys [arguments create-config force lat lon sabbath today today-brief
+                verbosity zone exit-message ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
@@ -333,6 +367,9 @@
       ;;
       create-config
       (save-config force :lat lat :lon lon :z zone)
+      ;;
+      today-brief
+      (print-brief-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
       ;;
       today
       (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
