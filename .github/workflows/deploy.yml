@@ -467,6 +467,24 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -Ralh
 
+      - name: Make tmp directory
+        run: mkdir -p tmp
+
+      - name: Move all artifacts to tmp directory
+        run: find ./bibcal* -mindepth 1 -name 'bibcal*' -type f -exec mv {} tmp/ \;
+
+      - name: Remove empty directories
+        run: rmdir bibcal*
+
+      - name: Move all artifacts to the current directory
+        run: mv tmp/* .
+
+      - name: Remove empty tmp directory
+        run: rmdir tmp
+
+      - name: Display current directory
+        run: ls -alh
+
       - name: Sign artifacts
         uses: tristan-weil/ghaction-checksum-sign-artifact@v1.0.1
         with:
