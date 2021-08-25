@@ -534,11 +534,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/download-artifact@v2
-
-      - name: Display structure of downloaded files
-        run: ls -Ralh
-
       - name: Download checksum artifact
         if: contains(matrix.target, 'linux')
         uses: actions/download-artifact@v2.0.5
