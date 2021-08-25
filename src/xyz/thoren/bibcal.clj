@@ -51,7 +51,7 @@
 
 (def exit-messages
   "Exit messages used by `exit`."
-  {:64 "ERROR: The configuration file already exists. Use -F to overwrite."
+  {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
    :65 (str "ERROR: Something went wrong while validating the saved config.\n"
             "       Inspect the config file for more details:\n"
             "       " (config-file))
@@ -66,8 +66,11 @@
             "\n"
             "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
             l/jerusalem-lon " --zone " l/jerusalem-zone)
-   :67 "ERROR: You can't use option -F without option -c."
-   :68 "ERROR: Arguments can only be used together with -v, -x, -y, or -z."})
+   :67 "ERROR: You can't use option -f without option -c."
+   :68 "ERROR: Arguments can only be used together with -v, -x, -y, or -z."
+   :69 "ERROR: Wrong number or wrong type of arguments."
+       "       Either use just one integer to print the feast days of a year,"
+       "       Or use between 3 and 7 integers to calculate a certain time."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -206,13 +209,7 @@
     [["-c" "--create-config"
       "Save --lat, --lon, and --zone to the configuration file."
       :default false]
-     ["-f" "--feast-days YEAR"
-      "Calculate and print a list of feast days in a gregorian YEAR"
-      :parse-fn read-string
-      :validate [#(and (int? %) (<= 1584 % 2100))
-                 #(str % " is not an integer between 1584 and 2100")]
-      :id :year-to-calculate-feast-days]
-     ["-F" "--force"
+     ["-f" "--force"
       "Force saving of configuration file even if it already exists."
       :default false]
      ["-h" "--help"
@@ -220,6 +217,9 @@
       :default false]
      ["-s" "--sabbath"
       "Check Sabbath status. Silent by default."
+      :default false]
+     ["-t" "--today"
+      "Show long summary of the current biblical date."
       :default false]
      ["-v" nil
       "Verbosity level; specify multiple times to increase value."
@@ -257,13 +257,19 @@
     ""
     (str "Version: " version-number)
     ""
-    "Usage: bibcal [options]"
+    "Usage: bibcal [options] [YEAR]"
+    "       bibcal [options] YEAR MONTH DAY [HOUR] [MINUTE] [SECOND]"
     ""
     "Options:"
-    options-summary]))
-    ;; ""]))
-    ;; "Example output:"
-    ;; "FIXME: Examples..."]))
+    options-summary
+    ""
+    "Examples:"
+    ""
+    "Command: $ bibcal 2021"
+    "Result:  Display all feast days in the gregorian year 2021."
+    ""
+    "Command: $ bibcal 2021 4 13 18"
+    "Result:  Show a summary of the biblical date at 2021-04-13T18:00."]))
 
 (defn validate-args
   [args]
@@ -278,7 +284,7 @@
       {:exit-message (str/join \newline errors)}
       (and (:force options) (not (:create-config options)))
       (exit 67 (:67 exit-messages))
-      (and (not (:year-to-calculate-feast-days options))
+      (and (not= (count arguments) 1)
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
       (and (seq arguments)
@@ -289,16 +295,16 @@
                 (< 0)))
       (exit 68 (:68 exit-messages))
       :else
-      (assoc (select-keys options [:create-config :force :lat :lon :sabbath :zone
-                                   :verbosity :year-to-calculate-feast-days])
+      (assoc (select-keys options [:create-config :force :lat :lon :sabbath
+                                   :today :verbosity :zone])
              :arguments
              (map read-string arguments)))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [arguments create-config force lat lon sabbath zone verbosity
-                year-to-calculate-feast-days exit-message ok?]}
+  (let [{:keys [arguments create-config force lat lon sabbath today verbosity
+                zone exit-message ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
@@ -310,10 +316,17 @@
     (log/debug "Arguments:" arguments)
     (cond
       (seq arguments)
-      (print-date lat lon (apply l/zdt (cons (or zone (tick/zone)) arguments)))
-      ;;
-      year-to-calculate-feast-days
-      (print-feast-days-in-year year-to-calculate-feast-days)
+      (cond
+        (and (= (count arguments) 1)
+             (and (int? (first arguments))
+                  (<= 1584 (first arguments) 2100)))
+        (print-feast-days-in-year (first arguments))
+        ;;
+        (and (<= 3 (count arguments) 7)
+             (empty? (remove int? arguments)))
+        (print-date lat lon (apply l/zdt (cons (or zone (tick/zone)) arguments)))
+        ;;
+        :else (exit 69 (:69 exit-messages)))
       ;;
       sabbath
       (exit-with-sabbath (sabbath? lat lon zone (l/now)))
@@ -321,5 +334,8 @@
       create-config
       (save-config force :lat lat :lon lon :z zone)
       ;;
-      :else (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))))
+      today
+      (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
+      ;;
+      :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
   (System/exit 0))

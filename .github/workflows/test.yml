@@ -288,15 +288,15 @@ jobs:
         shell: bash
         run: ./bibcal.exe -h
 
-      - name: Run the executable with -f 2021 (WINDOWS)
+      - name: Run the executable with 2021 (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash
-        run: ./bibcal.exe -f 2021
+        run: ./bibcal.exe 2021
 
-      - name: Run the executable with -f 2051 (WINDOWS)
+      - name: Run the executable with 2051 (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash
-        run: ./bibcal.exe -f 2021
+        run: ./bibcal.exe 2021
 
       - name: Run the executable with -x, -y, -z, and args (WINDOWS)
         if: "contains(matrix.target, 'windows')"
@@ -314,6 +314,11 @@ jobs:
         if: "contains(matrix.target, 'windows')"
         shell: bash
         run: ./bibcal.exe
+
+      - name: Run the executable with option -t (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        shell: bash
+        run: ./bibcal.exe -t
 
       - name: Run the executable with -vv (WINDOWS)
         if: "contains(matrix.target, 'windows')"

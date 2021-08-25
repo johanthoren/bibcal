@@ -46,12 +46,16 @@ options following.
 
 Note to Windows users: double clicking bibcal.exe will do nothing useful.
 
-Running bibcal without any options or arguments will print a brief summary of
-the current biblical date.
+Running bibcal without any options or arguments will print a list of feast days
+in the current gregorian year. Adding a year as an argument will print the feast
+days of that year.
+
+Running bibcal with the option `-t` will print a long summary of the current
+biblical date.
 
 If you want to see the biblical date of a specific gregorian date, then add
 arguments at the end of the command representing year, month, day, hour, minute,
-and second. 
+and second (at least 3 positions). 
 
 Example:
 ``` sh

@@ -17,21 +17,21 @@ verify_version_number() {
 
 # Options -f, -h, and -V should work without a saved configuration file.
 
-@test "invoking bibcal -f 2021" {
+@test "invoking bibcal 2021" {
     if [ ! "$(uname)" = "Linux" ]; then
         skip "This test only runs on Linux"
     fi
-    run ./bibcal -f 2021
+    run ./bibcal 2021
     [ "$status" -eq 0 ]
     [ "${lines[0]}" = "2021-01-13 1st day of the 11th month" ]
     [ "${lines[-1]}" = "2021-12-31 4th day of Hanukkah" ]
 }
 
-@test "invoking bibcal -f 2051" {
+@test "invoking bibcal 2051" {
     if [ ! "$(uname)" = "Linux" ]; then
         skip "This test only runs on Linux"
     fi
-    run ./bibcal -f 2051
+    run ./bibcal 2051
     [ "$status" -eq 0 ]
     [ "${lines[1]}" = "2051-01-13 1st day of the 11th month" ]
     [ "${lines[-1]}" = "2051-12-31 5th day of Hanukkah" ]
@@ -78,6 +78,12 @@ verify_version_number() {
 @test "invoking bibcal without any arguments" {
     run ./bibcal
     [ "$status" -eq 0 ]
+}
+
+@test "invoking bibcal with option -t" {
+    run ./bibcal -t
+    [ "$status" -eq 0 ]
+    [[ "${lines[3]}" =~ "Gregorian time" ]]
 }
 
 @test "invoking bibcal with option -vv" {
