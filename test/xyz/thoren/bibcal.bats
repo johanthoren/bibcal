@@ -66,7 +66,7 @@ verify_version_number() {
 # Save the configuration options in the first command to avoid errors in later
 # tests.
 
-@test "invoking bibcal with argument -c -x -y and -z" {
+@test "invoking bibcal with options -c -x -y and -z" {
     if [ -f ~/.config/bibcal/config.edn ]; then
         skip "Config file already exists"
     fi

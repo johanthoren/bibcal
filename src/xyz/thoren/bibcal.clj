@@ -313,7 +313,7 @@
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
       (and (:create-config options)
-           (->> (dissoc options :lat :lon :zone :verbosity)
+           (->> (dissoc options :create-config :lat :lon :zone :verbosity)
                 (vals)
                 (remove #(or (false? %) (nil? %)))
                 (count)
