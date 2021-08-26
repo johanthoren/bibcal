@@ -162,20 +162,13 @@
     (feast-day-name (:name feast) (:day-of-feast feast) (:days-in-feast feast))
     false))
 
-(defn- possible-year
-  [date]
-  (->> (get-in date [:time :year :start])
-       (tick/year)
-       (tick/int)
-       (+ 4000)))
-
 (defn print-brief-date
   [lat lon time & {:keys [year] :or {year false}}]
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
         without-y (str (:day-of-month n) " of " (:traditional-month-of-year n))
-        with-y (str without-y ", " (possible-year d))]
+        with-y (str without-y ", " (:year h))]
     (println (if year with-y without-y))))
 
 (defn print-date
@@ -213,7 +206,7 @@
                     {:Key "Config file"
                      :Value (if (read-config) (config-file) "None")}]
         table-with-y (cons {:Key "Biblical year"
-                            :Value (possible-year d)}
+                            :Value (:year h)}
                            base-table)
         table-with-g (cons {:Key "Gregorian time" :Value (tick/format tf time)}
                            (if year table-with-y base-table))]
