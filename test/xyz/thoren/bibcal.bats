@@ -63,6 +63,16 @@ verify_version_number() {
     [[ "${lines[7]}" =~ "true" ]]
 }
 
+@test "invoking bibcal with argument -x -y -Y and -z plus arguments" {
+    run ./bibcal -Y -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
+    [ "$status" -eq 0 ]
+    [[ "${lines[3]}" =~ "2021-09-11 09:00:00" ]]
+    [[ "${lines[5]}" =~ "6" ]]
+    [[ "${lines[6]}" =~ "4" ]]
+    [[ "${lines[7]}" =~ "7" ]]
+    [[ "${lines[8]}" =~ "true" ]]
+}
+
 # Save the configuration options in the first command to avoid errors in later
 # tests.
 
@@ -84,10 +94,34 @@ verify_version_number() {
     run ./bibcal -t
     [ "$status" -eq 0 ]
     [[ "${lines[3]}" =~ "Gregorian time" ]]
+    [[ ! "${lines[4]}" =~ "Biblical year" ]]
+}
+
+@test "invoking bibcal with option -t and -Y" {
+    run ./bibcal -t -Y
+    [ "$status" -eq 0 ]
+    [[ "${lines[3]}" =~ "Gregorian time" ]]
+    [[ "${lines[4]}" =~ "Biblical year" ]]
+}
+
+@test "invoking bibcal with option -t and -T" {
+    run ./bibcal -t -T
+    [ "$status" -eq 70 ]
+}
+
+@test "invoking bibcal with option -t -T and -Y" {
+    run ./bibcal -t -T -Y
+    [ "$status" -eq 70 ]
 }
 
 @test "invoking bibcal with option -T" {
     run ./bibcal -T
+    [ "$status" -eq 0 ]
+    [[ ! "${lines[0]}" =~ ", " ]]
+}
+
+@test "invoking bibcal with option -T and -Y" {
+    run ./bibcal -T -Y
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" =~ ", " ]]
 }

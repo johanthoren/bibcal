@@ -53,6 +53,19 @@ days of that year.
 Running bibcal with the option `-t` will print a long summary of the current
 biblical date.
 
+Running bibcal with the option `-T` will print a short summary of the current
+biblical date.
+
+Example:
+``` sh
+$ bibcal -T
+```
+Result:
+
+``` sh
+18th of Av
+```
+
 If you want to see the biblical date of a specific gregorian date, then add
 arguments at the end of the command representing year, month, day, hour, minute,
 and second (at least 3 positions). 

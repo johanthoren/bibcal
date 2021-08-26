@@ -67,7 +67,7 @@
             "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
             l/jerusalem-lon " --zone " l/jerusalem-zone)
    :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can only be used together with -v, -x, -y, or -z."
+   :68 "ERROR: Arguments can only be used together with -v, -x, -y, -Y, or -z."
    :69 (str "ERROR: Wrong number or wrong type of arguments."
             "       Either use just one integer to print the feast days of a"
             "       year, or use between 3 and 7 integers to calculate a "
@@ -126,14 +126,11 @@
 
 (defn print-feast-days-in-year
   [y]
-  (if (l/feast-days y)
-    (doseq [d (l/list-of-feast-days-in-year y)]
-      (println d))
-    (do
-      (println (str "Calculating feast days in " y ". Please wait..."))
-      (let [days (l/list-of-feast-days-in-year y)]
-        (doseq [d days]
-          (println d))))))
+  (cond
+    (coll? y) (doseq [d y] (println d))
+    (l/feast-days y) (doseq [d (l/list-of-feast-days-in-year y)] (println d))
+    :else (do (println (str "Calculating feast days in " y ". Please wait..."))
+              (print-feast-days-in-year (l/list-of-feast-days-in-year y)))))
 
 (defn sabbath?
   ([lat lon z date]
@@ -173,52 +170,54 @@
        (+ 4000)))
 
 (defn print-brief-date
-  [lat lon time]
+  [lat lon time & {:keys [year] :or {year false}}]
   (let [d (l/date lat lon time)
         h (:hebrew d)
-        n (:names h)]
-    (println (str (:day-of-month n)
-                  " of "
-                  (:traditional-month-of-year n)
-                  ", "
-                  (possible-year d)))))
+        n (:names h)
+        without-y (str (:day-of-month n) " of " (:traditional-month-of-year n))
+        with-y (str without-y ", " (possible-year d))]
+    (println (if year with-y without-y))))
 
 (defn print-date
-  [lat lon time]
+  [lat lon time & {:keys [year] :or {year false}}]
   (let [d (l/date lat lon time)
         h (:hebrew d)
         t (:time d)
-        tf (tick/formatter "yyy-MM-dd HH:mm:ss")]
-    (table
-     [{:Key "Gregorian time" :Value (tick/format tf time)}
-      {:Key "Biblical month" :Value (:month-of-year h)}
-      {:Key "Biblical day of month" :Value (:day-of-month h)}
-      {:Key "Biblical day of week" :Value (:day-of-week h)}
-      {:Key "Sabbath" :Value (:sabbath h)}
-      {:Key "Major feast day"
-       :Value (feast-or-false (:major-feast-day h))}
-      {:Key "Minor feast day"
-       :Value (feast-or-false (:minor-feast-day h))}
-      {:Key "Start of year"
-       :Value (tick/format tf (get-in t [:year :start]))}
-      {:Key "Start of month"
-       :Value (tick/format tf (get-in t [:month :start]))}
-      {:Key "Start of week"
-       :Value (tick/format tf (get-in t [:week :start]))}
-      {:Key "Start of day"
-       :Value (tick/format tf (get-in t [:day :start]))}
-      {:Key "End of day"
-       :Value (tick/format tf (get-in t [:day :end]))}
-      {:Key "End of week"
-       :Value (tick/format tf (get-in t [:week :end]))}
-      {:Key "End of month"
-       :Value (tick/format tf (get-in t [:month :end]))}
-      {:Key "End of year"
-       :Value (tick/format tf (get-in t [:year :end]))}
-      {:Key "Location" :Value (str lat "," lon)}
-      {:Key "Timezone" :Value (str (tick/zone time))}
-      {:Key "Config file"
-       :Value (if (read-config) (config-file) "None")}])))
+        tf (tick/formatter "yyy-MM-dd HH:mm:ss")
+        base-table [{:Key "Biblical month" :Value (:month-of-year h)}
+                    {:Key "Biblical day of month" :Value (:day-of-month h)}
+                    {:Key "Biblical day of week" :Value (:day-of-week h)}
+                    {:Key "Sabbath" :Value (:sabbath h)}
+                    {:Key "Major feast day"
+                     :Value (feast-or-false (:major-feast-day h))}
+                    {:Key "Minor feast day"
+                     :Value (feast-or-false (:minor-feast-day h))}
+                    {:Key "Start of year"
+                     :Value (tick/format tf (get-in t [:year :start]))}
+                    {:Key "Start of month"
+                     :Value (tick/format tf (get-in t [:month :start]))}
+                    {:Key "Start of week"
+                     :Value (tick/format tf (get-in t [:week :start]))}
+                    {:Key "Start of day"
+                     :Value (tick/format tf (get-in t [:day :start]))}
+                    {:Key "End of day"
+                     :Value (tick/format tf (get-in t [:day :end]))}
+                    {:Key "End of week"
+                     :Value (tick/format tf (get-in t [:week :end]))}
+                    {:Key "End of month"
+                     :Value (tick/format tf (get-in t [:month :end]))}
+                    {:Key "End of year"
+                     :Value (tick/format tf (get-in t [:year :end]))}
+                    {:Key "Location" :Value (str lat "," lon)}
+                    {:Key "Timezone" :Value (str (tick/zone time))}
+                    {:Key "Config file"
+                     :Value (if (read-config) (config-file) "None")}]
+        table-with-y (cons {:Key "Biblical year"
+                            :Value (possible-year d)}
+                           base-table)
+        table-with-g (cons {:Key "Gregorian time" :Value (tick/format tf time)}
+                           (if year table-with-y base-table))]
+    (table table-with-g)))
 
 ;; Beginning of command line parsing.
 
@@ -266,6 +265,9 @@
       :default (:lat config)
       :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
                  #(str % " is not a number between -90 and 90.")]]
+     ["-Y" "--include-year"
+      "Include potential biblical year in the output."
+      :default false]
      ["-z" "--zone STRING"
       "The timezone of the location."
       :default (:zone config)
@@ -320,7 +322,7 @@
                 (< 0)))
       (exit 71 (:71 exit-messages))
       (and (seq arguments)
-           (->> (dissoc options :lat :lon :zone :verbosity)
+           (->> (dissoc options :include-year :lat :lon :zone :verbosity)
                 (vals)
                 (remove #(or (false? %) (nil? %)))
                 (count)
@@ -329,16 +331,17 @@
       (and (:today options) (:today-brief options))
       (exit 70 (:70 exit-messages))
       :else
-      (assoc (select-keys options [:create-config :force :lat :lon :sabbath
-                                   :today :today-brief :verbosity :zone])
+      (assoc (select-keys options [:include-year :create-config :force :lat :lon
+                                   :sabbath :today :today-brief :verbosity
+                                   :zone])
              :arguments
              (map read-string arguments)))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [arguments create-config force lat lon sabbath today today-brief
-                verbosity zone exit-message ok?]}
+  (let [{:keys [arguments include-year create-config force lat lon sabbath today
+                today-brief verbosity zone exit-message ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
@@ -358,7 +361,10 @@
         ;;
         (and (<= 3 (count arguments) 7)
              (empty? (remove int? arguments)))
-        (print-date lat lon (apply l/zdt (cons (or zone (tick/zone)) arguments)))
+        (print-date lat
+                    lon
+                    (apply l/zdt (cons (or zone (tick/zone)) arguments))
+                    :year include-year)
         ;;
         :else (exit 69 (:69 exit-messages)))
       ;;
@@ -369,10 +375,12 @@
       (save-config force :lat lat :lon lon :z zone)
       ;;
       today-brief
-      (print-brief-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
+      (print-brief-date
+       lat lon (l/in-zone (or zone (tick/zone)) (l/now)) :year include-year)
       ;;
       today
-      (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
+      (print-date
+       lat lon (l/in-zone (or zone (tick/zone)) (l/now)) :year include-year)
       ;;
       :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
   (System/exit 0))
