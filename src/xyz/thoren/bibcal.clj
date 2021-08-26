@@ -67,13 +67,13 @@
             "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
             l/jerusalem-lon " --zone " l/jerusalem-zone)
    :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can only be used together with -v, -x, -y, -Y, or -z."
+   :68 "ERROR: Arguments can only be used together with -l, -L, -v, or -z."
    :69 (str "ERROR: Wrong number or wrong type of arguments."
             "       Either use just one integer to print the feast days of a"
             "       year, or use between 3 and 7 integers to calculate a "
             "       certain time.")
    :70 "ERROR: You can't use both options -t and -T at the same time."
-   :71 (str "ERROR: You can't use option -c with other options than -v, -x, -y,"
+   :71 (str "ERROR: You can't use option -c with other options than -l, -L, -v,"
             "       and -z.")})
 
 (defn exit
@@ -226,6 +226,18 @@
      ["-h" "--help"
       "Print this help message."
       :default false]
+     ["-l" "--lat NUMBER"
+      "The latitude of the location."
+      :parse-fn read-string
+      :default (:lat config)
+      :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
+                 #(str % " is not a number between -90 and 90.")]]
+     ["-L" "--lon NUMBER"
+      "The longitude of the location."
+      :parse-fn read-string
+      :default (:lon config)
+      :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
+                 #(str % " is not a number between -180 and 180.")]]
      ["-s" "--sabbath"
       "Check Sabbath status. Silent by default."
       :default false]
@@ -243,18 +255,6 @@
      ["-V" "--version"
       "Print the current version number."
       :default false]
-     ["-x" "--lon NUMBER"
-      "The longitude of the location."
-      :parse-fn read-string
-      :default (:lon config)
-      :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
-                 #(str % " is not a number between -180 and 180.")]]
-     ["-y" "--lat NUMBER"
-      "The latitude of the location."
-      :parse-fn read-string
-      :default (:lat config)
-      :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
-                 #(str % " is not a number between -90 and 90.")]]
      ["-Y" "--include-year"
       "Include potential biblical year in the output."
       :default false]
@@ -312,7 +312,7 @@
                 (< 0)))
       (exit 71 (:71 exit-messages))
       (and (seq arguments)
-           (->> (dissoc options :include-year :lat :lon :zone :verbosity)
+           (->> (dissoc options :lat :lon :zone :verbosity)
                 (vals)
                 (remove #(or (false? %) (nil? %)))
                 (count)

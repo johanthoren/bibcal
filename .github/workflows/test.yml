@@ -298,22 +298,17 @@ jobs:
         shell: bash
         run: ./bibcal.exe 2021
 
-      - name: Run the executable with -Y, -x, -y, -z, and args (WINDOWS)
+      - name: Run the executable with -L, -l, -z, and args (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash
-        run: ./bibcal -Y -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
-
-      - name: Run the executable with -x, -y, -z, and args (WINDOWS)
-        if: "contains(matrix.target, 'windows')"
-        shell: bash
-        run: ./bibcal -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
+        run: ./bibcal -L -74.006111 -l 40.712778 -z America/New_York 2021 9 11 9 0
 
         # The command below saves a configuration file, which is needed
         # for the later commands to work.
-      - name: Run the executable with -c, -x, -y, and -z (WINDOWS)
+      - name: Run the executable with -c, -L, -l, and -z (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         shell: bash
-        run: ./bibcal.exe -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
+        run: ./bibcal.exe -c -L 35.233804 -l 31.7781161 -z Asia/Jerusalem
 
       - name: Run the executable without any options (WINDOWS)
         if: "contains(matrix.target, 'windows')"
@@ -329,11 +324,6 @@ jobs:
         if: "contains(matrix.target, 'windows')"
         shell: bash
         run: ./bibcal.exe -T
-
-      - name: Run the executable with option -t and -Y (WINDOWS)
-        if: "contains(matrix.target, 'windows')"
-        shell: bash
-        run: ./bibcal.exe -t -Y
 
       - name: Run the executable with option -T and -Y (WINDOWS)
         if: "contains(matrix.target, 'windows')"

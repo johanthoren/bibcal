@@ -53,8 +53,8 @@ verify_version_number() {
     [ "$(verify_version_number "${lines[0]}")" ]
 }
 
-@test "invoking bibcal with argument -x -y and -z plus arguments" {
-    run ./bibcal -x -74.006111 -y 40.712778 -z America/New_York 2021 9 11 9 0
+@test "invoking bibcal with argument -l -L and -z plus arguments" {
+    run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
     [ "$status" -eq 0 ]
     [[ "${lines[3]}" =~ "2021-09-11 09:00:00" ]]
     [[ "${lines[6]}" =~ "6" ]]
@@ -66,11 +66,11 @@ verify_version_number() {
 # Save the configuration options in the first command to avoid errors in later
 # tests.
 
-@test "invoking bibcal with options -c -x -y and -z" {
+@test "invoking bibcal with options -c -l -L and -z" {
     if [ -f ~/.config/bibcal/config.edn ]; then
         skip "Config file already exists"
     fi
-    run ./bibcal -c -x 35.233804 -y 31.7781161 -z Asia/Jerusalem
+    run ./bibcal -c -l 31.7781161 -L 35.233804 -z Asia/Jerusalem
     [ "$status" -eq 0 ]
     [ "${lines[0]}" = "The configuration file has been successfully saved." ]
 }
