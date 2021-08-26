@@ -93,6 +93,16 @@ verify_version_number() {
     [ "$status" -eq 70 ]
 }
 
+@test "invoking bibcal with option -t and -Y" {
+    run ./bibcal -t -Y
+    [ "$status" -eq 72 ]
+}
+
+@test "invoking bibcal with option -Y" {
+    run ./bibcal -Y
+    [ "$status" -eq 72 ]
+}
+
 @test "invoking bibcal with option -t -T and -Y" {
     run ./bibcal -t -T -Y
     [ "$status" -eq 70 ]
@@ -102,6 +112,12 @@ verify_version_number() {
     run ./bibcal -T
     [ "$status" -eq 0 ]
     [[ ! "${lines[0]}" =~ ", " ]]
+}
+
+@test "invoking bibcal with option -T and -y" {
+    run ./bibcal -T -y
+    [ "$status" -eq 0 ]
+    [[ "${lines[0]}" =~ ", " ]]
 }
 
 @test "invoking bibcal with option -T and -Y" {

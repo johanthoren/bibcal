@@ -74,7 +74,9 @@
             "       certain time.")
    :70 "ERROR: You can't use both options -t and -T at the same time."
    :71 (str "ERROR: You can't use option -c with other options than -l, -L, -v,"
-            "       and -z.")})
+            "       and -z.")
+   :72 "ERROR: Options -Y and -y can only be used together with option -T."
+   :73 "ERROR: Options -y and -Y are mutually exclusive."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -163,13 +165,17 @@
     false))
 
 (defn print-brief-date
-  [lat lon time & {:keys [year] :or {year false}}]
+  [lat lon time & {:keys [year trad-year] :or {year false trad-year false}}]
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
         without-y (str (:day-of-month n) " of " (:traditional-month-of-year n))
-        with-y (str without-y ", " (:year h))]
-    (println (if year with-y without-y))))
+        with-y (str without-y ", " (:year h))
+        with-trad-y (str without-y ", " (:traditional-year h))]
+    (println (cond
+               year with-y
+               trad-year with-trad-y
+               :else without-y))))
 
 (defn print-date
   [lat lon time]
@@ -242,10 +248,10 @@
       "Check Sabbath status. Silent by default."
       :default false]
      ["-t" "--today"
-      "Long summary of the current biblical date."
+      "Long summary of the current Biblical date."
       :default false]
      ["-T" "--today-brief"
-      "Short summary of the current biblical date."
+      "Short summary of the current Biblical date."
       :default false]
      ["-v" nil
       "Verbosity level; specify multiple times to increase value."
@@ -255,8 +261,11 @@
      ["-V" "--version"
       "Print the current version number."
       :default false]
+     ["-y" "--include-trad-year"
+      "Include traditional Jewish year in the output."
+      :default false]
      ["-Y" "--include-year"
-      "Include potential biblical year in the output."
+      "Include potential Biblical year in the output."
       :default false]
      ["-z" "--zone STRING"
       "The timezone of the location."
@@ -286,7 +295,7 @@
     "Result:  Display all feast days in the gregorian year 2021."
     ""
     "Command: $ bibcal 2021 4 13 18"
-    "Result:  Show a summary of the biblical date at 2021-04-13T18:00."]))
+    "Result:  Show a summary of the Biblical date at 2021-04-13T18:00."]))
 
 (defn validate-args
   [args]
@@ -299,6 +308,11 @@
       {:exit-message version-number :ok? true}
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
+      (and (:include-year options) (:include-trad-year options))
+      (exit 73 (:73 exit-messages))
+      (and (or (:include-year options) (:include-trad-year options))
+           (not (:today-brief options)))
+      (exit 72 (:72 exit-messages))
       (and (:force options) (not (:create-config options)))
       (exit 67 (:67 exit-messages))
       (and (> (count arguments) 2)
@@ -321,17 +335,18 @@
       (and (:today options) (:today-brief options))
       (exit 70 (:70 exit-messages))
       :else
-      (assoc (select-keys options [:include-year :create-config :force :lat :lon
-                                   :sabbath :today :today-brief :verbosity
-                                   :zone])
+      (assoc (select-keys options [:include-trad-year :include-year
+                                   :create-config :force :lat :lon :sabbath
+                                   :today :today-brief :verbosity :zone])
              :arguments
              (map read-string arguments)))))
 
 ;; End of command line parsing.
 
 (defn -main [& args]
-  (let [{:keys [arguments include-year create-config force lat lon sabbath today
-                today-brief verbosity zone exit-message ok?]}
+  (let [{:keys [arguments include-trad-year include-year create-config force
+                lat lon sabbath today today-brief verbosity zone exit-message
+                ok?]}
         (validate-args args)]
     (when exit-message
       (exit (if ok? 0 1) exit-message))
@@ -365,7 +380,8 @@
       ;;
       today-brief
       (print-brief-date
-       lat lon (l/in-zone (or zone (tick/zone)) (l/now)) :year include-year)
+       lat lon (l/in-zone (or zone (tick/zone)) (l/now))
+       :year include-year :trad-year include-trad-year)
       ;;
       today
       (print-date
