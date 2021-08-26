@@ -172,45 +172,42 @@
     (println (if year with-y without-y))))
 
 (defn print-date
-  [lat lon time & {:keys [year] :or {year false}}]
+  [lat lon time]
   (let [d (l/date lat lon time)
         h (:hebrew d)
         t (:time d)
-        tf (tick/formatter "yyy-MM-dd HH:mm:ss")
-        base-table [{:Key "Biblical month" :Value (:month-of-year h)}
-                    {:Key "Biblical day of month" :Value (:day-of-month h)}
-                    {:Key "Biblical day of week" :Value (:day-of-week h)}
-                    {:Key "Sabbath" :Value (:sabbath h)}
-                    {:Key "Major feast day"
+        tf (tick/formatter "yyy-MM-dd HH:mm:ss")]
+    (table [{:Key "Gregorian time" :Value (tick/format tf time)}
+            {:Key "Traditional year" :Value (:traditional-year h)}
+            {:Key "Alternative year" :Value (:year h)}
+            {:Key "Biblical month" :Value (:month-of-year h)}
+            {:Key "Biblical day of month" :Value (:day-of-month h)}
+            {:Key "Biblical day of week" :Value (:day-of-week h)}
+            {:Key "Sabbath" :Value (:sabbath h)}
+            {:Key "Major feast day"
                      :Value (feast-or-false (:major-feast-day h))}
-                    {:Key "Minor feast day"
+            {:Key "Minor feast day"
                      :Value (feast-or-false (:minor-feast-day h))}
-                    {:Key "Start of year"
+            {:Key "Start of year"
                      :Value (tick/format tf (get-in t [:year :start]))}
-                    {:Key "Start of month"
+            {:Key "Start of month"
                      :Value (tick/format tf (get-in t [:month :start]))}
-                    {:Key "Start of week"
+            {:Key "Start of week"
                      :Value (tick/format tf (get-in t [:week :start]))}
-                    {:Key "Start of day"
+            {:Key "Start of day"
                      :Value (tick/format tf (get-in t [:day :start]))}
-                    {:Key "End of day"
+            {:Key "End of day"
                      :Value (tick/format tf (get-in t [:day :end]))}
-                    {:Key "End of week"
+            {:Key "End of week"
                      :Value (tick/format tf (get-in t [:week :end]))}
-                    {:Key "End of month"
+            {:Key "End of month"
                      :Value (tick/format tf (get-in t [:month :end]))}
-                    {:Key "End of year"
+            {:Key "End of year"
                      :Value (tick/format tf (get-in t [:year :end]))}
-                    {:Key "Location" :Value (str lat "," lon)}
-                    {:Key "Timezone" :Value (str (tick/zone time))}
-                    {:Key "Config file"
-                     :Value (if (read-config) (config-file) "None")}]
-        table-with-y (cons {:Key "Biblical year"
-                            :Value (:year h)}
-                           base-table)
-        table-with-g (cons {:Key "Gregorian time" :Value (tick/format tf time)}
-                           (if year table-with-y base-table))]
-    (table table-with-g)))
+            {:Key "Location" :Value (str lat "," lon)}
+            {:Key "Timezone" :Value (str (tick/zone time))}
+            {:Key "Config file"
+             :Value (if (read-config) (config-file) "None")}])))
 
 ;; Beginning of command line parsing.
 
@@ -356,8 +353,7 @@
              (empty? (remove int? arguments)))
         (print-date lat
                     lon
-                    (apply l/zdt (cons (or zone (tick/zone)) arguments))
-                    :year include-year)
+                    (apply l/zdt (cons (or zone (tick/zone)) arguments)))
         ;;
         :else (exit 69 (:69 exit-messages)))
       ;;
@@ -373,7 +369,7 @@
       ;;
       today
       (print-date
-       lat lon (l/in-zone (or zone (tick/zone)) (l/now)) :year include-year)
+       lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
       ;;
       :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
   (System/exit 0))

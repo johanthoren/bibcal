@@ -80,6 +80,8 @@ Result:
 | Key                   | Value                |
 +-----------------------+----------------------+
 | Gregorian time        | 2011-01-01 09:00:00  |
+| Traditional year      | 5771                 |
+| Alternative year      | 6010                 |
 | Biblical month        | 9                    |
 | Biblical day of month | 26                   |
 | Biblical day of week  | 7                    |
