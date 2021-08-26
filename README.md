@@ -33,6 +33,10 @@ $ chmod +x bibcal
 bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) from the
 [AUR](https://aur.archlinux.org/):
 
+Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with
+[the latest release](https://github.com/johanthoren/bibcal/releases/latest).
+These packages have no dependencies and will install cleanly on any such system.
+
 ``` sh
 $ paru -S bibcal-bin
 ```
