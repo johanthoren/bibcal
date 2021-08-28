@@ -79,31 +79,27 @@ Example:
 $ bibcal -x -74.006111 -y 40.712778 -z America/New_York 2011 1 1 9 0
 ```
 Result:
-```sh
-+-----------------------+----------------------+
-| Key                   | Value                |
-+-----------------------+----------------------+
-| Gregorian time        | 2011-01-01 09:00:00  |
-| Traditional year      | 5771                 |
-| Alternative year      | 6010                 |
-| Biblical month        | 9                    |
-| Biblical day of month | 26                   |
-| Biblical day of week  | 7                    |
-| Sabbath               | true                 |
-| Major feast day       | 2nd day of Hanukkah  |
-| Minor feast day       | false                |
-| Start of year         | 2010-04-14 19:34:00  |
-| Start of month        | 2010-12-06 16:28:00  |
-| Start of week         | 2010-12-25 16:34:00  |
-| Start of day          | 2010-12-31 16:38:00  |
-| End of day            | 2011-01-01 16:38:59  |
-| End of week           | 2011-01-01 16:38:59  |
-| End of month          | 2011-01-04 16:41:59  |
-| End of year           | 2011-04-03 19:21:59  |
-| Location              | 40.712778,-74.006111 |
-| Timezone              | America/New_York     |
-| Config file           | None                 |
-+-----------------------+----------------------+
+```
+Gregorian time          2011-01-01 09:00:00
+Traditional year        5771
+Alternative year        6010
+Biblical month          9
+Biblical day of month   26
+Biblical day of week    7
+Sabbath                 true
+Major feast day         2nd day of Hanukkah
+Minor feast day         false
+Start of year           2010-04-14 19:34:00
+Start of month          2010-12-06 16:28:00
+Start of week           2010-12-25 16:34:00
+Start of day            2010-12-31 16:38:00
+End of day              2011-01-01 16:38:59
+End of week             2011-01-01 16:38:59
+End of month            2011-01-04 16:41:59
+End of year             2011-04-03 19:21:59
+Location                40.712778,-74.006111
+Timezone                America/New_York
+Config file             None
 ```
 
 Use `bibcal -h` to see a list of options and arguments.
