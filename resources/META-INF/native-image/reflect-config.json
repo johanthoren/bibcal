@@ -573,6 +573,9 @@
   "name":"clojure.walk__init"
 },
 {
+  "name":"clojure.zip__init"
+},
+{
   "name":"double[]"
 },
 {
@@ -616,6 +619,9 @@
 },
 {
   "name":"java.io.FileWriter"
+},
+{
+  "name":"java.io.FilenameFilter"
 },
 {
   "name":"java.io.InputStream"
@@ -771,7 +777,13 @@
   "name":"java.nio.charset.Charset"
 },
 {
+  "name":"java.nio.file.CopyOption"
+},
+{
   "name":"java.nio.file.Files"
+},
+{
+  "name":"java.nio.file.LinkOption"
 },
 {
   "name":"java.nio.file.Path"
@@ -920,6 +932,9 @@
 },
 {
   "name":"long[]"
+},
+{
+  "name":"me.raynes.fs__init"
 },
 {
   "name":"org.apache.log4j.Appender"
@@ -1071,12 +1086,6 @@
 {
   "name":"sun.security.provider.SHA",
   "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"table.core__init"
-},
-{
-  "name":"table.width__init"
 },
 {
   "name":"tick.core.AtomicClock"
