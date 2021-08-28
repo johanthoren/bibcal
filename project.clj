@@ -13,7 +13,6 @@
                  [clj-logging-config "1.9.12"]
                  [say-cheez "0.2.0"]
                  [tick "0.5.0-RC1"]
-                 [table "0.5.0"]
                  [clj-commons/fs "1.6.307"]
                  [xyz.thoren/luminary "0.7.0"]]
   :plugins [[lein-kibit "0.1.8"]]

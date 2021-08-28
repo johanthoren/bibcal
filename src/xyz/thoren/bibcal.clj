@@ -6,7 +6,6 @@
             [clojure.edn :as edn]
             [me.raynes.fs :as fs]
             [tick.core :as tick]
-            [table.core :refer [table]]
             [say-cheez.core :refer [current-build-env]]
             [xyz.thoren.luminary :as l])
   (:gen-class))
@@ -182,38 +181,30 @@
   (let [d (l/date lat lon time)
         h (:hebrew d)
         t (:time d)
-        tf (tick/formatter "yyy-MM-dd HH:mm:ss")]
-    (table [{:Key "Gregorian time" :Value (tick/format tf time)}
-            {:Key "Traditional year" :Value (:traditional-year h)}
-            {:Key "Alternative year" :Value (:year h)}
-            {:Key "Biblical month" :Value (:month-of-year h)}
-            {:Key "Biblical day of month" :Value (:day-of-month h)}
-            {:Key "Biblical day of week" :Value (:day-of-week h)}
-            {:Key "Sabbath" :Value (:sabbath h)}
-            {:Key "Major feast day"
-                     :Value (feast-or-false (:major-feast-day h))}
-            {:Key "Minor feast day"
-                     :Value (feast-or-false (:minor-feast-day h))}
-            {:Key "Start of year"
-                     :Value (tick/format tf (get-in t [:year :start]))}
-            {:Key "Start of month"
-                     :Value (tick/format tf (get-in t [:month :start]))}
-            {:Key "Start of week"
-                     :Value (tick/format tf (get-in t [:week :start]))}
-            {:Key "Start of day"
-                     :Value (tick/format tf (get-in t [:day :start]))}
-            {:Key "End of day"
-                     :Value (tick/format tf (get-in t [:day :end]))}
-            {:Key "End of week"
-                     :Value (tick/format tf (get-in t [:week :end]))}
-            {:Key "End of month"
-                     :Value (tick/format tf (get-in t [:month :end]))}
-            {:Key "End of year"
-                     :Value (tick/format tf (get-in t [:year :end]))}
-            {:Key "Location" :Value (str lat "," lon)}
-            {:Key "Timezone" :Value (str (tick/zone time))}
-            {:Key "Config file"
-             :Value (if (read-config) (config-file) "None")}])))
+        tf (tick/formatter "yyy-MM-dd HH:mm:ss")
+        fmt-time #(tick/format tf (get-in t [%1 %2]))
+        fmt #(println (format "%-24s%s" %1 %2))
+        msgs [["Gregorian time" (tick/format tf time)]
+              ["Traditional year" (:traditional-year h)]
+              ["Alternative year" (:year h)]
+              ["Biblical month" (:month-of-year h)]
+              ["Biblical day of month" (:day-of-month h)]
+              ["Biblical day of week" (:day-of-week h)]
+              ["Sabbath" (:sabbath h)]
+              ["Major feast day" (feast-or-false (:major-feast-day h))]
+              ["Minor feast day" (feast-or-false (:minor-feast-day h))]
+              ["Start of year" (fmt-time :year :start)]
+              ["Start of month" (fmt-time :month :start)]
+              ["Start of week" (fmt-time :week :start)]
+              ["Start of day" (fmt-time :day :start)]
+              ["End of day" (fmt-time :day :end)]
+              ["End of week" (fmt-time :week :end)]
+              ["End of month" (fmt-time :month :end)]
+              ["End of year" (fmt-time :year :end)]
+              ["Location" (str lat "," lon)]
+              ["Timezone" (str (tick/zone time))]
+              ["Config file" (if (read-config) (config-file) "None")]]]
+    (doseq [m msgs] (apply fmt m))))
 
 ;; Beginning of command line parsing.
 
