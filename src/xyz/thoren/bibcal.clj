@@ -51,31 +51,39 @@
 (def exit-messages
   "Exit messages used by `exit`."
   {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
-   :65 (str "ERROR: Something went wrong while validating the saved config.\n"
-            "       Inspect the config file for more details:\n"
-            "       " (config-file))
-   :66 (str "ERROR:   The options --lat and --lon are both needed, and --zone\n"
-            "         is highly recommended. You can provide them either as\n"
-            "         options to the command or saved in the config file:\n"
-            "\n"
-            "         " (config-file) "\n"
-            "\n"
-            "         Use them with the option -c to save them to the\n"
-            "         config file.\n"
-            "\n"
-            "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
-            l/jerusalem-lon " --zone " l/jerusalem-zone)
+   :65 (str/join \newline
+        ["ERROR: Something went wrong while validating the saved config."
+         "       Inspect the config file for more details:"
+         (str "       " (config-file))])
+   :66 (str/join \newline
+        ["ERROR:   The options --lat and --lon are both needed, and --zone"
+         "         is highly recommended. You can provide them either as"
+         "         options to the command or saved in the config file:"
+         ""
+         (str "         " (config-file))
+         ""
+         "         Use them with the option -c to save them to the"
+         "         config file."
+         ""
+         (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
+              l/jerusalem-lon " --zone " l/jerusalem-zone)])
    :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can only be used together with -l, -L, -v, or -z."
-   :69 (str "ERROR: Wrong number or wrong type of arguments."
-            "       Either use just one integer to print the feast days of a"
-            "       year, or use between 3 and 7 integers to calculate a "
-            "       certain time.")
+   :68 "ERROR: Arguments can't be used with options -c, -f, or -s."
+   :69 (str/join \newline
+        ["ERROR: Wrong number of arguments or wrong type of arguments."
+         "       Either use just 1 integer to print the feast days of a"
+         "       year, or use between 3 and 7 integers to calculate a "
+         "       certain time."])
    :70 "ERROR: You can't use both options -t and -T at the same time."
-   :71 (str "ERROR: You can't use option -c with other options than -l, -L, -v,"
-            "       and -z.")
+   :71 (str/join \newline
+        ["ERROR: You can't use option -c with other options than "
+         "       -f, -l, -L, -v, and/or -z."])
    :72 "ERROR: Options -Y and -y can only be used together with option -T."
-   :73 "ERROR: Options -y and -Y are mutually exclusive."})
+   :73 "ERROR: Options -y and -Y are mutually exclusive."
+   :74 (str/join \newline
+        ["ERROR: Options -t and -T can only be used with either 0 or"
+         "       between 3 and 7 arguments."])
+   :75 "ERROR: Year is outside of range 1584 to 2100."})
 
 (defn exit
   "Print a `message` and exit the program with the given `status` code.
@@ -165,6 +173,8 @@
 
 (defn print-brief-date
   [lat lon time & {:keys [year trad-year] :or {year false trad-year false}}]
+  (when-not (<= 1584 (tick/int (tick/year time)) 2100)
+    (exit 75 (:75 exit-messages)))
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
@@ -178,12 +188,14 @@
 
 (defn print-date
   [lat lon time]
+  (when-not (<= 1584 (tick/int (tick/year time)) 2100)
+    (exit 75 (:75 exit-messages)))
   (let [d (l/date lat lon time)
         h (:hebrew d)
         t (:time d)
         tf (tick/formatter "yyy-MM-dd HH:mm:ss")
         fmt-time #(tick/format tf (get-in t [%1 %2]))
-        fmt #(println (format "%-24s%s" %1 %2))
+        fmt #(format "%-24s%s" %1 %2)
         msgs [["Gregorian time" (tick/format tf time)]
               ["Traditional year" (:traditional-year h)]
               ["Alternative year" (:year h)]
@@ -204,7 +216,7 @@
               ["Location" (str lat "," lon)]
               ["Timezone" (str (tick/zone time))]
               ["Config file" (if (read-config) (config-file) "None")]]]
-    (doseq [m msgs] (apply fmt m))))
+    (doseq [m msgs] (println (apply fmt m)))))
 
 ;; Beginning of command line parsing.
 
@@ -310,21 +322,30 @@
            (or (nil? (:lat options)) (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
       (and (:create-config options)
-           (->> (dissoc options :create-config :lat :lon :zone :verbosity)
+           (->> (dissoc options
+                        :create-config
+                        :force
+                        :lat
+                        :lon
+                        :zone
+                        :verbosity)
                 (vals)
                 (remove #(or (false? %) (nil? %)))
                 (count)
                 (< 0)))
       (exit 71 (:71 exit-messages))
       (and (seq arguments)
-           (->> (dissoc options :lat :lon :zone :verbosity)
-                (vals)
-                (remove #(or (false? %) (nil? %)))
-                (count)
-                (< 0)))
+           (or (:force options) (:create-config options) (:sabbath options)))
       (exit 68 (:68 exit-messages))
+      (and (or (:today options) (:today-brief options))
+           (<= 1 (count arguments) 2))
+      (exit 74 (:74 exit-messages))
       (and (:today options) (:today-brief options))
       (exit 70 (:70 exit-messages))
+      (seq (remove int? (map read-string arguments)))
+      (exit 69 (:69 exit-messages))
+      (and (seq arguments) (not (<= 1584 (read-string (first arguments)) 2100)))
+      (exit 75 (:75 exit-messages))
       :else
       (assoc (select-keys options [:include-trad-year :include-year
                                    :create-config :force :lat :lon :sabbath
@@ -357,9 +378,11 @@
         ;;
         (and (<= 3 (count arguments) 7)
              (empty? (remove int? arguments)))
-        (print-date lat
-                    lon
-                    (apply l/zdt (cons (or zone (tick/zone)) arguments)))
+        (let [d (apply l/zdt (cons (or zone (tick/zone)) arguments))]
+          (if today-brief
+            (print-brief-date
+             lat lon d :year include-year :trad-year include-trad-year)
+            (print-date lat lon d)))
         ;;
         :else (exit 69 (:69 exit-messages)))
       ;;

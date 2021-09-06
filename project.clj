@@ -15,13 +15,17 @@
                  [tick "0.5.0-RC1"]
                  [clj-commons/fs "1.6.307"]
                  [xyz.thoren/luminary "0.7.0"]]
-  :plugins [[lein-kibit "0.1.8"]]
+  :plugins [[lein-kibit "0.1.8"]
+            [jonase/eastwood "0.9.9"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"
   :aliases
-  {"make-uberjars"
+  {"lint"
+   ["do" ["kibit"] ["eastwood"]]
+   "make-uberjars"
    ["do" ["test"] ["clean"] ["uberjar"]]}
-  :release-tasks [["test"]
+  :release-tasks [["lint"]
+                  ["test"]
                   ["vcs" "assert-committed"]
                   ["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
