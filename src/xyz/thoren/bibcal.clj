@@ -186,21 +186,28 @@
                trad-year with-trad-y
                :else without-y))))
 
+(defn- iso-date
+  [y m d]
+  (str y "-" (format "%02d" m) "-" (format "%02d" d)))
+
 (defn print-date
   [lat lon time]
   (when-not (<= 1584 (tick/int (tick/year time)) 2100)
     (exit 75 (:75 exit-messages)))
   (let [d (l/date lat lon time)
         h (:hebrew d)
+        n (:names h)
+        moy (:month-of-year h)
+        dom (:day-of-month h)
         t (:time d)
         tf (tick/formatter "yyy-MM-dd HH:mm:ss")
         fmt-time #(tick/format tf (get-in t [%1 %2]))
         fmt #(format "%-24s%s" %1 %2)
         msgs [["Gregorian time" (tick/format tf time)]
-              ["Traditional year" (:traditional-year h)]
-              ["Alternative year" (:year h)]
-              ["Biblical month" (:month-of-year h)]
-              ["Biblical day of month" (:day-of-month h)]
+              ["Traditional name" (str (:day-of-month n) " of "
+                                       (:traditional-month-of-year n))]
+              ["Traditional date" (iso-date (:traditional-year h) moy dom)]
+              ["Alternative date" (iso-date (:year h) moy dom)]
               ["Biblical day of week" (:day-of-week h)]
               ["Sabbath" (:sabbath h)]
               ["Major feast day" (feast-or-false (:major-feast-day h))]
@@ -213,7 +220,7 @@
               ["End of week" (fmt-time :week :end)]
               ["End of month" (fmt-time :month :end)]
               ["End of year" (fmt-time :year :end)]
-              ["Location" (str lat "," lon)]
+              ["Coordinates" (str lat "," lon)]
               ["Timezone" (str (tick/zone time))]
               ["Config file" (if (read-config) (config-file) "None")]]]
     (doseq [m msgs] (println (apply fmt m)))))
