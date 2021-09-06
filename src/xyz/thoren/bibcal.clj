@@ -204,11 +204,13 @@
         fmt-time #(tick/format tf (get-in t [%1 %2]))
         fmt #(format "%-24s%s" %1 %2)
         msgs [["Gregorian time" (tick/format tf time)]
+              ["Name" (str (:day-of-month n) " day of the "
+                           (:month-of-year n) " month")]
               ["Traditional name" (str (:day-of-month n) " of "
                                        (:traditional-month-of-year n))]
-              ["Traditional date" (iso-date (:traditional-year h) moy dom)]
-              ["Alternative date" (iso-date (:year h) moy dom)]
-              ["Biblical day of week" (:day-of-week h)]
+              ["ISO date" (iso-date (:year h) moy dom)]
+              ["Traditional ISO date" (iso-date (:traditional-year h) moy dom)]
+              ["Day of week" (:day-of-week h)]
               ["Sabbath" (:sabbath h)]
               ["Major feast day" (feast-or-false (:major-feast-day h))]
               ["Minor feast day" (feast-or-false (:minor-feast-day h))]

@@ -75,10 +75,10 @@ verify_version_number() {
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" =~ "2021-09-11 09:00:00" ]]
-    [[ "${lines[2]}" =~ "5781-06-04" ]]
     [[ "${lines[3]}" =~ "6021-06-04" ]]
-    [[ "${lines[4]}" =~ "7" ]]
-    [[ "${lines[5]}" =~ "true" ]]
+    [[ "${lines[4]}" =~ "5781-06-04" ]]
+    [[ "${lines[5]}" =~ "7" ]]
+    [[ "${lines[6]}" =~ "true" ]]
 }
 
 # Save the configuration options in the first command to avoid errors in later
@@ -102,8 +102,10 @@ verify_version_number() {
     run ./bibcal -t
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" =~ "Gregorian time" ]]
-    [[ "${lines[2]}" =~ "Traditional date" ]]
-    [[ "${lines[3]}" =~ "Alternative date" ]]
+    [[ "${lines[1]}" =~ "Name" ]]
+    [[ "${lines[2]}" =~ "Traditional name" ]]
+    [[ "${lines[3]}" =~ "ISO date" ]]
+    [[ "${lines[4]}" =~ "Traditional ISO date" ]]
 }
 
 @test "invoking bibcal with option -t and 1 argument" {
@@ -119,8 +121,10 @@ verify_version_number() {
     run ./bibcal -t 2021 1 1 12
     [ "$status" -eq 0 ]
     [[ "${lines[0]}" =~ "Gregorian time" ]]
-    [[ "${lines[2]}" =~ "Traditional date" ]]
-    [[ "${lines[3]}" =~ "Alternative date" ]]
+    [[ "${lines[1]}" =~ "Name" ]]
+    [[ "${lines[2]}" =~ "Traditional name" ]]
+    [[ "${lines[3]}" =~ "ISO date" ]]
+    [[ "${lines[4]}" =~ "Traditional ISO date" ]]
 }
 
 @test "invoking bibcal with option -t and 8 arguments" {
