@@ -19,8 +19,6 @@
 
 (set-default-root-logger! :fatal "%p: %m%n")
 
-(def build-env (current-build-env))
-
 (defn set-log-level!
   "Set the output level based on `verbosity`.
   See also [[set-default-root-logger!]]."
@@ -31,22 +29,23 @@
     2 (set-default-root-logger! :debug "[%p] %m%n")
     (set-default-root-logger! :trace "[%p] %m%n")))
 
+(def build-env (current-build-env))
+
 (def version-number
   "The version number as defined in project.clj."
   ;; Note that this is evaluated at build time by native-image.
   (:version build-env))
 
-(defn- config-dir
-  []
-  (let [os (System/getProperty "os.name")
-        home (System/getProperty "user.home")]
-    (if (str/starts-with? os "Windows")
-      (str home "\\AppData\\Roaming\\bibcal\\")
-      (str home "/.config/bibcal/"))))
+(def config-dir
+  (delay
+    (let [os (System/getProperty "os.name")
+          home (System/getProperty "user.home")]
+      (if (str/starts-with? os "Windows")
+        (str home "\\AppData\\Roaming\\bibcal\\")
+        (str home "/.config/bibcal/")))))
 
-(defn- config-file
-  []
-  (str (config-dir) "config.edn"))
+(def config-file
+  (delay (str @config-dir "config.edn")))
 
 (def exit-messages
   "Exit messages used by `exit`."
@@ -54,13 +53,13 @@
    :65 (str/join \newline
         ["ERROR: Something went wrong while validating the saved config."
          "       Inspect the config file for more details:"
-         (str "       " (config-file))])
+         (str "       " @config-file)])
    :66 (str/join \newline
         ["ERROR:   The options --lat and --lon are both needed, and --zone"
          "         is highly recommended. You can provide them either as"
          "         options to the command or saved in the config file:"
          ""
-         (str "         " (config-file))
+         (str "         " @config-file)
          ""
          "         Use them with the option -c to save them to the"
          "         config file."
@@ -100,25 +99,25 @@
 (defn- read-config
   ([k]
    (try
-     (let [config (edn/read-string (slurp (config-file)))]
+     (let [config (edn/read-string (slurp @config-file))]
        (get config k))
      (catch java.io.FileNotFoundException _e nil)))
   ([]
    (try
-     (edn/read-string (slurp (config-file)))
+     (edn/read-string (slurp @config-file))
      (catch java.io.FileNotFoundException _e nil))))
 
 (defn- write-config
   [config]
-  (log/debug "Will try to save configuration to" (config-file))
-  (when-not (fs/exists? (config-dir))
-    (log/debug "Creating directory" (config-dir))
-    (fs/mkdirs (config-dir)))
-  (when-not (fs/exists? (config-file))
-    (log/debug "Creating file" (config-file))
-    (fs/create (fs/file (config-file))))
-  (log/debug "Saving" config "to" (config-file))
-  (spit (config-file) config)
+  (log/debug "Will try to save configuration to" @config-file)
+  (when-not (fs/exists? @config-dir)
+    (log/debug "Creating directory" @config-dir)
+    (fs/mkdirs @config-dir))
+  (when-not (fs/exists? @config-file)
+    (log/debug "Creating file" @config-file)
+    (fs/create (fs/file @config-file)))
+  (log/debug "Saving" config "to" @config-file)
+  (spit @config-file config)
   (if (= (read-config) config)
     (println "The configuration file has been successfully saved.")
     (exit 65 (:65 exit-messages))))
@@ -129,7 +128,7 @@
                     (remove #(nil? (second %)))
                     (map #(apply hash-map %))
                     (apply merge))]
-    (if (and (fs/exists? (config-file)) (not force))
+    (if (and (fs/exists? @config-file) (not force))
       (exit 64 (:64 exit-messages))
       (write-config config))))
 
@@ -224,7 +223,7 @@
               ["End of year" (fmt-time :year :end)]
               ["Coordinates" (str lat "," lon)]
               ["Timezone" (str (tick/zone time))]
-              ["Config file" (if (read-config) (config-file) "None")]]]
+              ["Config file" (if (read-config) @config-file "None")]]]
     (doseq [m msgs] (println (apply fmt m)))))
 
 ;; Beginning of command line parsing.
@@ -372,7 +371,7 @@
     (when exit-message
       (exit (if ok? 0 1) exit-message))
     (set-log-level! verbosity)
-    (log/debug "Configuration file:" (if (read-config) (config-file) "None"))
+    (log/debug "Configuration file:" (if (read-config) @config-file "None"))
     (log/debug "Latitude:" lat)
     (log/debug "Longitude:" lon)
     (log/debug "TimeZone:" zone)
