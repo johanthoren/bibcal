@@ -16,7 +16,7 @@ ENV GRAALVM_HOME="/opt/graalvm-ce-java11-${GRAALVM_VERSION}"
 ENV PATH="${PATH}:${RESOURCE_DIR}/bin:${GRAALVM_HOME}/bin"
 
 # Install build dependencies:
-RUN apt-get update && apt-get install -yy make gcc libstdc++-8-dev
+RUN apt-get update && apt-get install -yy make gcc libstdc++-10-dev
 
 # Download and compile musl:
 WORKDIR /
