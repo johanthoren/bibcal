@@ -82,7 +82,7 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     fi
     run ./bibcal -c -l 31.7781161 -L 35.233804 -z Asia/Jerusalem
     assert_status 0
-    assert_output_equals 0 "The configuration file has been successfully saved."
+    assert_output "The configuration file has been successfully saved."
 }
 
 @test "invoking bibcal without any arguments" {
