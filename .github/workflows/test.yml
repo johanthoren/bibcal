@@ -228,6 +228,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
+    env:
+      BATS_DIR: "test/xyz/thoren/bats/"
+      BATS_EXT_URL: "https://raw.githubusercontent.com/mbland/go-script-bash/master/lib/bats"
+
     strategy:
       fail-fast: false
       matrix:
@@ -248,10 +252,27 @@ jobs:
         if: "!contains(matrix.target, 'windows')"
         uses: mig4/setup-bats@v1
         with:
-          bats-version: 1.2.1
+          bats-version: 1.4.1
 
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Create directory for bats extensions
+        if: "!contains(matrix.target, 'windows')"
+        run: mkdir -p "$BATS_DIR"
+
+      - name: Download bats extensions
+        if: "!contains(matrix.target, 'windows') && success()"
+        run: |
+          curl ${BATS_EXT_URL}/assertion-test-helpers -o ${BATS_DIR}/assertion-test-helpers
+          curl ${BATS_EXT_URL}/assertions -o ${BATS_DIR}/assertions
+          curl ${BATS_EXT_URL}/background-process -o ${BATS_DIR}/background-process
+          curl ${BATS_EXT_URL}/helper-function -o ${BATS_DIR}/helper-function
+          curl ${BATS_EXT_URL}/helpers -o ${BATS_DIR}/helpers
+
+      - name: Display the contents of the test dir
+        if: "!contains(matrix.target, 'windows')"
+        run: ls -Ral test
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
