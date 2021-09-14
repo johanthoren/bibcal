@@ -14,7 +14,7 @@
                  [say-cheez "0.2.0"]
                  [tick "0.5.0-RC1"]
                  [clj-commons/fs "1.6.307"]
-                 [xyz.thoren/luminary "0.7.0"]]
+                 [xyz.thoren/luminary "0.7.1"]]
   :plugins [[lein-kibit "0.1.8"]
             [jonase/eastwood "0.9.9"]]
   :main xyz.thoren.bibcal
