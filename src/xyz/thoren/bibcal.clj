@@ -155,19 +155,13 @@
   (log/info (if s "It's Sabbath!" "It's not Sabbath."))
   (System/exit (if s 0 1)))
 
-(defn- feast-day-name
-  [n day-of-feast days-in-feast]
-  (if (< days-in-feast 3)
-    n
-    (if (= days-in-feast 8)
-      (str (l/day-numbers (dec day-of-feast)) " day of " n)
-      (str (l/day-numbers (dec day-of-feast)) " day of the " n))))
-
 (defn- feast-or-false
-  [feast]
-  (if feast
-    (feast-day-name (:name feast) (:day-of-feast feast) (:days-in-feast feast))
-    false))
+  [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
+  (cond
+    (not name) false
+    (< days-in-feast 3) name
+    (= days-in-feast 8) (str (l/day-numbers (dec day-of-feast)) " day of " name)
+    :else (str (l/day-numbers (dec day-of-feast)) " day of the " name)))
 
 (defn print-brief-date
   [lat lon time & {:keys [year trad-year] :or {year false trad-year false}}]
