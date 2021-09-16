@@ -221,40 +221,44 @@
 
 ;; Beginning of command line parsing.
 
-(defn- cli-options
-  ;; First three strings describe a short-option, long-option with optional
-  ;; example argument description, and a description. All three are optional
-  ;; and positional.
-  []
+(defn- cli-options []
   (let [config (read-config)]
-    [["-c" "--create-config"
+    [["-c"
+      "--create-config"
       "Save --lat, --lon, and --zone to the configuration file."
       :default false]
-     ["-f" "--force"
+     ["-f"
+      "--force"
       "Force saving of configuration file even if it already exists."
       :default false]
-     ["-h" "--help"
+     ["-h"
+      "--help"
       "Print this help message."
       :default false]
-     ["-l" "--lat NUMBER"
+     ["-l"
+      "--lat NUMBER"
       "The latitude of the location."
       :parse-fn read-string
       :default (:lat config)
       :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
                  #(str % " is not a number between -90 and 90.")]]
-     ["-L" "--lon NUMBER"
+     ["-L"
+      "--lon NUMBER"
       "The longitude of the location."
       :parse-fn read-string
       :default (:lon config)
       :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
                  #(str % " is not a number between -180 and 180.")]]
-     ["-s" "--sabbath"
+     ["-s"
+      "--sabbath"
       "Check Sabbath status. Silent by default."
       :default false]
-     ["-t" "--today"
+     ["-t"
+      "--today"
       "Long summary of the current Biblical date."
       :default false]
-     ["-T" "--today-brief"
+     ["-T"
+      "--today-brief"
       "Short summary of the current Biblical date."
       :default false]
      ["-v" nil
@@ -262,20 +266,23 @@
       :id :verbosity
       :default 0
       :update-fn inc]
-     ["-V" "--version"
+     ["-V"
+      "--version"
       "Print the current version number."
       :default false]
-     ["-y" "--include-trad-year"
+     ["-y"
+      "--include-trad-year"
       "Include traditional Jewish year in the output."
       :default false]
-     ["-Y" "--include-year"
+     ["-Y"
+      "--include-year"
       "Include potential Biblical year in the output."
       :default false]
-     ["-z" "--zone STRING"
+     ["-z"
+      "--zone STRING"
       "The timezone of the location."
       :default (:zone config)
-      :validate [valid-zone?
-                 #(str % " is not a valid zone id string")]]]))
+      :validate [valid-zone? #(str % " is not a valid zone id string")]]]))
 
 (defn usage
   "Print a brief description and a short list of available options."
@@ -308,20 +315,33 @@
     (cond
       (:help options) ; help => exit OK with usage summary
       {:exit-message (usage summary) :ok? true}
+      ;;
       (:version options) ; version => exit OK with version number
       {:exit-message version-number :ok? true}
+      ;;
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
-      (and (:include-year options) (:include-trad-year options))
+      ;;
+      (and (:include-year options)
+           (:include-trad-year options))
       (exit 73 (:73 exit-messages))
-      (and (or (:include-year options) (:include-trad-year options))
+      ;;
+      (and (or (:include-year options)
+               (:include-trad-year options))
            (not (:today-brief options)))
       (exit 72 (:72 exit-messages))
-      (and (:force options) (not (:create-config options)))
+      ;;
+      (and (:force options)
+           (not (:create-config options)))
       (exit 67 (:67 exit-messages))
-      (and (or (> (count arguments) 2) (:today options) (:today-brief options))
-           (or (nil? (:lat options)) (nil? (:lon options))))
+      ;;
+      (and (or (> (count arguments) 2)
+               (:today options)
+               (:today-brief options))
+           (or (nil? (:lat options))
+               (nil? (:lon options))))
       (exit 66 (:66 exit-messages))
+      ;;
       (and (:create-config options)
            (->> (dissoc options
                         :create-config
@@ -330,23 +350,33 @@
                         :lon
                         :zone
                         :verbosity)
-                (vals)
+                vals
                 (remove #(or (false? %) (nil? %)))
-                (count)
-                (< 0)))
+                seq))
       (exit 71 (:71 exit-messages))
+      ;;
       (and (seq arguments)
-           (or (:force options) (:create-config options) (:sabbath options)))
+           (or (:force options)
+               (:create-config options)
+               (:sabbath options)))
       (exit 68 (:68 exit-messages))
-      (and (or (:today options) (:today-brief options))
+      ;;
+      (and (or (:today options)
+               (:today-brief options))
            (<= 1 (count arguments) 2))
       (exit 74 (:74 exit-messages))
-      (and (:today options) (:today-brief options))
+      ;;
+      (and (:today options)
+           (:today-brief options))
       (exit 70 (:70 exit-messages))
+      ;;
       (seq (remove int? (map read-string arguments)))
       (exit 69 (:69 exit-messages))
-      (and (seq arguments) (not (<= 1584 (read-string (first arguments)) 2100)))
+      ;;
+      (and (seq arguments)
+           (not (<= 1584 (read-string (first arguments)) 2100)))
       (exit 75 (:75 exit-messages))
+      ;;
       :else
       (assoc (select-keys options [:include-trad-year :include-year
                                    :create-config :force :lat :lon :sabbath
@@ -369,8 +399,7 @@
     (log/debug "Longitude:" lon)
     (log/debug "TimeZone:" zone)
     (log/debug "Arguments:" arguments)
-    (cond
-      (seq arguments)
+    (if (seq arguments)
       (cond
         (and (= (count arguments) 1)
              (and (int? (first arguments))
@@ -386,21 +415,23 @@
             (print-date lat lon d)))
         ;;
         :else (exit 69 (:69 exit-messages)))
-      ;;
-      sabbath
-      (exit-with-sabbath (sabbath? lat lon zone (l/now)))
-      ;;
-      create-config
-      (save-config force :lat lat :lon lon :z zone)
-      ;;
-      today-brief
-      (print-brief-date
-       lat lon (l/in-zone (or zone (tick/zone)) (l/now))
-       :year include-year :trad-year include-trad-year)
-      ;;
-      today
-      (print-date
-       lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
-      ;;
-      :else (print-feast-days-in-year (tick/int (tick/year (l/now))))))
+      (cond
+        ;;
+        sabbath
+        (exit-with-sabbath (sabbath? lat lon zone (l/now)))
+        ;;
+        create-config
+        (save-config force :lat lat :lon lon :z zone)
+        ;;
+        today-brief
+        (print-brief-date lat
+                          lon
+                          (l/in-zone (or zone (tick/zone)) (l/now))
+                          :year include-year
+                          :trad-year include-trad-year)
+        ;;
+        today
+        (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
+        ;;
+        :else (print-feast-days-in-year (tick/int (tick/year (l/now)))))))
   (System/exit 0))
