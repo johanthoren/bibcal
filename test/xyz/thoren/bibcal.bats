@@ -67,7 +67,7 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
     assert_status 0
     assert_line_matches 0 "2021-09-11 09:00:00"
-    assert_line_matches 3 "6021-06-04"
+    assert_line_matches 2 "6021-06-04"
     assert_line_matches 4 "5781-06-04"
     assert_line_matches 5 "7"
     assert_line_matches 6 "true"
@@ -94,9 +94,9 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     run ./bibcal -t
     assert_status 0
     assert_line_matches 0 "Gregorian time"
-    assert_line_matches 1 "Name"
-    assert_line_matches 2 "Traditional name"
-    assert_line_matches 3 "ISO date"
+    assert_line_matches 1 "Date"
+    assert_line_matches 2 "ISO date"
+    assert_line_matches 3 "Traditional date"
     assert_line_matches 4 "Traditional ISO date"
 }
 
@@ -113,9 +113,9 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     run ./bibcal -t 2021 1 1 12
     assert_status 0
     assert_line_matches 0 "Gregorian time"
-    assert_line_matches 1 "Name"
-    assert_line_matches 2 "Traditional name"
-    assert_line_matches 3 "ISO date"
+    assert_line_matches 1 "Date"
+    assert_line_matches 2 "ISO date"
+    assert_line_matches 3 "Traditional date"
     assert_line_matches 4 "Traditional ISO date"
 }
 

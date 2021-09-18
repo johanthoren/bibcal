@@ -41,9 +41,9 @@
       (testing "2021-09-09T23:08"
         (let [t (r 2021 9 9 23 8)]
           (is (= t ["Gregorian time          2021-09-09 23:08:00"
-                    "Name                    3rd day of the 6th month"
-                    "Traditional name        3rd of Elul"
+                    "Date                    3rd day of the 6th month"
                     "ISO date                6021-06-03"
+                    "Traditional date        3rd of Elul"
                     "Traditional ISO date    5781-06-03"
                     "Day of week             6"
                     "Sabbath                 false"
