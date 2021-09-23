@@ -46,50 +46,6 @@
 (defn- config-file []
   (str (config-dir) "config.edn"))
 
-(def exit-messages
-  "Exit messages used by `exit`."
-  {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
-   :65 (str/join \newline
-        ["ERROR: Something went wrong while validating the saved config."
-         "       Inspect the config file for more details:"
-         (str "       " (config-file))])
-   :66 (str/join \newline
-        ["ERROR:   The options --lat and --lon are both needed, and --zone"
-         "         is highly recommended. You can provide them either as"
-         "         options to the command or saved in the config file:"
-         ""
-         (str "         " (config-file))
-         ""
-         "         Use them with the option -c to save them to the"
-         "         config file."
-         ""
-         (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
-              l/jerusalem-lon " --zone " l/jerusalem-zone)])
-   :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can't be used with options -c, -f, or -s."
-   :69 (str/join \newline
-        ["ERROR: Wrong number of arguments or wrong type of arguments."
-         "       Either use just 1 integer to print the feast days of a"
-         "       year, or use between 3 and 7 integers to calculate a "
-         "       certain time."])
-   :70 "ERROR: You can't use both options -t and -T at the same time."
-   :71 (str/join \newline
-        ["ERROR: You can't use option -c with other options than "
-         "       -f, -l, -L, -v, and/or -z."])
-   :72 "ERROR: Options -Y and -y can only be used together with option -T."
-   :73 "ERROR: Options -y and -Y are mutually exclusive."
-   :74 (str/join \newline
-        ["ERROR: Options -t and -T can only be used with either 0 or"
-         "       between 3 and 7 arguments."])
-   :75 "ERROR: Year is outside of range 1584 to 2100."})
-
-(defn exit
-  "Print a `message` and exit the program with the given `status` code.
-  See also [[exit-messages]]."
-  [status message]
-  (println message)
-  (System/exit status))
-
 (defn- valid-zone?
   [s]
   (log/debug "Validating zone:" s)
@@ -106,30 +62,30 @@
      (edn/read-string (slurp (config-file)))
      (catch java.io.FileNotFoundException _e nil))))
 
-(defn- write-config
-  [config]
-  (log/debug "Will try to save configuration to" (config-file))
+(defn create-config-dir []
   (when-not (fs/exists? (config-dir))
     (log/debug "Creating directory" (config-dir))
-    (fs/mkdirs (config-dir)))
+    (fs/mkdirs (config-dir))))
+
+(defn create-config-file []
   (when-not (fs/exists? (config-file))
     (log/debug "Creating file" (config-file))
-    (fs/create (fs/file (config-file))))
-  (log/debug "Saving" config "to" (config-file))
-  (spit (config-file) config)
-  (if (= (read-config) config)
-    (println "The configuration file has been successfully saved.")
-    (exit 65 (:65 exit-messages))))
+    (fs/create (fs/file (config-file)))))
 
-(defn- save-config
-  [force & {:keys [lat lon z]}]
-  (let [config (->> {:lat lat, :lon lon, :zone z}
-                    (remove #(nil? (second %)))
-                    (map #(apply hash-map %))
-                    (apply merge))]
-    (if (and (fs/exists? (config-file)) (not force))
-      (exit 64 (:64 exit-messages))
-      (write-config config))))
+(defn write-config
+  [config]
+  (log/debug "Will try to save configuration to" (config-file))
+  (create-config-dir)
+  (create-config-file)
+  (log/debug "Saving" config "to" (config-file))
+  (spit (config-file) config))
+
+(defn config
+  [{:keys [lat lon z]}]
+  (->> {:lat lat, :lon lon, :zone z}
+       (remove #(nil? (second %)))
+       (map #(apply hash-map %))
+       (apply merge)))
 
 (defn print-feast-days-in-year
   [y]
@@ -308,6 +264,43 @@
     "Command: $ bibcal 2021 4 13 18"
     "Result:  Show a summary of the Biblical date at 2021-04-13T18:00."]))
 
+(def exit-messages
+  "Exit messages used by `exit`."
+  {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
+   :65 (str/join \newline
+        ["ERROR: Something went wrong while validating the saved config."
+         "       Inspect the config file for more details:"
+         (str "       " (config-file))])
+   :66 (str/join \newline
+        ["ERROR:   The options --lat and --lon are both needed, and --zone"
+         "         is highly recommended. You can provide them either as"
+         "         options to the command or saved in the config file:"
+         ""
+         (str "         " (config-file))
+         ""
+         "         Use them with the option -c to save them to the"
+         "         config file."
+         ""
+         (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
+              l/jerusalem-lon " --zone " l/jerusalem-zone)])
+   :67 "ERROR: You can't use option -f without option -c."
+   :68 "ERROR: Arguments can't be used with options -c, -f, or -s."
+   :69 (str/join \newline
+        ["ERROR: Wrong number of arguments or wrong type of arguments."
+         "       Either use just 1 integer to print the feast days of a"
+         "       year, or use between 3 and 7 integers to calculate a "
+         "       certain time."])
+   :70 "ERROR: You can't use both options -t and -T at the same time."
+   :71 (str/join \newline
+        ["ERROR: You can't use option -c with other options than "
+         "       -f, -l, -L, -v, and/or -z."])
+   :72 "ERROR: Options -Y and -y can only be used together with option -T."
+   :73 "ERROR: Options -y and -Y are mutually exclusive."
+   :74 (str/join \newline
+        ["ERROR: Options -t and -T can only be used with either 0 or"
+         "       between 3 and 7 arguments."])
+   :75 "ERROR: Year is outside of range 1584 to 2100."})
+
 (defn validate-args
   [args]
   (let [{:keys [options arguments errors summary]}
@@ -321,6 +314,11 @@
       ;;
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
+      ;;
+      (and (:create-config options)
+           (fs/exists? (config-file))
+           (not (:force options)))
+      {:exit-message (:64 exit-messages) :exit-code 64}
       ;;
       (and (or (> (count arguments) 2)
                (:today options)
@@ -381,6 +379,13 @@
 
 ;; End of command line parsing.
 
+(defn exit
+  "Print a `message` and exit the program with the given `status` code.
+  See also [[exit-messages]]."
+  [status message]
+  (println message)
+  (System/exit status))
+
 (defn -main [& args]
   (let [{:keys [arguments include-trad-year include-year create-config force
                 lat lon sabbath today today-brief verbosity zone exit-message
@@ -416,7 +421,11 @@
         (exit-with-sabbath (sabbath? lat lon zone (l/now)))
         ;;
         create-config
-        (save-config force :lat lat :lon lon :z zone)
+        (let [c (config :lat lat :lon lon :z zone)]
+          (write-config c)
+          (if (= (read-config) c)
+            (println "The configuration file has been successfully saved.")
+            (exit 65 (:65 exit-messages))))
         ;;
         today-brief
         (print-brief-date lat
