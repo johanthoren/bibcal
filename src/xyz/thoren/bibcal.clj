@@ -314,33 +314,35 @@
         (parse-opts args (cli-options))]
     (cond
       (:help options) ; help => exit OK with usage summary
-      {:exit-message (usage summary) :ok? true}
+      {:exit-message (usage summary) :exit-code 0}
       ;;
       (:version options) ; version => exit OK with version number
-      {:exit-message version-number :ok? true}
+      {:exit-message version-number :exit-code 0}
       ;;
       errors ; errors => exit with description of errors
       {:exit-message (str/join \newline errors)}
-      ;;
-      (and (:include-year options)
-           (:include-trad-year options))
-      (exit 73 (:73 exit-messages))
-      ;;
-      (and (or (:include-year options)
-               (:include-trad-year options))
-           (not (:today-brief options)))
-      (exit 72 (:72 exit-messages))
-      ;;
-      (and (:force options)
-           (not (:create-config options)))
-      (exit 67 (:67 exit-messages))
       ;;
       (and (or (> (count arguments) 2)
                (:today options)
                (:today-brief options))
            (or (nil? (:lat options))
                (nil? (:lon options))))
-      (exit 66 (:66 exit-messages))
+      {:exit-message (:66 exit-messages) :exit-code 66}
+      ;;
+      (and (:force options) (not (:create-config options)))
+      {:exit-message (:67 exit-messages) :exit-code 67}
+      ;;
+      (and (seq arguments)
+           (or (:force options)
+               (:create-config options)
+               (:sabbath options)))
+      {:exit-message (:68 exit-messages) :exit-code 68}
+      ;;
+      (seq (remove int? (map read-string arguments)))
+      {:exit-message (:69 exit-messages) :exit-code 69}
+      ;;
+      (and (:today options) (:today-brief options))
+      {:exit-message (:70 exit-messages) :exit-code 70}
       ;;
       (and (:create-config options)
            (->> (dissoc options
@@ -353,29 +355,22 @@
                 vals
                 (remove #(or (false? %) (nil? %)))
                 seq))
-      (exit 71 (:71 exit-messages))
+      {:exit-message (:71 exit-messages) :exit-code 71}
       ;;
-      (and (seq arguments)
-           (or (:force options)
-               (:create-config options)
-               (:sabbath options)))
-      (exit 68 (:68 exit-messages))
+      (and (or (:include-year options) (:include-trad-year options))
+           (not (:today-brief options)))
+      {:exit-message (:72 exit-messages) :exit-code 72}
       ;;
-      (and (or (:today options)
-               (:today-brief options))
+      (and (:include-year options) (:include-trad-year options))
+      {:exit-message (:73 exit-messages) :exit-code 73}
+      ;;
+      (and (or (:today options) (:today-brief options))
            (<= 1 (count arguments) 2))
-      (exit 74 (:74 exit-messages))
-      ;;
-      (and (:today options)
-           (:today-brief options))
-      (exit 70 (:70 exit-messages))
-      ;;
-      (seq (remove int? (map read-string arguments)))
-      (exit 69 (:69 exit-messages))
+      {:exit-message (:74 exit-messages) :exit-code 74}
       ;;
       (and (seq arguments)
            (not (<= 1584 (read-string (first arguments)) 2100)))
-      (exit 75 (:75 exit-messages))
+      {:exit-message (:75 exit-messages) :exit-code 75}
       ;;
       :else
       (assoc (select-keys options [:include-trad-year :include-year
@@ -389,10 +384,10 @@
 (defn -main [& args]
   (let [{:keys [arguments include-trad-year include-year create-config force
                 lat lon sabbath today today-brief verbosity zone exit-message
-                ok?]}
+                exit-code]}
         (validate-args args)]
     (when exit-message
-      (exit (if ok? 0 1) exit-message))
+      (exit exit-code exit-message))
     (set-log-level! verbosity)
     (log/debug "Configuration file:" (if (read-config) (config-file) "None"))
     (log/debug "Latitude:" lat)
