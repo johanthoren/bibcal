@@ -81,11 +81,11 @@
   (spit (config-file) config))
 
 (defn config
-  [& {:keys [lat lon z]}]
-  (->> {:lat lat, :lon lon, :zone z}
-       (remove #(nil? (second %)))
-       (map #(apply hash-map %))
-       (apply merge)))
+  [m]
+  (as-> (remove #(nil? (val %)) m) <>
+        (into (empty m) <>)
+        (select-keys <> [:lat :lon :zone])
+        (when (seq <>) <>)))
 
 (defn print-feast-days-in-year
   [y]
@@ -417,7 +417,7 @@
         (exit-with-sabbath (sabbath? lat lon zone (l/now)))
         ;;
         create-config
-        (let [c (config :lat lat :lon lon :z zone)]
+        (let [c (config {:lat lat :lon lon :z zone})]
           (write-config c)
           (if (= (read-config) c)
             (println "The configuration file has been successfully saved.")

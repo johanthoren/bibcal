@@ -59,3 +59,16 @@
                     "End of year             2022-04-01 18:57:59"
                     "Coordinates             31.7781161,35.233804"
                     "Timezone                Asia/Jerusalem"])))))))
+
+(deftest test-config
+  (testing "that the correct config is produced"
+    (let [r #(b/config %)
+          t #(is (= %2 (r %1)))]
+      (testing "with all nil vals"
+        (t {:lat nil :lon nil :zone nil} nil))
+      (testing "with no nil vals"
+        (t {:lat 1 :lon 2 :zone "foo"} {:lat 1 :lon 2 :zone "foo"}))
+      (testing "with some invalid keys"
+        (t {:lat 1 :lon 2 :zone "foo" :foo "bar"} {:lat 1 :lon 2 :zone "foo"}))
+      (testing "with all invalid keys"
+        (t {:baz "foo" :foo "bar"} nil)))))
