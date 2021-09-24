@@ -81,7 +81,7 @@
   (spit (config-file) config))
 
 (defn config
-  [{:keys [lat lon z]}]
+  [& {:keys [lat lon z]}]
   (->> {:lat lat, :lon lon, :zone z}
        (remove #(nil? (second %)))
        (map #(apply hash-map %))
