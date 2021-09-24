@@ -100,7 +100,7 @@
    (let [h (l/date lat lon (l/in-zone z date))
          s (get-in h [:hebrew :sabbath])]
      (log/trace "Checking Sabbath for the following hebrew date:" h)
-     (if s true false)))
+     (boolean s)))
   ([lat lon date]
    (sabbath? lat lon (str (tick/zone date)) date))
   ([lat lon]
@@ -413,7 +413,7 @@
       (cond
         ;;
         sabbath
-        (let [s (sabbath? lat lon zone (l/now))]
+        (let [s (sabbath? lat lon (or zone (tick/zone)) (l/now))]
           (print-sabbath s)
           (when-not s (System/exit 1)))
         ;;

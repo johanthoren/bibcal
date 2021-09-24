@@ -72,3 +72,16 @@
         (t {:lat 1 :lon 2 :zone "foo" :foo "bar"} {:lat 1 :lon 2 :zone "foo"}))
       (testing "with all invalid keys"
         (t {:baz "foo" :foo "bar"} nil)))))
+
+(deftest test-sabbath?
+  (testing "that the sabbath is correctly"
+    (testing "true"
+      (is (true? (b/sabbath? l/jerusalem-lat
+                             l/jerusalem-lon
+                             l/jerusalem-zone
+                             (l/zdt l/jerusalem-zone 2021 9 25 12 0)))))
+    (testing "false"
+      (is (false? (b/sabbath? l/jerusalem-lat
+                              l/jerusalem-lon
+                              l/jerusalem-zone
+                              (l/zdt l/jerusalem-zone 2021 9 23 12 0)))))))
