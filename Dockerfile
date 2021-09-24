@@ -55,7 +55,6 @@ RUN native-image \
 --static \
 --libc=musl \
 --initialize-at-build-time \
-#--no-server \
 --no-fallback \
 -H:+AllowIncompleteClasspath \
 --report-unsupported-elements-at-runtime \
