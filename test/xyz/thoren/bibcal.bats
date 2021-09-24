@@ -47,6 +47,24 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_line_equals -1 "2051-12-31 5th day of Hanukkah"
 }
 
+@test "invoking bibcal 1101" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 1101
+    assert_status 75
+    assert_output "ERROR: Year is outside of range 1584 to 2100."
+}
+
+@test "invoking bibcal 2101" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 2101
+    assert_status 75
+    assert_output "ERROR: Year is outside of range 1584 to 2100."
+}
+
 @test "invoking bibcal -h" {
     run ./bibcal -h
     assert_status 0
@@ -63,7 +81,13 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_output_matches "^[0-9]+\.[0-9]+\.[0-9]+-?(SNAPSHOT)?$"
 }
 
-@test "invoking bibcal with argument -l, -L, and -z, plus arguments" {
+@test "invoking bibcal with argument -l, -L, and -z, plus incorrect arguments" {
+    run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2101 9 11 9 0
+    assert_status 75
+    assert_output "ERROR: Year is outside of range 1584 to 2100."
+}
+
+@test "invoking bibcal with argument -l, -L, and -z, plus correct arguments" {
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
     assert_status 0
     assert_line_matches 0 "2021-09-11 09:00:00"
