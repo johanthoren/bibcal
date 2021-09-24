@@ -121,8 +121,6 @@
 
 (defn print-brief-date
   [lat lon time & {:keys [year trad-year] :or {year false trad-year false}}]
-  (when-not (<= 1584 (tick/int (tick/year time)) 2100)
-    (exit 75 (:75 exit-messages)))
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
@@ -140,8 +138,6 @@
 
 (defn print-date
   [lat lon time]
-  (when-not (<= 1584 (tick/int (tick/year time)) 2100)
-    (exit 75 (:75 exit-messages)))
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
@@ -387,7 +383,7 @@
   (System/exit status))
 
 (defn -main [& args]
-  (let [{:keys [arguments include-trad-year include-year create-config force
+  (let [{:keys [arguments include-trad-year include-year create-config
                 lat lon sabbath today today-brief verbosity zone exit-message
                 exit-code]}
         (validate-args args)]
@@ -401,13 +397,13 @@
     (log/debug "Arguments:" arguments)
     (if (seq arguments)
       (cond
-        (and (= (count arguments) 1)
-             (and (int? (first arguments))
-                  (<= 1584 (first arguments) 2100)))
+        (not (<= 1584 (first arguments) 2100))
+        (exit 75 (:75 exit-messages))
+        ;;
+        (= (count arguments) 1)
         (print-feast-days-in-year (first arguments))
         ;;
-        (and (<= 3 (count arguments) 7)
-             (empty? (remove int? arguments)))
+        (<= 3 (count arguments) 7)
         (let [d (apply l/zdt (cons (or zone (tick/zone)) arguments))]
           (if today-brief
             (print-brief-date
