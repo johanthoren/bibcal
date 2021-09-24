@@ -278,7 +278,7 @@
          (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
               l/jerusalem-lon " --zone " l/jerusalem-zone)])
    :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can't be used with options -c, -f, or -s."
+   :68 "ERROR: Arguments can't be used with options -c or -f."
    :69 (str/join \newline
         ["ERROR: Wrong number of arguments or wrong type of arguments."
          "       Either use just 1 integer to print the feast days of a"
@@ -291,7 +291,7 @@
    :72 "ERROR: Options -Y and -y can only be used together with option -T."
    :73 "ERROR: Options -y and -Y are mutually exclusive."
    :74 (str/join \newline
-        ["ERROR: Options -t and -T can only be used with either 0 or"
+        ["ERROR: Options -s, -t, and -T can only be used with either 0 or"
          "       between 3 and 7 arguments."])
    :75 "ERROR: Year is outside of range 1584 to 2100."})
 
@@ -315,6 +315,7 @@
       {:exit-message (:64 exit-messages) :exit-code 64}
       ;;
       (and (or (> (count arguments) 2)
+               (:sabbath options)
                (:today options)
                (:today-brief options))
            (or (nil? (:lat options))
@@ -326,8 +327,7 @@
       ;;
       (and (seq arguments)
            (or (:force options)
-               (:create-config options)
-               (:sabbath options)))
+               (:create-config options)))
       {:exit-message (:68 exit-messages) :exit-code 68}
       ;;
       (seq (remove int? (map read-string arguments)))
@@ -356,7 +356,7 @@
       (and (:include-year options) (:include-trad-year options))
       {:exit-message (:73 exit-messages) :exit-code 73}
       ;;
-      (and (or (:today options) (:today-brief options))
+      (and (or (:sabbath options) (:today options) (:today-brief options))
            (<= 1 (count arguments) 2))
       {:exit-message (:74 exit-messages) :exit-code 74}
       ;;
@@ -403,9 +403,17 @@
         ;;
         (<= 3 (count arguments) 7)
         (let [d (apply l/zdt (cons (or zone (tick/zone)) arguments))]
-          (if today-brief
+          (cond
+            sabbath
+            (let [s (sabbath? lat lon d)]
+              (print-sabbath s)
+              (when-not s (System/exit 1)))
+            ;;
+            today-brief
             (print-brief-date
              lat lon d :year include-year :trad-year include-trad-year)
+            ;;
+            :else
             (print-date lat lon d)))
         ;;
         :else (exit 69 (:69 exit-messages)))

@@ -119,8 +119,32 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     fail_if output_matches "Sabbath"
 }
 
+@test "invoking bibcal with option -s and arguments on Sabbath" {
+    run ./bibcal -s -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
+    assert_status 0
+    fail_if output_matches "Sabbath"
+}
+
+@test "invoking bibcal with option -s, and arguments on non-Sabbath" {
+    run ./bibcal -s -l 40.712778 -L -74.006111 -z America/New_York 2021 9 13 9 0
+    assert_status 1
+    fail_if output_matches "Sabbath"
+}
+
 @test "invoking bibcal with option -s and -v" {
     run ./bibcal -s -v
+    assert_output_matches "Sabbath"
+}
+
+@test "invoking bibcal with option -s, -v, and arguments on Sabbath" {
+    run ./bibcal -s -v -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
+    assert_status 0
+    assert_output_matches "Sabbath"
+}
+
+@test "invoking bibcal with option -s, -v, and arguments on non-Sabbath" {
+    run ./bibcal -s -v -l 40.712778 -L -74.006111 -z America/New_York 2021 9 13 9 0
+    assert_status 1
     assert_output_matches "Sabbath"
 }
 
