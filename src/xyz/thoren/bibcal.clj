@@ -107,8 +107,8 @@
    (sabbath? lat lon (l/now))))
 
 (defn print-sabbath
-  [s]
-  (log/info (if s "It's Sabbath!" "It's not Sabbath.")))
+  [b]
+  (println (if b "It's Sabbath!" "It's not Sabbath.")))
 
 (defn feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
