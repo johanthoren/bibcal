@@ -78,10 +78,8 @@
     (testing "true"
       (is (true? (b/sabbath? l/jerusalem-lat
                              l/jerusalem-lon
-                             l/jerusalem-zone
                              (l/zdt l/jerusalem-zone 2021 9 25 12 0)))))
     (testing "false"
       (is (false? (b/sabbath? l/jerusalem-lat
                               l/jerusalem-lon
-                              l/jerusalem-zone
                               (l/zdt l/jerusalem-zone 2021 9 23 12 0)))))))

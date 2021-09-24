@@ -96,13 +96,11 @@
               (print-feast-days-in-year (l/list-of-feast-days-in-year y)))))
 
 (defn sabbath?
-  ([lat lon z date]
-   (let [h (l/date lat lon (l/in-zone z date))
-         s (get-in h [:hebrew :sabbath])]
-     (log/trace "Checking Sabbath for the following hebrew date:" h)
+  ([lat lon time]
+   (let [d (l/date lat lon time)
+         s (get-in d [:hebrew :sabbath])]
+     (log/trace "Checking Sabbath for the following hebrew date:" d)
      (boolean s)))
-  ([lat lon date]
-   (sabbath? lat lon (str (tick/zone date)) date))
   ([lat lon]
    (sabbath? lat lon (l/now))))
 
@@ -414,7 +412,7 @@
       (cond
         ;;
         sabbath
-        (let [s (sabbath? lat lon (or zone (tick/zone)) (l/now))]
+        (let [s (sabbath? lat lon (l/in-zone (or zone (tick/zone)) (l/now)))]
           (print-sabbath s)
           (when-not s (System/exit 1)))
         ;;
