@@ -114,6 +114,16 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_status 0
 }
 
+@test "invoking bibcal with option -s" {
+    run ./bibcal -s
+    fail_if output_matches "Sabbath"
+}
+
+@test "invoking bibcal with option -s and -v" {
+    run ./bibcal -s -v
+    assert_output_matches "Sabbath"
+}
+
 @test "invoking bibcal with option -t" {
     run ./bibcal -t
     assert_status 0

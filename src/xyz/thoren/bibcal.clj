@@ -108,7 +108,7 @@
 
 (defn print-sabbath
   [b]
-  (println (if b "It's Sabbath!" "It's not Sabbath.")))
+  (log/info (if b "It's Sabbath!" "It's not Sabbath.")))
 
 (defn feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
