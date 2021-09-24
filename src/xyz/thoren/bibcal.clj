@@ -73,12 +73,12 @@
     (fs/create (fs/file (config-file)))))
 
 (defn write-config
-  [config]
+  [m]
   (log/debug "Will try to save configuration to" (config-file))
   (create-config-dir)
   (create-config-file)
-  (log/debug "Saving" config "to" (config-file))
-  (spit (config-file) config))
+  (log/debug "Saving" m "to" (config-file))
+  (spit (config-file) m))
 
 (defn config
   [m]
