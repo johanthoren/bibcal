@@ -106,10 +106,9 @@
   ([lat lon]
    (sabbath? lat lon (l/now))))
 
-(defn exit-with-sabbath
+(defn print-sabbath
   [s]
-  (log/info (if s "It's Sabbath!" "It's not Sabbath."))
-  (System/exit (if s 0 1)))
+  (log/info (if s "It's Sabbath!" "It's not Sabbath.")))
 
 (defn- feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
@@ -414,7 +413,9 @@
       (cond
         ;;
         sabbath
-        (exit-with-sabbath (sabbath? lat lon zone (l/now)))
+        (let [s (sabbath? lat lon zone (l/now))]
+          (print-sabbath s)
+          (when-not s (System/exit 1)))
         ;;
         create-config
         (let [c (config {:lat lat :lon lon :z zone})]
