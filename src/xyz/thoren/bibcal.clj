@@ -172,68 +172,69 @@
 
 ;; Beginning of command line parsing.
 
-(defn cli-options []
-  (let [config (read-config)]
-    [["-c"
-      "--create-config"
-      "Save --lat, --lon, and --zone to the configuration file."
-      :default false]
-     ["-f"
-      "--force"
-      "Force saving of configuration file even if it already exists."
-      :default false]
-     ["-h"
-      "--help"
-      "Print this help message."
-      :default false]
-     ["-l"
-      "--lat NUMBER"
-      "The latitude of the location."
-      :parse-fn read-string
-      :default (:lat config)
-      :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
-                 #(str % " is not a number between -90 and 90.")]]
-     ["-L"
-      "--lon NUMBER"
-      "The longitude of the location."
-      :parse-fn read-string
-      :default (:lon config)
-      :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
-                 #(str % " is not a number between -180 and 180.")]]
-     ["-s"
-      "--sabbath"
-      "Check Sabbath status. Silent by default."
-      :default false]
-     ["-t"
-      "--today"
-      "Long summary of the current Biblical date."
-      :default false]
-     ["-T"
-      "--today-brief"
-      "Short summary of the current Biblical date."
-      :default false]
-     ["-v" nil
-      "Verbosity level; specify multiple times to increase value."
-      :id :verbosity
-      :default 0
-      :update-fn inc]
-     ["-V"
-      "--version"
-      "Print the current version number."
-      :default false]
-     ["-y"
-      "--include-trad-year"
-      "Include traditional Jewish year in the output."
-      :default false]
-     ["-Y"
-      "--include-year"
-      "Include potential Biblical year in the output."
-      :default false]
-     ["-z"
-      "--zone STRING"
-      "The timezone of the location."
-      :default (:zone config)
-      :validate [valid-zone? #(str % " is not a valid zone id string")]]]))
+(def cli-options
+  (delay
+    (let [config (read-config)]
+      [["-c"
+        "--create-config"
+        "Save --lat, --lon, and --zone to the configuration file."
+        :default false]
+       ["-f"
+        "--force"
+        "Force saving of configuration file even if it already exists."
+        :default false]
+       ["-h"
+        "--help"
+        "Print this help message."
+        :default false]
+       ["-l"
+        "--lat NUMBER"
+        "The latitude of the location."
+        :parse-fn read-string
+        :default (:lat config)
+        :validate [#(or (nil? %) (and (number? %) (<= -90 % 90)))
+                   #(str % " is not a number between -90 and 90.")]]
+       ["-L"
+        "--lon NUMBER"
+        "The longitude of the location."
+        :parse-fn read-string
+        :default (:lon config)
+        :validate [#(or (nil? %) (and (number? %) (<= -180 % 180)))
+                   #(str % " is not a number between -180 and 180.")]]
+       ["-s"
+        "--sabbath"
+        "Check Sabbath status. Silent by default."
+        :default false]
+       ["-t"
+        "--today"
+        "Long summary of the current Biblical date."
+        :default false]
+       ["-T"
+        "--today-brief"
+        "Short summary of the current Biblical date."
+        :default false]
+       ["-v" nil
+        "Verbosity level; specify multiple times to increase value."
+        :id :verbosity
+        :default 0
+        :update-fn inc]
+       ["-V"
+        "--version"
+        "Print the current version number."
+        :default false]
+       ["-y"
+        "--include-trad-year"
+        "Include traditional Jewish year in the output."
+        :default false]
+       ["-Y"
+        "--include-year"
+        "Include potential Biblical year in the output."
+        :default false]
+       ["-z"
+        "--zone STRING"
+        "The timezone of the location."
+        :default (:zone config)
+        :validate [valid-zone? #(str % " is not a valid zone id string")]]])))
 
 (defn usage
   "Print a brief description and a short list of available options."
@@ -299,7 +300,7 @@
 (defn validate-args
   [args]
   (let [{:keys [options arguments errors summary]}
-        (parse-opts args (cli-options))]
+        (parse-opts args @cli-options)]
     (cond
       (:help options) ; help => exit OK with usage summary
       {:exit-message (usage summary) :exit-code 0}
