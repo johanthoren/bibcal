@@ -36,22 +36,22 @@
   ;; Note that this is evaluated at build time by native-image.
   (:version build-env))
 
-(defn- config-dir []
+(defn config-dir []
   (let [os (System/getProperty "os.name")
         home (System/getProperty "user.home")]
     (if (str/starts-with? os "Windows")
       (str home "\\AppData\\Roaming\\bibcal\\")
       (str home "/.config/bibcal/"))))
 
-(defn- config-file []
+(defn config-file []
   (str (config-dir) "config.edn"))
 
-(defn- valid-zone?
+(defn valid-zone?
   [s]
   (log/debug "Validating zone:" s)
   (l/valid-zone? s))
 
-(defn- read-config
+(defn read-config
   ([k]
    (try
      (let [config (edn/read-string (slurp (config-file)))]
@@ -110,7 +110,7 @@
   [s]
   (log/info (if s "It's Sabbath!" "It's not Sabbath.")))
 
-(defn- feast-or-false
+(defn feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
   (cond
     (not name) false
@@ -131,7 +131,7 @@
                trad-year with-trad-y
                :else without-y))))
 
-(defn- iso-date
+(defn iso-date
   [y m d]
   (str y "-" (format "%02d" m) "-" (format "%02d" d)))
 
@@ -172,7 +172,7 @@
 
 ;; Beginning of command line parsing.
 
-(defn- cli-options []
+(defn cli-options []
   (let [config (read-config)]
     [["-c"
       "--create-config"
