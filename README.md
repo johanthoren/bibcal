@@ -18,9 +18,7 @@ $ java -jar /path/to/bibcal-all.jar [options]
 
 ## Installation
 
-Download [the latest pre-built
-binary archive](https://github.com/johanthoren/bibcal/releases/latest), unpack 
-it and place it somewhere on your PATH.
+Download [the latest pre-built binary archive](https://github.com/johanthoren/bibcal/releases/latest), unpack it and place it somewhere on your PATH.
 
 For Linux and MacOS users, you may need to make it executable:
 
@@ -29,13 +27,9 @@ cd /path/of/bibcal
 $ chmod +x bibcal
 ```
 
-[Arch Linux](https://archlinux.org/) users may install [the package
-bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) from the
-[AUR](https://aur.archlinux.org/):
+[Arch Linux](https://archlinux.org/) users may install [the package bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) from the [AUR](https://aur.archlinux.org/).
 
-Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with
-[the latest release](https://github.com/johanthoren/bibcal/releases/latest).
-These packages have no dependencies and will install cleanly on any such system.
+Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with [the latest release](https://github.com/johanthoren/bibcal/releases/latest). These packages have no dependencies and will install cleanly on any such system.
 
 ``` sh
 $ paru -S bibcal-bin
@@ -43,22 +37,15 @@ $ paru -S bibcal-bin
 
 ## Usage
 
-The app is run from the command line. Windows users can use either CMD or
-PowerShell and simply go to the directory where the file is located (if it's not
-already added to the PATH environment variable) and run `./bibcal.exe` with any
-options following.
+The app is run from the command line. Windows users can use either CMD or PowerShell and simply go to the directory where the file is located (if it's not already added to the PATH environment variable) and run `./bibcal.exe` with any options following.
 
 Note to Windows users: double clicking bibcal.exe will do nothing useful.
 
-Running bibcal without any options or arguments will print a list of feast days
-in the current gregorian year. Adding a year as an argument will print the feast
-days of that year.
+Running bibcal without any options or arguments will print a list of feast days in the current gregorian year. Adding a year as an argument will print the feast days of that year.
 
-Running bibcal with the option `-t` will print a long summary of the current
-biblical date.
+Running bibcal with the option `-t` will print a long summary of the current biblical date.
 
-Running bibcal with the option `-T` will print a short summary of the current
-biblical date.
+Running bibcal with the option `-T` will print a short summary of the current biblical date.
 
 Example:
 ``` sh
@@ -70,9 +57,7 @@ Result:
 18th of Av
 ```
 
-If you want to see the biblical date of a specific gregorian date, then add
-arguments at the end of the command representing year, month, day, hour, minute,
-and second (at least 3 positions). 
+If you want to see the biblical date of a specific gregorian date, then add arguments at the end of the command representing year, month, day, hour, minute, and second (at least 3 positions).
 
 Example:
 ``` sh
@@ -106,10 +91,7 @@ Use `bibcal -h` to see a list of options and arguments.
 
 ## Configuration file
 
-To save your timezone, latitude and longitude, create a file
-`~/.config/bibcal/config.edn`. If you are running Windows, the file would be
-`C:\Users\USERNAME\AppData\Roaming\bibcal\config.edn`. In it, save all or some
-of the following key-value pairs:
+To save your timezone, latitude and longitude, create a file `~/.config/bibcal/config.edn`. If you are running Windows, the file would be `C:\Users\USERNAME\AppData\Roaming\bibcal\config.edn`. In it, save all or some of the following key-value pairs:
 
 ``` edn
 {:zone "Asia/Jerusalem"
@@ -117,8 +99,7 @@ of the following key-value pairs:
  :lon 35.233804}
 ```
 
-This file can be generated for you by using the option `-c` together with the
-options that you want to save. Example:
+This file can be generated for you by using the option `-c` together with the options that you want to save. Example:
 
 ``` sh
 $ bibcal -c --lat 31.7781161 --lon 35.233804 --zone Asia/Jerusalem
@@ -126,8 +107,7 @@ $ bibcal -c --lat 31.7781161 --lon 35.233804 --zone Asia/Jerusalem
 
 ## Project status
 
-The project is pre-alpha and will move quickly. Don't expect options or output
-to be stable until a 1.0 release has been tagged.
+The project is currently in beta stage and will soon tag a 1.0.0 release.
 
 ## Acknowledgements
 
@@ -135,8 +115,7 @@ All calculations are provided by [the luminary library](https://github.com/johan
 
 ## Security
 
-All releases are signed with the following key which is in turn signed with [my
-master key, which is published at keybase.io](https://keybase.io/johan_thoren):
+All releases are signed with the following key which is in turn signed with [my master key, which is published at keybase.io](https://keybase.io/johan_thoren):
 
 ``` public-key
 -----BEGIN PGP PUBLIC KEY BLOCK-----
