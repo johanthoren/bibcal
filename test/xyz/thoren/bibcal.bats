@@ -25,46 +25,6 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_status 69
 }
 
-# Options -f, -h, and -V should work without a saved configuration file.
-
-@test "invoking bibcal 2021" {
-    if [ ! "$(uname)" = "Linux" ]; then
-        skip "This test only runs on Linux"
-    fi
-    run ./bibcal 2021
-    assert_status 0
-    assert_line_equals 0 "2021-01-13 1st day of the 11th month"
-    assert_line_equals -1 "2021-12-31 4th day of Hanukkah"
-}
-
-@test "invoking bibcal 2051" {
-    if [ ! "$(uname)" = "Linux" ]; then
-        skip "This test only runs on Linux"
-    fi
-    run ./bibcal 2051
-    assert_status 0
-    assert_line_equals 1 "2051-01-13 1st day of the 11th month"
-    assert_line_equals -1 "2051-12-31 5th day of Hanukkah"
-}
-
-@test "invoking bibcal 1101" {
-    if [ ! "$(uname)" = "Linux" ]; then
-        skip "This test only runs on Linux"
-    fi
-    run ./bibcal 1101
-    assert_status 75
-    assert_output "ERROR: Year is outside of range 1584 to 2100."
-}
-
-@test "invoking bibcal 2101" {
-    if [ ! "$(uname)" = "Linux" ]; then
-        skip "This test only runs on Linux"
-    fi
-    run ./bibcal 2101
-    assert_status 75
-    assert_output "ERROR: Year is outside of range 1584 to 2100."
-}
-
 @test "invoking bibcal -h" {
     run ./bibcal -h
     assert_status 0
@@ -78,7 +38,7 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     fi
     run ./bibcal -V
     assert_status 0
-    assert_output_matches "^[0-9]+\.[0-9]+\.[0-9]+-?(SNAPSHOT)?$"
+    assert_output_matches "^[0-9]+\.[0-9]+\.[0-9]+-?(alpha|beta|rc)?[0-9]?-?(SNAPSHOT)?$"
 }
 
 @test "invoking bibcal with argument -l, -L, and -z, plus incorrect arguments" {
@@ -269,6 +229,44 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     run ./bibcal -vv 2021 1 1 12
     assert_status 0
     assert_line_matches 0 DEBUG
+}
+
+@test "invoking bibcal 2021" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 2021
+    assert_status 0
+    assert_line_equals 0 "2021-01-13 1st day of the 11th month"
+    assert_line_equals -1 "2021-12-31 4th day of Hanukkah"
+}
+
+@test "invoking bibcal 1101" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 1101
+    assert_status 75
+    assert_output "ERROR: Year is outside of range 1584 to 2100."
+}
+
+@test "invoking bibcal 2101" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 2101
+    assert_status 75
+    assert_output "ERROR: Year is outside of range 1584 to 2100."
+}
+
+@test "invoking bibcal 2051" {
+    if [ ! "$(uname)" = "Linux" ]; then
+        skip "This test only runs on Linux"
+    fi
+    run ./bibcal 2051
+    assert_status 0
+    assert_line_equals 1 "2051-01-13 1st day of the 11th month"
+    assert_line_equals -1 "2051-12-31 5th day of Hanukkah"
 }
 
 ### End of main tests ###
