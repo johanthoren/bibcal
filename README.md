@@ -43,9 +43,9 @@ Note to Windows users: double clicking bibcal.exe will do nothing useful.
 
 Running bibcal without any options or arguments will print a list of feast days in the current gregorian year. Adding a year as an argument will print the feast days of that year.
 
-Running bibcal with the option `-t` will print a long summary of the current biblical date.
-
 Running bibcal with the option `-T` will print a short summary of the current biblical date.
+
+Running bibcal with the option `-t` will print a slightly longer summary of the current biblical date.
 
 Example:
 ``` sh
@@ -61,7 +61,7 @@ If you want to see the biblical date of a specific gregorian date, then add argu
 
 Example:
 ``` sh
-$ bibcal -x -74.006111 -y 40.712778 -z America/New_York 2011 1 1 9 0
+$ bibcal -l -74.006111 -L 40.712778 -z America/New_York 2011 1 1 9 0
 ```
 Result:
 ```
@@ -73,16 +73,31 @@ Biblical day of month   26
 Biblical day of week    7
 Sabbath                 true
 Major feast day         2nd day of Hanukkah
+```
+Run with option `-v` for a more verbose output, including the start and end of day, week, month, and year, as well as false values that would otherwise be omitted.
+``` sh
+$ bibcal -v -l -74.006111 -L 40.712778 -z America/New_York 2011 1 1 9 0
+```
+Result:
+```
+Gregorian time          2011-01-01 09:00:00
+Date                    26th day of the 9th month
+ISO date                6010-09-26
+Traditional date        26th of Kislev
+Traditional ISO date    5771-09-26
+Day of week             7
+Sabbath                 true
+Major feast day         2nd day of Hanukkah
 Minor feast day         false
-Start of year           2010-04-14 19:34:00
-Start of month          2010-12-06 16:28:00
-Start of week           2010-12-25 16:34:00
-Start of day            2010-12-31 16:38:00
-End of day              2011-01-01 16:38:59
-End of week             2011-01-01 16:38:59
-End of month            2011-01-04 16:41:59
-End of year             2011-04-03 19:21:59
-Location                40.712778,-74.006111
+Start of year           2010-04-14 09:09:00
+Start of month          2010-12-06 15:46:00
+Start of week           2010-12-25 15:59:00
+Start of day            2010-12-31 15:58:00
+End of day              2011-01-01 16:00:59
+End of week             2011-01-01 16:00:59
+End of month            2011-01-04 16:03:59
+End of year             2011-04-03 10:16:59
+Coordinates             -74.006111,40.712778
 Timezone                America/New_York
 Config file             None
 ```

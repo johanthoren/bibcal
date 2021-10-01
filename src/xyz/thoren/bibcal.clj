@@ -133,6 +133,8 @@
   [y m d]
   (str y "-" (format "%02d" m) "-" (format "%02d" d)))
 
+(defn info? [] (log/enabled? :info))
+
 (defn print-date
   [lat lon time]
   (let [d (l/date lat lon time)
@@ -144,29 +146,33 @@
         tf (tick/formatter "yyy-MM-dd HH:mm:ss")
         fmt-time #(tick/format tf (get-in t [%1 %2]))
         fmt #(format "%-24s%s" %1 %2)
-        msgs [["Gregorian time" (tick/format tf time)]
-              ["Date" (str (:day-of-month n) " day of the "
-                           (:month-of-year n) " month")]
-              ["ISO date" (iso-date (:year h) moy dom)]
-              ["Traditional date" (str (:day-of-month n) " of "
-                                       (:traditional-month-of-year n))]
-              ["Traditional ISO date" (iso-date (:traditional-year h) moy dom)]
-              ["Day of week" (:day-of-week h)]
-              ["Sabbath" (:sabbath h)]
-              ["Major feast day" (feast-or-false (:major-feast-day h))]
-              ["Minor feast day" (feast-or-false (:minor-feast-day h))]
-              ["Start of year" (fmt-time :year :start)]
-              ["Start of month" (fmt-time :month :start)]
-              ["Start of week" (fmt-time :week :start)]
-              ["Start of day" (fmt-time :day :start)]
-              ["End of day" (fmt-time :day :end)]
-              ["End of week" (fmt-time :week :end)]
-              ["End of month" (fmt-time :month :end)]
-              ["End of year" (fmt-time :year :end)]
-              ["Coordinates" (str lat "," lon)]
-              ["Timezone" (str (tick/zone time))]
-              ["Config file" (if (read-config) (config-file) "None")]]]
-    (doseq [m msgs] (println (apply fmt m)))))
+        sabbath (:sabbath h)
+        major-f (feast-or-false (:major-feast-day h))
+        minor-f (feast-or-false (:minor-feast-day h))]
+    (->> [["Gregorian time" (tick/format tf time)]
+          ["Date" (str (:day-of-month n) " day of the "
+                       (:month-of-year n) " month")]
+          ["ISO date" (iso-date (:year h) moy dom)]
+          ["Traditional date" (str (:day-of-month n) " of "
+                                        (:traditional-month-of-year n))]
+          ["Traditional ISO date" (iso-date (:traditional-year h) moy dom)]
+          ["Day of week" (:day-of-week h)]
+          (when (or sabbath (info?)) ["Sabbath" sabbath])
+          (when (or major-f (info?)) ["Major feast day" major-f])
+          (when (or minor-f (info?)) ["Minor feast day" minor-f])
+          (when (info?) ["Start of year" (fmt-time :year :start)])
+          (when (info?) ["Start of month" (fmt-time :month :start)])
+          (when (info?) ["Start of week" (fmt-time :week :start)])
+          (when (info?) ["Start of day" (fmt-time :day :start)])
+          (when (info?) ["End of day" (fmt-time :day :end)])
+          (when (info?) ["End of week" (fmt-time :week :end)])
+          (when (info?) ["End of month" (fmt-time :month :end)])
+          (when (info?) ["End of year" (fmt-time :year :end)])
+          (when (info?) ["Coordinates" (str lat "," lon)])
+          (when (info?) ["Timezone" (str (tick/zone time))])
+          (when (info?) ["Config file" (if (read-config) (config-file) "None")])]
+         (remove nil?)
+         (run! #(println (apply fmt %))))))
 
 ;; Beginning of command line parsing.
 

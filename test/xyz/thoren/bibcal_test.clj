@@ -31,35 +31,6 @@
           (let [t (r 2021 9 9 23 8 nil true)]
             (is (= "3rd of Elul, 5781\n" t))))))))
 
-(deftest test-print-date
-  (testing "that the expected output is printed for"
-    (let [r #(->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
-                  (b/print-date l/jerusalem-lat l/jerusalem-lon)
-                  (with-out-str)
-                  (str/split-lines)
-                  (drop-last))]
-      (testing "2021-09-09T23:08"
-        (let [t (r 2021 9 9 23 8)]
-          (is (= t ["Gregorian time          2021-09-09 23:08:00"
-                    "Date                    3rd day of the 6th month"
-                    "ISO date                6021-06-03"
-                    "Traditional date        3rd of Elul"
-                    "Traditional ISO date    5781-06-03"
-                    "Day of week             6"
-                    "Sabbath                 false"
-                    "Major feast day         false"
-                    "Minor feast day         false"
-                    "Start of year           2021-04-12 19:06:00"
-                    "Start of month          2021-09-07 18:55:00"
-                    "Start of week           2021-09-04 18:59:00"
-                    "Start of day            2021-09-09 18:52:00"
-                    "End of day              2021-09-10 18:50:59"
-                    "End of week             2021-09-11 18:49:59"
-                    "End of month            2021-10-06 18:16:59"
-                    "End of year             2022-04-01 18:57:59"
-                    "Coordinates             31.7781161,35.233804"
-                    "Timezone                Asia/Jerusalem"])))))))
-
 (deftest test-config
   (testing "that the correct config is produced"
     (let [r #(b/config %)
@@ -83,3 +54,63 @@
       (is (false? (b/sabbath? l/jerusalem-lat
                               l/jerusalem-lon
                               (l/zdt l/jerusalem-zone 2021 9 23 12 0)))))))
+
+(deftest test-print-date
+  (testing "that the expected short output is printed for"
+    (b/set-default-root-logger! :fatal "%p: %m%n")
+    (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
+                            (b/print-date l/jerusalem-lat l/jerusalem-lon)
+                            with-out-str
+                            str/split-lines)))]
+      (testing "2021-04-12T23:08"
+        (t 2021 4 12 23 8 ["Gregorian time          2021-04-12 23:08:00"
+                           "Date                    1st day of the 1st month"
+                           "ISO date                6021-01-01"
+                           "Traditional date        1st of Nisan"
+                           "Traditional ISO date    5781-01-01"
+                           "Day of week             3"
+                           "Minor feast day         1st day of the 1st month"]))
+      (testing "2021-04-26T23:08"
+        (t 2021 4 26 23 8 ["Gregorian time          2021-04-26 23:08:00"
+                           "Date                    15th day of the 1st month"
+                           "ISO date                6021-01-15"
+                           "Traditional date        15th of Nisan"
+                           "Traditional ISO date    5781-01-15"
+                           "Day of week             3"
+                           "Sabbath                 true"
+                           "Major feast day         1st day of the Feast of Unleavened Bread"]))
+      (testing "2021-09-09T23:08"
+        (t 2021 9 9 23 8 ["Gregorian time          2021-09-09 23:08:00"
+                          "Date                    3rd day of the 6th month"
+                          "ISO date                6021-06-03"
+                          "Traditional date        3rd of Elul"
+                          "Traditional ISO date    5781-06-03"
+                          "Day of week             6"]))))
+  (testing "that the expected long output is printed for"
+    (b/set-default-root-logger! :info "%p: %m%n")
+    (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
+                            (b/print-date l/jerusalem-lat l/jerusalem-lon)
+                            with-out-str
+                            str/split-lines
+                            drop-last)))]
+      (testing "2021-09-09T23:08"
+        (t 2021 9 9 23 8 ["Gregorian time          2021-09-09 23:08:00"
+                          "Date                    3rd day of the 6th month"
+                          "ISO date                6021-06-03"
+                          "Traditional date        3rd of Elul"
+                          "Traditional ISO date    5781-06-03"
+                          "Day of week             6"
+                          "Sabbath                 false"
+                          "Major feast day         false"
+                          "Minor feast day         false"
+                          "Start of year           2021-04-12 19:06:00"
+                          "Start of month          2021-09-07 18:55:00"
+                          "Start of week           2021-09-04 18:59:00"
+                          "Start of day            2021-09-09 18:52:00"
+                          "End of day              2021-09-10 18:50:59"
+                          "End of week             2021-09-11 18:49:59"
+                          "End of month            2021-10-06 18:16:59"
+                          "End of year             2022-04-01 18:57:59"
+                          "Coordinates             31.7781161,35.233804"
+                          "Timezone                Asia/Jerusalem"]))))
+  (b/set-default-root-logger! :fatal "%p: %m%n"))
