@@ -63,29 +63,32 @@
                             with-out-str
                             str/split-lines)))]
       (testing "2021-04-12T23:08"
-        (t 2021 4 12 23 8 ["Gregorian time          2021-04-12 23:08:00"
-                           "Date                    1st day of the 1st month"
+        (t 2021 4 12 23 8 ["Date                    1st day of the 1st month"
                            "ISO date                6021-01-01"
                            "Traditional date        1st of Nisan"
                            "Traditional ISO date    5781-01-01"
                            "Day of week             3"
-                           "Minor feast day         1st day of the 1st month"]))
+                           "Minor feast day         1st day of the 1st month"
+                           "Current local time      2021-04-12 23:08:00"
+                           "Start of next day       2021-04-13 19:06:00"]))
       (testing "2021-04-26T23:08"
-        (t 2021 4 26 23 8 ["Gregorian time          2021-04-26 23:08:00"
-                           "Date                    15th day of the 1st month"
+        (t 2021 4 26 23 8 ["Date                    15th day of the 1st month"
                            "ISO date                6021-01-15"
                            "Traditional date        15th of Nisan"
                            "Traditional ISO date    5781-01-15"
                            "Day of week             3"
                            "Sabbath                 true"
-                           "Major feast day         1st day of the Feast of Unleavened Bread"]))
+                           "Major feast day         1st day of the Feast of Unleavened Bread"
+                           "Current local time      2021-04-26 23:08:00"
+                           "Start of next day       2021-04-27 19:16:00"]))
       (testing "2021-09-09T23:08"
-        (t 2021 9 9 23 8 ["Gregorian time          2021-09-09 23:08:00"
-                          "Date                    3rd day of the 6th month"
+        (t 2021 9 9 23 8 ["Date                    3rd day of the 6th month"
                           "ISO date                6021-06-03"
                           "Traditional date        3rd of Elul"
                           "Traditional ISO date    5781-06-03"
-                          "Day of week             6"]))))
+                          "Day of week             6"
+                          "Current local time      2021-09-09 23:08:00"
+                          "Start of next day       2021-09-10 18:51:00"]))))
   (testing "that the expected long output is printed for"
     (b/set-default-root-logger! :info "%p: %m%n")
     (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
@@ -94,8 +97,7 @@
                             str/split-lines
                             drop-last)))]
       (testing "2021-09-09T23:08"
-        (t 2021 9 9 23 8 ["Gregorian time          2021-09-09 23:08:00"
-                          "Date                    3rd day of the 6th month"
+        (t 2021 9 9 23 8 ["Date                    3rd day of the 6th month"
                           "ISO date                6021-06-03"
                           "Traditional date        3rd of Elul"
                           "Traditional ISO date    5781-06-03"
@@ -103,6 +105,7 @@
                           "Sabbath                 false"
                           "Major feast day         false"
                           "Minor feast day         false"
+                          "Current local time      2021-09-09 23:08:00"
                           "Start of year           2021-04-12 19:06:00"
                           "Start of month          2021-09-07 18:55:00"
                           "Start of week           2021-09-04 18:59:00"

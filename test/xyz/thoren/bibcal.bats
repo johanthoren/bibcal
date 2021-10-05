@@ -50,11 +50,13 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
 @test "invoking bibcal with argument -l, -L, and -z, plus correct arguments" {
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York 2021 9 11 9 0
     assert_status 0
-    assert_line_matches 0 "2021-09-11 09:00:00"
-    assert_line_matches 2 "6021-06-04"
-    assert_line_matches 4 "5781-06-04"
-    assert_line_matches 5 "7"
-    assert_line_matches 6 "true"
+    assert_line_matches 0 "4th day of the 6th month"
+    assert_line_matches 1 "6021-06-04"
+    assert_line_matches 2 "4th of Elul"
+    assert_line_matches 3 "5781-06-04"
+    assert_line_matches 4 "7"
+    assert_line_matches 5 "true"
+    assert_line_matches 6 "2021-09-11 09:00:00"
 }
 
 # Save the configuration options in the first command to avoid errors in later
@@ -111,11 +113,12 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
 @test "invoking bibcal with option -t" {
     run ./bibcal -t
     assert_status 0
-    assert_line_matches 0 "Gregorian time"
-    assert_line_matches 1 "Date"
-    assert_line_matches 2 "ISO date"
-    assert_line_matches 3 "Traditional date"
-    assert_line_matches 4 "Traditional ISO date"
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_line_matches 5 "Current local time"
 }
 
 @test "invoking bibcal with option -t and 1 argument" {
@@ -130,12 +133,12 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
 @test "invoking bibcal with option -t and 4 arguments" {
     run ./bibcal -t 2021 1 4 12
     assert_status 0
-    assert_line_matches 0 "Gregorian time"
-    assert_line_matches 1 "Date"
-    assert_line_matches 2 "ISO date"
-    assert_line_matches 3 "Traditional date"
-    assert_line_matches 4 "Traditional ISO date"
-    assert_line_matches 5 "Day of week"
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_line_matches 5 "Current local time"
     fail_if output_matches "Sabbath"
     fail_if output_matches "Major"
     fail_if output_matches "Minor"
@@ -144,29 +147,29 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
 @test "invoking bibcal with options -t, -v, and 4 arguments" {
     run ./bibcal -t -v 2021 1 4 12
     assert_status 0
-    assert_line_matches 0 "Gregorian time"
-    assert_line_matches 1 "Date"
-    assert_line_matches 2 "ISO date"
-    assert_line_matches 3 "Traditional date"
-    assert_line_matches 4 "Traditional ISO date"
-    assert_line_matches 5 "Day of week"
-    assert_line_matches 6 "Sabbath"
-    assert_line_matches 7 "Major"
-    assert_line_matches 8 "Minor"
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_line_matches 5 "Sabbath"
+    assert_line_matches 6 "Major"
+    assert_line_matches 7 "Minor"
+    assert_line_matches 8 "Current local time"
 }
 
 @test "invoking bibcal with options -l, -L, -t, -v, and 4 arguments" {
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York -t -v 2021 1 4 12
     assert_status 0
-    assert_line_equals 0 "Gregorian time          2021-01-04 12:00:00"
-    assert_line_equals 1 "Date                    20th day of the 10th month"
-    assert_line_equals 2 "ISO date                6020-10-20"
-    assert_line_equals 3 "Traditional date        20th of Tevet"
-    assert_line_equals 4 "Traditional ISO date    5781-10-20"
-    assert_line_equals 5 "Day of week             2"
-    assert_line_equals 6 "Sabbath                 false"
-    assert_line_equals 7 "Major feast day         false"
-    assert_line_equals 8 "Minor feast day         false"
+    assert_line_equals 0 "Date                    20th day of the 10th month"
+    assert_line_equals 1 "ISO date                6020-10-20"
+    assert_line_equals 2 "Traditional date        20th of Tevet"
+    assert_line_equals 3 "Traditional ISO date    5781-10-20"
+    assert_line_equals 4 "Day of week             2"
+    assert_line_equals 5 "Sabbath                 false"
+    assert_line_equals 6 "Major feast day         false"
+    assert_line_equals 7 "Minor feast day         false"
+    assert_line_equals 8 "Current local time      2021-01-04 12:00:00"
     assert_line_equals 9 "Start of year           2020-03-24 19:13:00"
     assert_line_equals 10 "Start of month          2020-12-15 16:29:00"
     assert_line_equals 11 "Start of week           2021-01-02 16:40:00"

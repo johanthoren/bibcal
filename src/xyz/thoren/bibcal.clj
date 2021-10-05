@@ -148,9 +148,9 @@
         fmt #(format "%-24s%s" %1 %2)
         sabbath (:sabbath h)
         major-f (feast-or-false (:major-feast-day h))
-        minor-f (feast-or-false (:minor-feast-day h))]
-    (->> [["Gregorian time" (tick/format tf time)]
-          ["Date" (str (:day-of-month n) " day of the "
+        minor-f (feast-or-false (:minor-feast-day h))
+        next-day (l/go-forward 1 :seconds (get-in t [:day :end]))]
+    (->> [["Date" (str (:day-of-month n) " day of the "
                        (:month-of-year n) " month")]
           ["ISO date" (iso-date (:year h) moy dom)]
           ["Traditional date" (str (:day-of-month n) " of "
@@ -160,6 +160,8 @@
           (when (or sabbath (info?)) ["Sabbath" sabbath])
           (when (or major-f (info?)) ["Major feast day" major-f])
           (when (or minor-f (info?)) ["Minor feast day" minor-f])
+          ["Current local time" (tick/format tf time)]
+          (when-not (info?) ["Start of next day" (tick/format tf next-day)])
           (when (info?) ["Start of year" (fmt-time :year :start)])
           (when (info?) ["Start of month" (fmt-time :month :start)])
           (when (info?) ["Start of week" (fmt-time :week :start)])
