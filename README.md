@@ -18,7 +18,8 @@ $ java -jar /path/to/bibcal-all.jar [options]
 
 ## Installation
 
-Download [the latest pre-built binary archive](https://github.com/johanthoren/bibcal/releases/latest), unpack it and place it somewhere on your PATH.
+Download [the latest pre-built binary archive](https://github.com/johanthoren/bibcal/releases/latest), 
+unpack it and place it somewhere on your PATH.
 
 For Linux and MacOS users, you may need to make it executable:
 
@@ -27,9 +28,13 @@ cd /path/of/bibcal
 $ chmod +x bibcal
 ```
 
-[Arch Linux](https://archlinux.org/) users may install [the package bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) from the [AUR](https://aur.archlinux.org/).
+[Arch Linux](https://archlinux.org/) users may install [the package bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) 
+from the [AUR](https://aur.archlinux.org/).
 
-Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with [the latest release](https://github.com/johanthoren/bibcal/releases/latest). These packages have no dependencies and will install cleanly on any such system.
+Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) 
+or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with 
+[the latest release](https://github.com/johanthoren/bibcal/releases/latest).
+These packages have no dependencies and will install cleanly on any such system.
 
 ``` sh
 $ paru -S bibcal-bin
@@ -37,11 +42,16 @@ $ paru -S bibcal-bin
 
 ## Usage
 
-The app is run from the command line. Windows users can use either CMD or PowerShell and simply go to the directory where the file is located (if it's not already added to the PATH environment variable) and run `./bibcal.exe` with any options following.
+The app is run from the command line. 
+Windows users can use either CMD or PowerShell and simply go to the directory where the file is located 
+(if it's not already added to the PATH environment variable) 
+and run `./bibcal.exe` with any options following.
 
-Note to Windows users: double clicking bibcal.exe will do nothing useful.
+Note to Windows users: 
+double clicking bibcal.exe will do nothing useful.
 
-Running bibcal without any options or arguments will print a list of feast days in the current gregorian year. Adding a year as an argument will print the feast days of that year.
+Running bibcal without any options or arguments will print a list of feast days in the current gregorian year. 
+Adding a year as an argument will print the feast days of that year.
 
 Running bibcal with the option `-T` will print a short summary of the current biblical date.
 
@@ -57,7 +67,9 @@ Result:
 18th of Av
 ```
 
-If you want to see the biblical date of a specific gregorian date, then add arguments at the end of the command representing year, month, day, hour, minute, and second (at least 3 positions).
+If you want to see the biblical date of a specific gregorian date, 
+then add arguments at the end of the command representing 
+year, month, day, hour, minute, and second (at least 3 positions).
 
 Example:
 ``` sh
@@ -65,22 +77,24 @@ $ bibcal -l -74.006111 -L 40.712778 -z America/New_York 2011 1 1 9 0
 ```
 Result:
 ```
-Gregorian time          2011-01-01 09:00:00
-Traditional year        5771
-Alternative year        6010
-Biblical month          9
-Biblical day of month   26
-Biblical day of week    7
+Date                    26th day of the 9th month
+ISO date                6010-09-26
+Traditional date        26th of Kislev
+Traditional ISO date    5771-09-26
+Day of week             7
 Sabbath                 true
 Major feast day         2nd day of Hanukkah
+Current local time      2011-01-01 09:00:00
+Start of next day       2011-01-01 16:01:00
 ```
-Run with option `-v` for a more verbose output, including the start and end of day, week, month, and year, as well as false values that would otherwise be omitted.
+Run with option `-v` for a more verbose output, 
+including the start and end of day, week, month, and year, 
+as well as false values that would otherwise be omitted.
 ``` sh
 $ bibcal -v -l -74.006111 -L 40.712778 -z America/New_York 2011 1 1 9 0
 ```
 Result:
 ```
-Gregorian time          2011-01-01 09:00:00
 Date                    26th day of the 9th month
 ISO date                6010-09-26
 Traditional date        26th of Kislev
@@ -89,6 +103,7 @@ Day of week             7
 Sabbath                 true
 Major feast day         2nd day of Hanukkah
 Minor feast day         false
+Current local time      2011-01-01 09:00:00
 Start of year           2010-04-14 09:09:00
 Start of month          2010-12-06 15:46:00
 Start of week           2010-12-25 15:59:00
@@ -99,14 +114,18 @@ End of month            2011-01-04 16:03:59
 End of year             2011-04-03 10:16:59
 Coordinates             -74.006111,40.712778
 Timezone                America/New_York
-Config file             None
+Config file             /home/jthoren/.config/bibcal/config.edn
 ```
 
 Use `bibcal -h` to see a list of options and arguments.
 
 ## Configuration file
 
-To save your timezone, latitude and longitude, create a file `~/.config/bibcal/config.edn`. If you are running Windows, the file would be `C:\Users\USERNAME\AppData\Roaming\bibcal\config.edn`. In it, save all or some of the following key-value pairs:
+To save your timezone, latitude and longitude, 
+create a file `~/.config/bibcal/config.edn`. 
+If you are running Windows, 
+the file would be `C:\Users\USERNAME\AppData\Roaming\bibcal\config.edn`. 
+In it, save all or some of the following key-value pairs:
 
 ``` edn
 {:zone "Asia/Jerusalem"
@@ -114,7 +133,9 @@ To save your timezone, latitude and longitude, create a file `~/.config/bibcal/c
  :lon 35.233804}
 ```
 
-This file can be generated for you by using the option `-c` together with the options that you want to save. Example:
+This file can be generated for you by using the option `-c` 
+together with the options that you want to save. 
+Example:
 
 ``` sh
 $ bibcal -c --lat 31.7781161 --lon 35.233804 --zone Asia/Jerusalem
@@ -126,11 +147,14 @@ The project is currently in beta stage and will soon tag a 1.0.0 release.
 
 ## Acknowledgements
 
-All calculations are provided by [the luminary library](https://github.com/johanthoren/luminary).
+All calculations are provided by 
+[the luminary library](https://github.com/johanthoren/luminary).
 
 ## Security
 
-All releases are signed with the following key which is in turn signed with [my master key, which is published at keybase.io](https://keybase.io/johan_thoren):
+All releases are signed with the following key 
+which is in turn signed with 
+[my master key, which is published at keybase.io](https://keybase.io/johan_thoren):
 
 ``` public-key
 -----BEGIN PGP PUBLIC KEY BLOCK-----
