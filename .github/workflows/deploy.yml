@@ -305,9 +305,17 @@ jobs:
         if: "!contains(matrix.target, 'windows')"
         run: tar xvf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
 
-      - name: Make artifact executable (NON-WINDOWS)
+      - name: Rename binary (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
-        run: chmod +x bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+        run: mv bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }} bibcal
+
+      - name: Rename binary (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
+        run: mv bibcal-${{ matrix.target }} bibcal.exe
+
+      - name: Make binary executable (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: chmod +x bibcal
 
       - name: List directory (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
@@ -316,14 +324,6 @@ jobs:
       - name: List directory (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         run: dir
-
-      - name: Rename binary (NON-WINDOWS)
-        if: "!contains(matrix.target, 'windows')"
-        run: mv bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }} bibcal
-
-      - name: Rename binary (WINDOWS)
-        if: "contains(matrix.target, 'windows')"
-        run: mv bibcal-${{ matrix.target }} bibcal.exe
 
       - name: Run tests (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
