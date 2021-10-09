@@ -18,6 +18,27 @@ $ java -jar /path/to/bibcal-all.jar [options]
 
 ## Installation
 
+### Windows
+Windows users using [the package manager Scoop](https://scoop.sh/) can install bibcal from the [scoop-clojure bucket](https://github.com/littleli/scoop-clojure). 
+
+### Linux
+#### Arch Linux
+[Arch Linux](https://archlinux.org/) users may install [the package bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) 
+from the [AUR](https://aur.archlinux.org/).
+
+``` sh
+$ paru -S bibcal-bin
+```
+
+#### RPM based distributions
+Linux distributions using [RPM packages](https://en.wikipedia.org/wiki/RPM_Package_Manager) can find a freshly baked RPM on
+[the latest release page](https://github.com/johanthoren/bibcal/releases/latest).
+
+#### DEB based distributions
+Linux distributions using [DEB packages](https://en.wikipedia.org/wiki/Deb_(file_format)) can find a newly pressed DEB on
+[the latest release page](https://github.com/johanthoren/bibcal/releases/latest).
+
+### All supported operating systems
 Download [the latest pre-built binary archive](https://github.com/johanthoren/bibcal/releases/latest), 
 unpack it and place it somewhere on your PATH.
 
@@ -28,24 +49,15 @@ cd /path/of/bibcal
 $ chmod +x bibcal
 ```
 
-[Arch Linux](https://archlinux.org/) users may install [the package bibcal-bin](https://aur.archlinux.org/packages/bibcal-bin/) 
-from the [AUR](https://aur.archlinux.org/).
-
-Users of Linux distributions using either [RPM](https://en.wikipedia.org/wiki/RPM_Package_Manager) 
-or [DEB](https://en.wikipedia.org/wiki/Deb_(file_format)) can find such files with 
-[the latest release](https://github.com/johanthoren/bibcal/releases/latest).
-These packages have no dependencies and will install cleanly on any such system.
-
-``` sh
-$ paru -S bibcal-bin
-```
-
 ## Usage
 
 The app is run from the command line. 
+
 Windows users can use either CMD or PowerShell and simply go to the directory where the file is located 
 (if it's not already added to the PATH environment variable) 
 and run `./bibcal.exe` with any options following.
+
+If you installed it using scoop you can run `bibcal` from any PowerShell terminal since it will automatically be added to your PATH.
 
 Note to Windows users: 
 double clicking bibcal.exe will do nothing useful.
