@@ -94,8 +94,16 @@ jobs:
       - name: Make
         run: make
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
       - name: Move and rename binary
-        run: mv target/bibcal bibcal-${{ matrix.target }}
+        run: mv target/bibcal bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+
+      - name: Compress binary
+        run: |
+          tar cvzf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
@@ -103,8 +111,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: bibcal-${{ matrix.target }}
-          path: bibcal-${{ matrix.target }}
+          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+          path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
 
   build_macos:
     name: Build macOS
@@ -139,6 +147,10 @@ jobs:
       - name: Print the current state of the directory
         run: ls -alh
 
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
       - name: Build Native Image
         run: |
           native-image \
@@ -149,16 +161,20 @@ jobs:
           -H:+ReportExceptionStackTraces \
           --allow-incomplete-classpath \
           -jar bibcal-all.jar \
-          -H:Name=bibcal-${{ matrix.target }}
+          -H:Name=bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
 
+      - name: Compress binary
+        run: |
+          tar cvzf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v2
         with:
-          name: bibcal-${{ matrix.target }}
-          path: bibcal-${{ matrix.target }}
+          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+          path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
 
   build_windows:
     name: Build Windows
@@ -269,14 +285,29 @@ jobs:
         if: "!contains(matrix.target, 'windows')"
         run: ls -Ral test
 
-      - name: Download build artifacts
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      - name: Download build artifacts (WINDOWS)
+        if: "contains(matrix.target, 'windows')"
         uses: actions/download-artifact@v2
         with:
           name: bibcal-${{ matrix.target }}
 
+      - name: Download build artifacts (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        uses: actions/download-artifact@v2
+        with:
+          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+
+      - name: Extract archive (NON-WINDOWS)
+        if: "!contains(matrix.target, 'windows')"
+        run: tar xvf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+
       - name: Make artifact executable (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
-        run: chmod +x bibcal-${{ matrix.target }}
+        run: chmod +x bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
 
       - name: List directory (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
@@ -288,7 +319,7 @@ jobs:
 
       - name: Rename binary (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
-        run: mv bibcal-${{ matrix.target }} bibcal
+        run: mv bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }} bibcal
 
       - name: Rename binary (WINDOWS)
         if: "contains(matrix.target, 'windows')"
@@ -415,7 +446,15 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2.0.5
         with:
-          name: bibcal-${{ matrix.target }}
+          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+
+      - name: Extract archive
+        run: |
+          tar xvf bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+
+      - name: Rename binary
+        run: |
+          mv bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }} bibcal-${{ matrix.target }}
 
       - name: Build DEB Package
         id: build_deb
@@ -459,7 +498,15 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v2.0.5
         with:
-          name: bibcal-${{ matrix.target }}
+          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+
+      - name: Extract archive
+        run: |
+          tar xvf bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+
+      - name: Rename binary
+        run: |
+          mv bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }} bibcal-${{ matrix.target }}
 
       - name: Build RPM Package
         id: build_rpm
@@ -599,7 +646,7 @@ jobs:
         if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
         uses: actions/download-artifact@v2.0.5
         with:
-          name: bibcal-${{ matrix.target }}
+          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
 
       - name: Download artifact (WINDOWS)
         if: contains(matrix.target, 'windows')
@@ -650,9 +697,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ matrix.target }}
-          asset_name: bibcal-${{ matrix.target }}
-          asset_content_type: application/octet-stream
+          asset_path: ./bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          asset_name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          asset_content_type: application/gzip
 
       - name: Release executable (WINDOWS)
         if: contains(matrix.target, 'windows')
@@ -737,7 +784,7 @@ jobs:
       - name: Insert executable checksum into PKGBUILD
         run: |
           sed -i \
-          "s/BINARY_CHECKSUM/$(awk '/linux/ {print $1}' SHA256SUMS)/g" \
+          "s/BINARY_CHECKSUM/$(awk '/linux-x86_64.tar.gz/ {print $1}' SHA256SUMS)/g" \
           PKGBUILD
 
       - name: Insert checksum of checksum into PKGBUILD
