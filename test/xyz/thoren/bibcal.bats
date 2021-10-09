@@ -118,7 +118,7 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_line_matches 2 "Traditional date"
     assert_line_matches 3 "Traditional ISO date"
     assert_line_matches 4 "Day of week"
-    assert_line_matches 5 "Current local time"
+    assert_output_matches 5 "Current local time"
 }
 
 @test "invoking bibcal with option -t and 1 argument" {
