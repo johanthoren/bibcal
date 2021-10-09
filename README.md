@@ -141,10 +141,6 @@ Example:
 $ bibcal -c --lat 31.7781161 --lon 35.233804 --zone Asia/Jerusalem
 ```
 
-## Project status
-
-The project is currently in beta stage and will soon tag a 1.0.0 release.
-
 ## Acknowledgements
 
 All calculations are provided by 
