@@ -36,6 +36,7 @@ Which expands to this:
 ![xbar bibcal plugin, on click](/screenshots/xbar_max.png)
 
 Use [the example plugin](/xbar/bibcal.30s.sh) or customize according to your needs.
+Make sure to save your coordinates and timezone to your configuration file first and verify that you get the expected results when running bibcal from the command line.
 
 ### Windows
 Windows users using [the package manager Scoop](https://scoop.sh/) can install bibcal from the [scoop-clojure bucket](https://github.com/littleli/scoop-clojure). 
