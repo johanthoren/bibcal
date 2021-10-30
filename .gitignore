@@ -21,4 +21,4 @@ TAGS
 /bibcal-linux-x86_64
 /*.deb
 /test/xyz/thoren/bats/
-/.DS_Store
+*.DS_Store
