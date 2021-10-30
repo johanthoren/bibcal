@@ -7,7 +7,7 @@ A command-line calendar based on the Bible and the 1st Book of Enoch.
 There are pre-build binaries for recent version of any x86_64 OS listed below:
 
 - Linux
-- MacOS
+- MacOS (it runs just fine on Apple Silicon using Rosetta 2)
 - Windows
 
 The file bibcal-all.jar can be run by java on any OS:
@@ -17,6 +17,25 @@ $ java -jar /path/to/bibcal-all.jar [options]
 ```
 
 ## Installation
+
+### MacOS
+Download and unpack the binary from
+[the latest release page](https://github.com/johanthoren/bibcal/releases/latest).
+Move the binary to a reasonable location:
+
+``` sh
+tar xvf bibcal-*-apple-darwin-x86_64.tar.gz
+cp bibcal-*-apple-darwin-x86_64 /usr/local/bin/bibcal
+```
+
+Using [the excellent xbar application](https://github.com/matryer/xbar) you can create a Menu Bar plugin like this:
+
+![xbar bibcal plugin, minimized](/screenshots/xbar_min.png)
+
+Which expands to this:
+![xbar bibcal plugin, on click](/screenshots/xbar_max.png)
+
+Use [the example plugin](/xbar/bibcal.30s.sh) or customize according to your needs.
 
 ### Windows
 Windows users using [the package manager Scoop](https://scoop.sh/) can install bibcal from the [scoop-clojure bucket](https://github.com/littleli/scoop-clojure). 
