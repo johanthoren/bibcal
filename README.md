@@ -145,7 +145,7 @@ End of month            2011-01-04 16:03:59
 End of year             2011-04-03 10:16:59
 Coordinates             -74.006111,40.712778
 Timezone                America/New_York
-Config file             /home/jthoren/.config/bibcal/config.edn
+Config file             /home/user/.config/bibcal/config.edn
 ```
 
 Use `bibcal -h` to see a list of options and arguments.
@@ -255,7 +255,7 @@ U4s4wOukEsEKMlCpugj5gS0f
 ```
 ISC License
 
-Copyright (c) 2021, Johan Thoren
+Copyright (c) 2021, Johan Thorén
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -272,6 +272,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ## Contributor Code of Conduct
 
-This project adheres to No Code of Conduct.  We are all adults.  We accept anyone's contributions.  Nothing else matters.
+This project adheres to No Code of Conduct. We are all adults. We accept anyone's contributions. Nothing else matters.
 
 For more information please visit the [No Code of Conduct](https://github.com/domgetter/NCoC) homepage.
