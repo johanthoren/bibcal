@@ -15,7 +15,7 @@ else
 fi
 
 if [ "$SABBATH" = "true" ]; then
-    echo "\033[0;33m$MSG\033[0m"
+    echo "\033[0;32m$MSG\033[0m"
 else
     echo "$MSG"
 fi
