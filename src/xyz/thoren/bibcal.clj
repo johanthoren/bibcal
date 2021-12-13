@@ -14,10 +14,10 @@
   (get-version "xyz.thoren" "bibcal"))
 
 (defn print-v [n & more]
-  (when (= n 1)
+  (when (pos? n)
     (apply println more)))
 
-(defn debug [n & more]
+(defn print-d [n & more]
   (when (> n 1)
     (apply println more)))
 
@@ -83,14 +83,14 @@
   ([v lat lon time]
    (let [d (l/date lat lon time)
          s (get-in d [:hebrew :sabbath])]
-     (debug v "Checking Sabbath for the following hebrew date:" d)
+     (print-d v "Checking Sabbath for the following hebrew date:" d)
      (boolean s)))
   ([v lat lon]
    (sabbath? v lat lon (l/now))))
 
 (defn print-sabbath
-  [b]
-  (println (if b "It's Sabbath!" "It's not Sabbath.")))
+  [b v]
+  (print-v v (if b "It's Sabbath!" "It's not Sabbath.")))
 
 (defn feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
@@ -399,7 +399,7 @@
           (cond
             sabbath
             (let [s (sabbath? verbosity lat lon d)]
-              (print-sabbath s)
+              (print-sabbath s verbosity)
               (when-not s (System/exit 1)))
             ;;
             today-brief
@@ -415,7 +415,7 @@
         sabbath
         (let [s (sabbath? verbosity lat lon (l/in-zone
                                              (or zone (tick/zone)) (l/now)))]
-          (print-sabbath s)
+          (print-sabbath s verbosity)
           (when-not s (System/exit 1)))
         ;;
         create-config
