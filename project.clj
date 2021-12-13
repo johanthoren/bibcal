@@ -9,8 +9,6 @@
             :key "isc"}
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/tools.cli "1.0.206"]
-                 [org.clojure/tools.logging "1.1.0"]
-                 [clj-logging-config "1.9.12"]
                  [say-cheez "0.2.0"]
                  [tick "0.5.0-RC1"]
                  [clj-commons/fs "1.6.307"]
