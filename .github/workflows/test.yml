@@ -150,7 +150,6 @@ jobs:
         run: |
           native-image \
           --no-fallback \
-          --initialize-at-build-time \
           --report-unsupported-elements-at-runtime \
           -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json \
           -H:+ReportExceptionStackTraces \
@@ -206,7 +205,7 @@ jobs:
 
       - name: Build Native Image
         shell: cmd
-        run: native-image --no-fallback --initialize-at-build-time --report-unsupported-elements-at-runtime -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json -H:+ReportExceptionStackTraces --allow-incomplete-classpath -jar bibcal-all.jar -H:Name=bibcal-${{ matrix.target }}
+        run: native-image --no-fallback --report-unsupported-elements-at-runtime -H:ReflectionConfigurationFiles=resources/META-INF/native-image/reflect-config.json -H:+ReportExceptionStackTraces --allow-incomplete-classpath -jar bibcal-all.jar -H:Name=bibcal-${{ matrix.target }}
 
       - name: Print the current state of the directory
         shell: powershell
