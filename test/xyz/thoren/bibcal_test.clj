@@ -47,19 +47,22 @@
 (deftest test-sabbath?
   (testing "that the sabbath is correctly"
     (testing "true"
-      (is (true? (b/sabbath? l/jerusalem-lat
-                             l/jerusalem-lon
-                             (l/zdt l/jerusalem-zone 2021 9 25 12 0)))))
+      (is (true? (b/sabbath?
+                  0
+                  l/jerusalem-lat
+                  l/jerusalem-lon
+                  (l/zdt l/jerusalem-zone 2021 9 25 12 0)))))
     (testing "false"
-      (is (false? (b/sabbath? l/jerusalem-lat
-                              l/jerusalem-lon
-                              (l/zdt l/jerusalem-zone 2021 9 23 12 0)))))))
+      (is (false? (b/sabbath?
+                   0
+                   l/jerusalem-lat
+                   l/jerusalem-lon
+                   (l/zdt l/jerusalem-zone 2021 9 23 12 0)))))))
 
 (deftest test-print-date
   (testing "that the expected short output is printed for"
-    (b/set-default-root-logger! :fatal "%p: %m%n")
     (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
-                            (b/print-date l/jerusalem-lat l/jerusalem-lon)
+                            (b/print-date 0 l/jerusalem-lat l/jerusalem-lon)
                             with-out-str
                             str/split-lines)))]
       (testing "2021-04-12T23:08"
@@ -90,9 +93,8 @@
                           "Current local time      2021-09-09 23:08:00"
                           "Start of next day       2021-09-10 18:51:00"]))))
   (testing "that the expected long output is printed for"
-    (b/set-default-root-logger! :info "%p: %m%n")
     (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
-                            (b/print-date l/jerusalem-lat l/jerusalem-lon)
+                            (b/print-date 1 l/jerusalem-lat l/jerusalem-lon)
                             with-out-str
                             str/split-lines
                             drop-last)))]
@@ -115,5 +117,4 @@
                           "End of month            2021-10-06 18:16:59"
                           "End of year             2022-04-01 18:57:59"
                           "Coordinates             31.7781161,35.233804"
-                          "Timezone                Asia/Jerusalem"]))))
-  (b/set-default-root-logger! :fatal "%p: %m%n"))
+                          "Timezone                Asia/Jerusalem"])))))

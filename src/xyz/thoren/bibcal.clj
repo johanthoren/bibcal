@@ -1,7 +1,5 @@
 (ns xyz.thoren.bibcal
   (:require [clojure.tools.cli :refer [parse-opts]]
-            [clojure.tools.logging :as log]
-            [clj-logging-config.log4j]
             [clojure.string :as str]
             [clojure.edn :as edn]
             [me.raynes.fs :as fs]
@@ -10,31 +8,20 @@
             [xyz.thoren.luminary :as l])
   (:gen-class))
 
-(defn set-default-root-logger!
-  [loglevel pattern]
-  (clj-logging-config.log4j/set-loggers! :root
-                                         {:level loglevel
-                                          :pattern pattern
-                                          :out :console}))
-
-(set-default-root-logger! :fatal "%p: %m%n")
-
-(defn set-log-level!
-  "Set the output level based on `verbosity`.
-  See also [[set-default-root-logger!]]."
-  [verbosity]
-  (case verbosity
-    0 nil
-    1 (set-default-root-logger! :info "%m%n")
-    2 (set-default-root-logger! :debug "[%p] %m%n")
-    (set-default-root-logger! :trace "[%p] %m%n")))
-
 (def build-env (current-build-env))
 
 (def version-number
   "The version number as defined in project.clj."
   ;; Note that this is evaluated at build time by native-image.
   (:version build-env))
+
+(defn print-v [n & more]
+  (when (= n 1)
+    (apply println more)))
+
+(defn debug [n & more]
+  (when (> n 1)
+    (apply println more)))
 
 (defn config-dir []
   (let [os (System/getProperty "os.name")
@@ -48,7 +35,6 @@
 
 (defn valid-zone?
   [s]
-  (log/debug "Validating zone:" s)
   (l/valid-zone? s))
 
 (defn read-config
@@ -62,22 +48,22 @@
      (edn/read-string (slurp (config-file)))
      (catch java.io.FileNotFoundException _e nil))))
 
-(defn create-config-dir []
+(defn create-config-dir [v]
   (when-not (fs/exists? (config-dir))
-    (log/debug "Creating directory" (config-dir))
+    (print-v v "Creating directory" (config-dir))
     (fs/mkdirs (config-dir))))
 
-(defn create-config-file []
+(defn create-config-file [v]
   (when-not (fs/exists? (config-file))
-    (log/debug "Creating file" (config-file))
+    (print-v v "Creating file" (config-file))
     (fs/create (fs/file (config-file)))))
 
 (defn write-config
-  [m]
-  (log/debug "Will try to save configuration to" (config-file))
-  (create-config-dir)
-  (create-config-file)
-  (log/debug "Saving" m "to" (config-file))
+  [m v]
+  (print-v v "Will try to save configuration to" (config-file))
+  (create-config-dir v)
+  (create-config-file v)
+  (print-v v "Saving" m "to" (config-file))
   (spit (config-file) m))
 
 (defn config
@@ -96,17 +82,17 @@
               (print-feast-days-in-year (l/list-of-feast-days-in-year y)))))
 
 (defn sabbath?
-  ([lat lon time]
+  ([v lat lon time]
    (let [d (l/date lat lon time)
          s (get-in d [:hebrew :sabbath])]
-     (log/trace "Checking Sabbath for the following hebrew date:" d)
+     (debug v "Checking Sabbath for the following hebrew date:" d)
      (boolean s)))
-  ([lat lon]
-   (sabbath? lat lon (l/now))))
+  ([v lat lon]
+   (sabbath? v lat lon (l/now))))
 
 (defn print-sabbath
   [b]
-  (log/info (if b "It's Sabbath!" "It's not Sabbath.")))
+  (println (if b "It's Sabbath!" "It's not Sabbath.")))
 
 (defn feast-or-false
   [{:keys [name day-of-feast days-in-feast] :or {name nil}}]
@@ -133,10 +119,8 @@
   [y m d]
   (str y "-" (format "%02d" m) "-" (format "%02d" d)))
 
-(defn info? [] (log/enabled? :info))
-
 (defn print-date
-  [lat lon time]
+  [v lat lon time]
   (let [d (l/date lat lon time)
         h (:hebrew d)
         n (:names h)
@@ -157,22 +141,24 @@
                                         (:traditional-month-of-year n))]
           ["Traditional ISO date" (iso-date (:traditional-year h) moy dom)]
           ["Day of week" (:day-of-week h)]
-          (when (or sabbath (info?)) ["Sabbath" sabbath])
-          (when (or major-f (info?)) ["Major feast day" major-f])
-          (when (or minor-f (info?)) ["Minor feast day" minor-f])
+          (when (or sabbath (pos? v)) ["Sabbath" sabbath])
+          (when (or major-f (pos? v)) ["Major feast day" major-f])
+          (when (or minor-f (pos? v)) ["Minor feast day" minor-f])
           ["Current local time" (tick/format tf time)]
-          (when-not (info?) ["Start of next day" (tick/format tf next-day)])
-          (when (info?) ["Start of year" (fmt-time :year :start)])
-          (when (info?) ["Start of month" (fmt-time :month :start)])
-          (when (info?) ["Start of week" (fmt-time :week :start)])
-          (when (info?) ["Start of day" (fmt-time :day :start)])
-          (when (info?) ["End of day" (fmt-time :day :end)])
-          (when (info?) ["End of week" (fmt-time :week :end)])
-          (when (info?) ["End of month" (fmt-time :month :end)])
-          (when (info?) ["End of year" (fmt-time :year :end)])
-          (when (info?) ["Coordinates" (str lat "," lon)])
-          (when (info?) ["Timezone" (str (tick/zone time))])
-          (when (info?) ["Config file" (if (read-config) (config-file) "None")])]
+          (when-not (pos? v) ["Start of next day" (tick/format tf next-day)])
+          (when (pos? v) ["Start of year" (fmt-time :year :start)])
+          (when (pos? v) ["Start of month" (fmt-time :month :start)])
+          (when (pos? v) ["Start of week" (fmt-time :week :start)])
+          (when (pos? v) ["Start of day" (fmt-time :day :start)])
+          (when (pos? v) ["End of day" (fmt-time :day :end)])
+          (when (pos? v) ["End of week" (fmt-time :week :end)])
+          (when (pos? v) ["End of month" (fmt-time :month :end)])
+          (when (pos? v) ["End of year" (fmt-time :year :end)])
+          (when (pos? v) ["Coordinates" (str lat "," lon)])
+          (when (pos? v) ["Timezone" (str (tick/zone time))])
+          (when (pos? v) ["Config file" (if (read-config)
+                                          (config-file)
+                                          "None")])]
          (remove nil?)
          (run! #(println (apply fmt %))))))
 
@@ -395,12 +381,13 @@
         (validate-args args)]
     (when exit-message
       (exit exit-code exit-message))
-    (set-log-level! verbosity)
-    (log/debug "Configuration file:" (if (read-config) (config-file) "None"))
-    (log/debug "Latitude:" lat)
-    (log/debug "Longitude:" lon)
-    (log/debug "TimeZone:" zone)
-    (log/debug "Arguments:" arguments)
+    (print-v verbosity "Configuration file:" (if (read-config)
+                                               (config-file)
+                                               "None"))
+    (print-v verbosity "Latitude:" lat)
+    (print-v verbosity "Longitude:" lon)
+    (print-v verbosity "TimeZone:" zone)
+    (print-v verbosity "Arguments:" arguments)
     (if (seq arguments)
       (cond
         (not (<= 1584 (first arguments) 2100))
@@ -413,7 +400,7 @@
         (let [d (apply l/zdt (cons (or zone (tick/zone)) arguments))]
           (cond
             sabbath
-            (let [s (sabbath? lat lon d)]
+            (let [s (sabbath? verbosity lat lon d)]
               (print-sabbath s)
               (when-not s (System/exit 1)))
             ;;
@@ -422,19 +409,20 @@
              lat lon d :year include-year :trad-year include-trad-year)
             ;;
             :else
-            (print-date lat lon d)))
+            (print-date verbosity lat lon d)))
         ;;
         :else (exit 69 (:69 exit-messages)))
       (cond
         ;;
         sabbath
-        (let [s (sabbath? lat lon (l/in-zone (or zone (tick/zone)) (l/now)))]
+        (let [s (sabbath? verbosity lat lon (l/in-zone
+                                             (or zone (tick/zone)) (l/now)))]
           (print-sabbath s)
           (when-not s (System/exit 1)))
         ;;
         create-config
         (let [c (config {:lat lat :lon lon :z zone})]
-          (write-config c)
+          (write-config c verbosity)
           (if (= (read-config) c)
             (println "The configuration file has been successfully saved.")
             (exit 65 (:65 exit-messages))))
@@ -447,7 +435,7 @@
                           :trad-year include-trad-year)
         ;;
         today
-        (print-date lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
+        (print-date verbosity lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
         ;;
         :else (print-feast-days-in-year (tick/int (tick/year (l/now)))))))
   (System/exit 0))
