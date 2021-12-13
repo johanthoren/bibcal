@@ -379,13 +379,13 @@
         (validate-args args)]
     (when exit-message
       (exit exit-code exit-message))
-    (print-v verbosity "Configuration file:" (if (read-config)
+    (print-d verbosity "Configuration file:" (if (read-config)
                                                (config-file)
                                                "None"))
-    (print-v verbosity "Latitude:" lat)
-    (print-v verbosity "Longitude:" lon)
-    (print-v verbosity "TimeZone:" zone)
-    (print-v verbosity "Arguments:" arguments)
+    (print-d verbosity "Latitude:" lat)
+    (print-d verbosity "Longitude:" lon)
+    (print-d verbosity "TimeZone:" zone)
+    (print-d verbosity "Arguments:" arguments)
     (if (seq arguments)
       (cond
         (not (<= 1584 (first arguments) 2100))
