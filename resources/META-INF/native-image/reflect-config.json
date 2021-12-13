@@ -144,150 +144,6 @@
   "name":"clojure.core.server__init"
 },
 {
-  "name":"clojure.core.specs.alpha$eval132",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$eval134",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$eval3",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$eval5",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$eval9",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$even_number_of_forms_QMARK_",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__102",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__104",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__107",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__110",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__112",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__115",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__117",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__119",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__14",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__17",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__20",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__23",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__26",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__28",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__31",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__33",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__36",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__39",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__42",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__46",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__49",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__52",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__54",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__56",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__69",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__71",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__83",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__96",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$fn__99",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.core.specs.alpha$quotable",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"clojure.core__init"
 },
 {
@@ -339,8 +195,7 @@
   "name":"clojure.lang.ChunkBuffer"
 },
 {
-  "name":"clojure.lang.Compiler",
-  "allPublicFields":true
+  "name":"clojure.lang.Compiler"
 },
 {
   "name":"clojure.lang.Compiler$CompilerException"
@@ -377,11 +232,6 @@
 },
 {
   "name":"clojure.lang.ILookup"
-},
-{
-  "name":"clojure.lang.IObj",
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
 },
 {
   "name":"clojure.lang.IPersistentCollection"
@@ -426,15 +276,10 @@
   "name":"clojure.lang.LispReader$ReaderException"
 },
 {
-  "name":"clojure.lang.LockingTransaction",
-  "allPublicMethods":true
-},
-{
   "name":"clojure.lang.Murmur3"
 },
 {
-  "name":"clojure.lang.Namespace",
-  "allPublicMethods":true
+  "name":"clojure.lang.Namespace"
 },
 {
   "name":"clojure.lang.PersistentHashMap"
@@ -443,14 +288,10 @@
   "name":"clojure.lang.PersistentHashSet"
 },
 {
-  "name":"clojure.lang.PersistentQueue"
-},
-{
   "name":"clojure.lang.PersistentVector"
 },
 {
-  "name":"clojure.lang.RT",
-  "allPublicMethods":true
+  "name":"clojure.lang.RT"
 },
 {
   "name":"clojure.lang.Ratio"
@@ -474,8 +315,7 @@
   "name":"clojure.lang.StringSeq"
 },
 {
-  "name":"clojure.lang.Symbol",
-  "allPublicMethods":true
+  "name":"clojure.lang.Symbol"
 },
 {
   "name":"clojure.lang.TaggedLiteral"
@@ -484,41 +324,13 @@
   "name":"clojure.lang.Util"
 },
 {
-  "name":"clojure.lang.Var",
-  "allPublicMethods":true
+  "name":"clojure.lang.Var"
 },
 {
   "name":"clojure.lang.Volatile"
 },
 {
   "name":"clojure.main__init"
-},
-{
-  "name":"clojure.pprint.PrettyFlush"
-},
-{
-  "name":"clojure.pprint.cl_format__init"
-},
-{
-  "name":"clojure.pprint.column_writer__init"
-},
-{
-  "name":"clojure.pprint.dispatch__init"
-},
-{
-  "name":"clojure.pprint.pprint_base__init"
-},
-{
-  "name":"clojure.pprint.pretty_writer__init"
-},
-{
-  "name":"clojure.pprint.print_table__init"
-},
-{
-  "name":"clojure.pprint.utilities__init"
-},
-{
-  "name":"clojure.pprint__init"
 },
 {
   "name":"clojure.spec.alpha.Spec"
@@ -638,17 +450,13 @@
   "name":"java.lang.Character"
 },
 {
-  "name":"java.lang.Class",
-  "allPublicMethods":true
+  "name":"java.lang.Class"
 },
 {
   "name":"java.lang.Double"
 },
 {
   "name":"java.lang.Float"
-},
-{
-  "name":"java.lang.Integer"
 },
 {
   "name":"java.lang.Iterable"
@@ -660,9 +468,7 @@
   "name":"java.lang.Number"
 },
 {
-  "name":"java.lang.Object",
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
+  "name":"java.lang.Object"
 },
 {
   "name":"java.lang.Object[]"
@@ -673,13 +479,6 @@
 {
   "name":"java.lang.String",
   "allPublicMethods":true
-},
-{
-  "name":"java.lang.String[]"
-},
-{
-  "name":"java.lang.Thread",
-  "methods":[{"name":"getContextClassLoader","parameterTypes":[] }]
 },
 {
   "name":"java.lang.ThreadLocal"
@@ -762,12 +561,6 @@
 },
 {
   "name":"java.nio.file.attribute.FileAttribute"
-},
-{
-  "name":"java.security.MessageDigestSpi"
-},
-{
-  "name":"java.security.SecureRandomParameters"
 },
 {
   "name":"java.sql.Timestamp"
@@ -921,21 +714,7 @@
   "name":"org.shredzone.commons.suncalc.SunTimes$SunTimesBuilder"
 },
 {
-  "name":"say_cheez.core__init"
-},
-{
-  "name":"say_cheez.platform__init"
-},
-{
   "name":"short[]"
-},
-{
-  "name":"sun.security.provider.NativePRNG",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"tick.core.AtomicClock"
@@ -1007,10 +786,16 @@
   "name":"time_literals.read_write__init"
 },
 {
+  "name":"trptcolin.versioneer.core__init"
+},
+{
   "name":"xyz.thoren.bibcal__init"
 },
 {
   "name":"xyz.thoren.equinox__init"
+},
+{
+  "name":"xyz.thoren.julian__init"
 },
 {
   "name":"xyz.thoren.luminary__init"
