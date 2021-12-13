@@ -10,7 +10,7 @@
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [com.github.clj-easy/graal-build-time "0.1.4"]
                  [org.clojure/tools.cli "1.0.206"]
-                 [say-cheez "0.2.0"]
+                 [trptcolin/versioneer "0.2.0"]
                  [tick "0.5.0-RC1"]
                  [clj-commons/fs "1.6.307"]
                  [xyz.thoren/luminary "0.7.3"]]

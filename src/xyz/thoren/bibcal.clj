@@ -4,16 +4,14 @@
             [clojure.edn :as edn]
             [me.raynes.fs :as fs]
             [tick.core :as tick]
-            [say-cheez.core :refer [current-build-env]]
+            [trptcolin.versioneer.core :refer [get-version]]
             [xyz.thoren.luminary :as l])
   (:gen-class))
-
-(def build-env (current-build-env))
 
 (def version-number
   "The version number as defined in project.clj."
   ;; Note that this is evaluated at build time by native-image.
-  (:version build-env))
+  (get-version "xyz.thoren" "bibcal"))
 
 (defn print-v [n & more]
   (when (= n 1)
