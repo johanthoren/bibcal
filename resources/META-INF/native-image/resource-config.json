@@ -1,9 +1,7 @@
 {
   "resources":{
   "includes":[
-    {"pattern":"\\Qclj_logging_config/log4j.clj\\E"}, 
-    {"pattern":"\\Qclj_logging_config/log4j__init.class\\E"}, 
-    {"pattern":"\\Qcljc/java_time/clock.clj\\E"}, 
+    {"pattern":"\\Qcljc/java_time/clock.clj\\E"},
     {"pattern":"\\Qcljc/java_time/clock__init.class\\E"}, 
     {"pattern":"\\Qcljc/java_time/day_of_week.clj\\E"}, 
     {"pattern":"\\Qcljc/java_time/day_of_week__init.class\\E"}, 
@@ -102,11 +100,7 @@
     {"pattern":"\\Qclojure/string__init.class\\E"}, 
     {"pattern":"\\Qclojure/tools/cli.cljc\\E"}, 
     {"pattern":"\\Qclojure/tools/cli__init.class\\E"}, 
-    {"pattern":"\\Qclojure/tools/logging.clj\\E"}, 
-    {"pattern":"\\Qclojure/tools/logging/impl.clj\\E"}, 
-    {"pattern":"\\Qclojure/tools/logging/impl__init.class\\E"}, 
-    {"pattern":"\\Qclojure/tools/logging__init.class\\E"}, 
-    {"pattern":"\\Qclojure/uuid.clj\\E"}, 
+    {"pattern":"\\Qclojure/uuid.clj\\E"},
     {"pattern":"\\Qclojure/uuid__init.class\\E"}, 
     {"pattern":"\\Qclojure/version.properties\\E"}, 
     {"pattern":"\\Qclojure/walk.clj\\E"}, 

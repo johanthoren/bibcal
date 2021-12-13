@@ -539,28 +539,6 @@
   "name":"clojure.tools.cli__init"
 },
 {
-  "name":"clojure.tools.logging$eval1",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.tools.logging$eval136",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
-  "name":"clojure.tools.logging.impl.Logger"
-},
-{
-  "name":"clojure.tools.logging.impl.LoggerFactory",
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
-},
-{
-  "name":"clojure.tools.logging.impl__init"
-},
-{
-  "name":"clojure.tools.logging__init"
-},
-{
   "name":"clojure.uuid__init"
 },
 {
