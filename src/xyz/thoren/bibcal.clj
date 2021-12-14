@@ -19,7 +19,7 @@
 
 (defn print-d [n & more]
   (when (> n 1)
-    (apply println more)))
+    (apply println (cons "DEBUG:" more))))
 
 (defn config-dir []
   (let [os (System/getProperty "os.name")
