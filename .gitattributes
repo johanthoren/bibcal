@@ -1,5 +1,5 @@
 Dockerfile -linguist-detectable
 Makefile -linguist-detectable
 test/** -linguist-detectable
-xbar/** -linguist-detectable
+xbar/** linguist-documentation
 template/** -linguist-detectable
