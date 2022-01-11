@@ -2,3 +2,4 @@ Dockerfile -linguist-detectable
 Makefile -linguist-detectable
 test/** -linguist-detectable
 xbar/** -linguist-detectable
+template/** -linguist-detectable
