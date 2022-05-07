@@ -15,7 +15,7 @@
                  [clj-commons/fs "1.6.310"]
                  [xyz.thoren/luminary "0.7.3"]]
   :plugins [[lein-kibit "0.1.8"]
-            [jonase/eastwood "0.9.9"]]
+            [jonase/eastwood "1.2.3"]]
   :main xyz.thoren.bibcal
   :target-path "target/%s"
   :aliases
