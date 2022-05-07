@@ -137,9 +137,10 @@ jobs:
           name: bibcal-all.jar
 
       - name: Setup GraalVM Environment
-        uses: DeLaGuardo/setup-graalvm@4.0
+        uses: DeLaGuardo/setup-graalvm@5.0
         with:
-          graalvm-version: '21.2.0.java11'
+          graalvm: '22.1.0'
+          java: 'java11'
 
       - name: Install Native Image Plugin
         run: gu install native-image
@@ -201,9 +202,10 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Setup GraalVM Environment
-        uses: DeLaGuardo/setup-graalvm@4.0
+        uses: DeLaGuardo/setup-graalvm@5.0
         with:
-          graalvm-version: '21.2.0.java11'
+          graalvm: '22.1.0'
+          java: 'java11'
 
       - name: Install Native Image Plugin
         run: gu.cmd install native-image
