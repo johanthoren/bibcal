@@ -18,23 +18,26 @@ ENV PATH="${PATH}:${RESOURCE_DIR}/bin:${GRAALVM_HOME}/bin"
 # Install build dependencies:
 RUN apt-get update && apt-get install -yy curl make gcc libstdc++-10-dev
 
-# Download and compile musl:
+# Download and compile the musl toolchain:
 WORKDIR /
-RUN curl -sL https://musl.libc.org/releases/musl-${MUSL_VERSION}.tar.gz \
+RUN curl -sL http://more.musl.cc/10/x86_64-linux-musl/x86_64-linux-musl-native.tgz \
 | tar -C /opt -xzvf -
 
-WORKDIR /opt/musl-${MUSL_VERSION}
-RUN ./configure --disable-shared --prefix=${RESOURCE_DIR} && make && make install
+# Export the TOOLCHAIN_DIR variable:
+ENV TOOLCHAIN_DIR="/opt/x86_64-linux-musl-native"
+
+# Make sure TOOLCHAIN_DIR/bin is on the PATH:
+ENV PATH=$TOOLCHAIN_DIR/bin:$PATH
 
 # Now set musl-gcc to be the CC:
-ENV CC=musl-gcc
+ENV CC=$TOOLCHAIN_DIR/bin/gcc
 
 # Download and compile zlib:
 RUN curl -sL https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz \
 | tar -C /opt -xzvf -
 
 WORKDIR /opt/zlib-${ZLIB_VERSION}
-RUN ./configure --static --prefix=${RESOURCE_DIR} && make && make install
+RUN ./configure --static --prefix=${TOOLCHAIN_DIR} && make && make install
 
 # Download and install graal-vm with native-image:
 WORKDIR /
