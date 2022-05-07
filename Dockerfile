@@ -3,7 +3,7 @@ ENV BIN_NAME="bibcal"
 
 # The current versions to build against:
 ENV MUSL_VERSION="1.2.3"
-ENV ZLIB_VERSION="1.2.11"
+ENV ZLIB_VERSION="1.2.12"
 ENV GRAALVM_VERSION="21.2.0"
 
 # Set the shell options:
