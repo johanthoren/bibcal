@@ -2,7 +2,7 @@ FROM clojure:lein AS build
 ENV BIN_NAME="bibcal"
 
 # The current versions to build against:
-ENV MUSL_VERSION="1.2.2"
+ENV MUSL_VERSION="1.2.3"
 ENV ZLIB_VERSION="1.2.11"
 ENV GRAALVM_VERSION="21.2.0"
 
