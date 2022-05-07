@@ -30,7 +30,7 @@ RUN ./configure --disable-shared --prefix=${RESOURCE_DIR} && make && make instal
 ENV CC=musl-gcc
 
 # Download and compile zlib:
-RUN curl -sL https://sourceforge.net/projects/libpng/files/zlib/${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz \
+RUN curl -sL https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz \
 | tar -C /opt -xzvf -
 
 WORKDIR /opt/zlib-${ZLIB_VERSION}
