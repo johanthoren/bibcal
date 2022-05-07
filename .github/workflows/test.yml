@@ -135,14 +135,12 @@ jobs:
         with:
           name: bibcal-all.jar
 
-      - name: Setup GraalVM Environment
-        uses: DeLaGuardo/setup-graalvm@5.0
+      - uses: graalvm/setup-graalvm@v1
         with:
-          graalvm: '22.1.0'
-          java: 'java11'
-
-      - name: Install Native Image Plugin
-        run: gu install native-image
+          version: '22.1.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print the current state of the directory
         run: ls -alh
@@ -192,14 +190,12 @@ jobs:
       - name: Add developer command prompt for Microsoft Visual C++
         uses: ilammy/msvc-dev-cmd@v1
 
-      - name: Setup GraalVM Environment
-        uses: DeLaGuardo/setup-graalvm@5.0
+      - uses: graalvm/setup-graalvm@v1
         with:
-          graalvm: '22.1.0'
-          java: 'java11'
-
-      - name: Install Native Image Plugin
-        run: gu.cmd install native-image
+          version: '22.1.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print the current state of the directory
         shell: powershell
