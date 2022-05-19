@@ -4,11 +4,13 @@ A command-line calendar based on the Bible and the 1st Book of Enoch.
 
 ## System requirements
 
-There are pre-build binaries for recent version of any x86_64 OS listed below:
+There are pre-built binaries for recent version of any x86_64 OS listed below:
 
 - Linux
 - MacOS (it runs just fine on Apple Silicon using Rosetta 2)
 - Windows
+
+There are also pre-built binaries for Apple Silicon, but these are built locally on my M1 Mac and not built automatically by Github.
 
 The file bibcal-all.jar can be run by java on any OS:
 
