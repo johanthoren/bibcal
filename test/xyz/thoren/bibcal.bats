@@ -285,7 +285,7 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     run ./bibcal 2023 08 01
     assert_status 0
     assert_line_matches 0 "14th day of the 5th month"
-    assert_line_matches -1 "2023-08-01 21:30:00"
+    assert_line_matches -1 "Start of next day"
 }
 
 @test "invoking bibcal 2021" {
