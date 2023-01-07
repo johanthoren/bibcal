@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # The folders where to put gu, musl and zlib:
 ENV RESOURCE_DIR="/usr/local/static-build-resources"
 RUN mkdir -p ${RESOURCE_DIR}/bin
-ENV GRAALVM_HOME="/opt/graalvm-ce-java11-${GRAALVM_VERSION}"
+ENV GRAALVM_HOME="/opt/graalvm-ce-java17-${GRAALVM_VERSION}"
 ENV PATH="${PATH}:${RESOURCE_DIR}/bin:${GRAALVM_HOME}/bin"
 
 # Install build dependencies:
@@ -41,7 +41,7 @@ RUN ./configure --static --prefix=${TOOLCHAIN_DIR} && make && make install
 
 # Download and install graal-vm with native-image:
 WORKDIR /
-RUN curl -sL https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java11-linux-amd64-${GRAALVM_VERSION}.tar.gz \
+RUN curl -sL https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-${GRAALVM_VERSION}/graalvm-ce-java17-linux-amd64-${GRAALVM_VERSION}.tar.gz \
 | tar -C /opt -xzvf -
 RUN gu install native-image
 
