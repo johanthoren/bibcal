@@ -4,7 +4,7 @@ ENV BIN_NAME="bibcal"
 # The current versions to build against:
 ENV MUSL_VERSION="1.2.3"
 ENV ZLIB_VERSION="1.2.13"
-ENV GRAALVM_VERSION="22.1.0"
+ENV GRAALVM_VERSION="22.3.0"
 
 # Set the shell options:
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
