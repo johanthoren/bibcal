@@ -132,7 +132,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-all.jar
 
@@ -192,7 +192,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-all.jar
 
@@ -441,7 +441,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
 
@@ -493,7 +493,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download artifact
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
 
@@ -611,43 +611,43 @@ jobs:
 
       - name: Download checksum artifact
         if: contains(matrix.target, 'linux')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: SHA256SUMS
 
       - name: Download signature artifact
         if: contains(matrix.target, 'linux')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: SHA256SUMS.asc
 
       - name: Download artifact (DEB)
         if: contains(matrix.target, 'linux')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: ${{ needs.package_deb.outputs.package_name }}
 
       - name: Download artifact (RPM)
         if: contains(matrix.target, 'linux')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: ${{ needs.package_rpm.outputs.package_name }}
 
       - name: Download artifact (JAR)
         if: contains(matrix.target, 'all')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}
 
       - name: Download artifact (UNIX)
         if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
 
       - name: Download artifact (WINDOWS)
         if: contains(matrix.target, 'windows')
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}.exe
 
@@ -757,12 +757,12 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download checksum
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: SHA256SUMS
 
       - name: Download signature
-        uses: actions/download-artifact@v3.0.5
+        uses: actions/download-artifact@v3
         with:
           name: SHA256SUMS.asc
 
