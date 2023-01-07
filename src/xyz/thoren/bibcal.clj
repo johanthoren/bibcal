@@ -382,7 +382,7 @@
                 exit-code]}
         (validate-args args)]
     (when exit-message
-      (exit exit-code exit-message))
+      (exit (or exit-code 1) exit-message))
     (print-d verbosity "Configuration file:" (if (read-config)
                                                (config-file)
                                                "None"))
