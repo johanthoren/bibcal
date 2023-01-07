@@ -290,7 +290,12 @@
 (defn validate-args
   [args]
   (let [{:keys [options arguments errors summary]}
-        (parse-opts args @cli-options)]
+        (parse-opts args @cli-options)
+        parsed-args (map #(try
+                            (Integer/parseInt %)
+                            (catch java.lang.NumberFormatException _ false))
+                         arguments)
+        int-args (filter integer? parsed-args)]
     (cond
       (:help options) ; help => exit OK with usage summary
       {:exit-message (usage summary) :exit-code 0}
@@ -306,7 +311,10 @@
            (not (:force options)))
       {:exit-message (:64 exit-messages) :exit-code 64}
       ;;
-      (and (or (> (count arguments) 2)
+      (seq (filter false? parsed-args))
+      {:exit-message (:69 exit-messages) :exit-code 69}
+      ;;
+      (and (or (> (count int-args) 2)
                (:sabbath options)
                (:today options)
                (:today-brief options))
@@ -317,13 +325,10 @@
       (and (:force options) (not (:create-config options)))
       {:exit-message (:67 exit-messages) :exit-code 67}
       ;;
-      (and (seq arguments)
+      (and (seq int-args)
            (or (:force options)
                (:create-config options)))
       {:exit-message (:68 exit-messages) :exit-code 68}
-      ;;
-      (seq (remove int? (map read-string arguments)))
-      {:exit-message (:69 exit-messages) :exit-code 69}
       ;;
       (and (:today options) (:today-brief options))
       {:exit-message (:70 exit-messages) :exit-code 70}
@@ -349,19 +354,18 @@
       {:exit-message (:73 exit-messages) :exit-code 73}
       ;;
       (and (or (:sabbath options) (:today options) (:today-brief options))
-           (<= 1 (count arguments) 2))
+           (<= 1 (count int-args) 2))
       {:exit-message (:74 exit-messages) :exit-code 74}
       ;;
-      (and (seq arguments)
-           (not (<= 1584 (read-string (first arguments)) 2100)))
+      (and (seq int-args)
+           (not (<= 1584 (first int-args) 2100)))
       {:exit-message (:75 exit-messages) :exit-code 75}
       ;;
       :else
       (assoc (select-keys options [:include-trad-year :include-year
                                    :create-config :force :lat :lon :sabbath
                                    :today :today-brief :verbosity :zone])
-             :arguments
-             (map read-string arguments)))))
+             :arguments int-args))))
 
 ;; End of command line parsing.
 
