@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: DeLaGuardo/setup-clj-kondo@master
+      - uses: DeLaGuardo/setup-clojure@10.1
         with:
-          version: '2021.08.06'
+          clj-kondo: 'latest'
 
       - uses: actions/checkout@v3
 
