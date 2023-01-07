@@ -74,7 +74,7 @@ jobs:
         run: ls -alh
 
       - name: Upload JAR
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
@@ -108,7 +108,7 @@ jobs:
         run: ls -alh
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
@@ -160,7 +160,7 @@ jobs:
         run: ls -alh
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
@@ -210,7 +210,7 @@ jobs:
         run: dir
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}.exe
           path: bibcal-${{ matrix.target }}.exe

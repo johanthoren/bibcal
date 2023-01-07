@@ -68,7 +68,7 @@ jobs:
         run: ls -alh
 
       - name: Upload JAR
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}
           path: bibcal-${{ matrix.target }}
@@ -109,7 +109,7 @@ jobs:
         run: ls -alh
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
           path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
@@ -169,7 +169,7 @@ jobs:
           tar cvzf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
           path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
@@ -219,7 +219,7 @@ jobs:
         run: dir
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bibcal-${{ matrix.target }}.exe
           path: bibcal-${{ matrix.target }}.exe
@@ -467,7 +467,7 @@ jobs:
         run: ls -alh
 
       - name: Upload DEB artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.build_deb.outputs.package }}
           path: ${{ steps.build_deb.outputs.package }}
@@ -519,7 +519,7 @@ jobs:
         run: ls -alh
 
       - name: Upload RPM artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.build_rpm.outputs.package }}
           path: ${{ steps.build_rpm.outputs.package }}
@@ -575,13 +575,13 @@ jobs:
         run: ls -Ralh
 
       - name: Upload checksum artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SHA256SUMS
           path: SHA256SUMS
 
       - name: Upload signature artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SHA256SUMS.asc
           path: SHA256SUMS.asc
