@@ -276,6 +276,12 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_line_matches 0 DEBUG
 }
 
+@test "invoking bibcal with non-existing option -e" {
+    run ./bibcal -e
+    assert_status 1
+    assert_output_matches "Unknown option:"
+}
+
 # This test should catch the issue with octal numbers described in issue #6
 # https://github.com/johanthoren/bibcal/issues/6
 @test "invoking bibcal 2023 08 01" {
