@@ -284,7 +284,7 @@
          "       Either use just 1 integer to print the feast days of a"
          "       year, or use between 3 and 7 integers to calculate a "
          "       certain time."])
-   :70 "ERROR: You can only use of of options -d, -D, -t, or -T at a time."
+   :70 "ERROR: You can only use one of of options -d, -D, -t, or -T at a time."
    :71 (str/join \newline
         ["ERROR: You can't use option -c with other options than "
          "       -f, -l, -L, -v, and/or -z."])
@@ -340,7 +340,12 @@
                (:create-config options)))
       {:exit-message (:68 exit-messages) :exit-code 68}
       ;;
-      (> (count (select-keys options [:date :date-brief :today :today-brief])) 1)
+      (->> [:date :date-brief :today :today-brief]
+           (select-keys options)
+           vals
+           (remove false?)
+           count
+           (< 1))
       {:exit-message (:70 exit-messages) :exit-code 70}
       ;;
       (and (:create-config options)
