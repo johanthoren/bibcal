@@ -260,40 +260,41 @@
 
 (def exit-messages
   "Exit messages used by `exit`."
-  {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
-   :65 (str/join \newline
-        ["ERROR: Something went wrong while validating the saved config."
-         "       Inspect the config file for more details:"
-         (str "       " (config-file))])
-   :66 (str/join \newline
-        ["ERROR:   The options --lat and --lon are both needed, and --zone"
-         "         is highly recommended. You can provide them either as"
-         "         options to the command or saved in the config file:"
-         ""
-         (str "         " (config-file))
-         ""
-         "         Use them with the option -c to save them to the"
-         "         config file."
-         ""
-         (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
-              l/jerusalem-lon " --zone " l/jerusalem-zone)])
-   :67 "ERROR: You can't use option -f without option -c."
-   :68 "ERROR: Arguments can't be used with options -c or -f."
-   :69 (str/join \newline
-        ["ERROR: Wrong number of arguments or wrong type of arguments."
-         "       Either use just 1 integer to print the feast days of a"
-         "       year, or use between 3 and 7 integers to calculate a "
-         "       certain time."])
-   :70 "ERROR: You can only use one of of options -d, -D, -t, or -T at a time."
-   :71 (str/join \newline
-        ["ERROR: You can't use option -c with other options than "
-         "       -f, -l, -L, -v, and/or -z."])
-   :72 "ERROR: Options -Y and -y can only be used together with option -T."
-   :73 "ERROR: Options -y and -Y are mutually exclusive."
-   :74 (str/join \newline
-        ["ERROR: Options -s, -t, and -T can only be used with either 0 or"
-         "       between 3 and 7 arguments."])
-   :75 "ERROR: Year is outside of range 1584 to 2100."})
+  (delay
+    {:64 "ERROR: The configuration file already exists. Use -f to overwrite."
+     :65 (str/join \newline
+          ["ERROR: Something went wrong while validating the saved config."
+           "       Inspect the config file for more details:"
+           (str "       " (config-file))])
+     :66 (str/join \newline
+          ["ERROR:   The options --lat and --lon are both needed, and --zone"
+           "         is highly recommended. You can provide them either as"
+           "         options to the command or saved in the config file:"
+           ""
+           (str "         " (config-file))
+           ""
+           "         Use them with the option -c to save them to the"
+           "         config file."
+           ""
+           (str "EXAMPLE: bibcal -c --lat " l/jerusalem-lat " --lon "
+                l/jerusalem-lon " --zone " l/jerusalem-zone)])
+     :67 "ERROR: You can't use option -f without option -c."
+     :68 "ERROR: Arguments can't be used with options -c or -f."
+     :69 (str/join \newline
+          ["ERROR: Wrong number of arguments or wrong type of arguments."
+           "       Either use just 1 integer to print the feast days of a"
+           "       year, or use between 3 and 7 integers to calculate a "
+           "       certain time."])
+     :70 "ERROR: You can only use one of of options -d, -D, -t, or -T at a time."
+     :71 (str/join \newline
+          ["ERROR: You can't use option -c with other options than "
+           "       -f, -l, -L, -v, and/or -z."])
+     :72 "ERROR: Options -Y and -y can only be used together with option -T."
+     :73 "ERROR: Options -y and -Y are mutually exclusive."
+     :74 (str/join \newline
+          ["ERROR: Options -s, -t, and -T can only be used with either 0 or"
+           "       between 3 and 7 arguments."])
+     :75 "ERROR: Year is outside of range 1584 to 2100."}))
 
 (defn validate-args
   [args]
@@ -317,10 +318,10 @@
       (and (:create-config options)
            (fs/exists? (config-file))
            (not (:force options)))
-      {:exit-message (:64 exit-messages) :exit-code 64}
+      {:exit-message (:64 @exit-messages) :exit-code 64}
       ;;
       (seq (filter false? parsed-args))
-      {:exit-message (:69 exit-messages) :exit-code 69}
+      {:exit-message (:69 @exit-messages) :exit-code 69}
       ;;
       (and (or (> (count int-args) 2)
                (:sabbath options)
@@ -330,15 +331,15 @@
                (:today-brief options))
            (or (nil? (:lat options))
                (nil? (:lon options))))
-      {:exit-message (:66 exit-messages) :exit-code 66}
+      {:exit-message (:66 @exit-messages) :exit-code 66}
       ;;
       (and (:force options) (not (:create-config options)))
-      {:exit-message (:67 exit-messages) :exit-code 67}
+      {:exit-message (:67 @exit-messages) :exit-code 67}
       ;;
       (and (seq int-args)
            (or (:force options)
                (:create-config options)))
-      {:exit-message (:68 exit-messages) :exit-code 68}
+      {:exit-message (:68 @exit-messages) :exit-code 68}
       ;;
       (->> [:date :date-brief :today :today-brief]
            (select-keys options)
@@ -346,7 +347,7 @@
            (remove false?)
            count
            (< 1))
-      {:exit-message (:70 exit-messages) :exit-code 70}
+      {:exit-message (:70 @exit-messages) :exit-code 70}
       ;;
       (and (:create-config options)
            (->> (dissoc options
@@ -359,14 +360,14 @@
                 vals
                 (remove #(or (false? %) (nil? %)))
                 seq))
-      {:exit-message (:71 exit-messages) :exit-code 71}
+      {:exit-message (:71 @exit-messages) :exit-code 71}
       ;;
       (and (or (:include-year options) (:include-trad-year options))
            (not (or (:date-brief options) (:today-brief options))))
-      {:exit-message (:72 exit-messages) :exit-code 72}
+      {:exit-message (:72 @exit-messages) :exit-code 72}
       ;;
       (and (:include-year options) (:include-trad-year options))
-      {:exit-message (:73 exit-messages) :exit-code 73}
+      {:exit-message (:73 @exit-messages) :exit-code 73}
       ;;
       (and (or (:sabbath options)
                (:date options)
@@ -374,11 +375,11 @@
                (:today options)
                (:today-brief options))
            (<= 1 (count int-args) 2))
-      {:exit-message (:74 exit-messages) :exit-code 74}
+      {:exit-message (:74 @exit-messages) :exit-code 74}
       ;;
       (and (seq int-args)
            (not (<= 1584 (first int-args) 2100)))
-      {:exit-message (:75 exit-messages) :exit-code 75}
+      {:exit-message (:75 @exit-messages) :exit-code 75}
       ;;
       :else
       (assoc (select-keys options [:date :date-brief :include-trad-year
@@ -413,7 +414,7 @@
     (if (seq arguments)
       (cond
         (not (<= 1584 (first arguments) 2100))
-        (exit 75 (:75 exit-messages))
+        (exit 75 (:75 @exit-messages))
         ;;
         (= (count arguments) 1)
         (print-feast-days-in-year (first arguments))
@@ -433,7 +434,7 @@
             :else
             (print-date verbosity lat lon d)))
         ;;
-        :else (exit 69 (:69 exit-messages)))
+        :else (exit 69 (:69 @exit-messages)))
       (cond
         ;;
         sabbath
@@ -447,7 +448,7 @@
           (write-config c verbosity)
           (if (= (read-config) c)
             (println "The configuration file has been successfully saved.")
-            (exit 65 (:65 exit-messages))))
+            (exit 65 (:65 @exit-messages))))
         ;;
         (or date-brief today-brief)
         (print-brief-date lat
