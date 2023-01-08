@@ -142,7 +142,7 @@
           (when (or sabbath (pos? v)) ["Sabbath" sabbath])
           (when (or major-f (pos? v)) ["Major feast day" major-f])
           (when (or minor-f (pos? v)) ["Minor feast day" minor-f])
-          ["Current local time" (tick/format tf time)]
+          ["Local time" (tick/format tf time)]
           (when-not (pos? v) ["Start of next day" (tick/format tf next-day)])
           (when (pos? v) ["Start of year" (fmt-time :year :start)])
           (when (pos? v) ["Start of month" (fmt-time :month :start)])
@@ -168,6 +168,14 @@
       [["-c"
         "--create-config"
         "Save --lat, --lon, and --zone to the configuration file."
+        :default false]
+       ["-d"
+        "--date"
+        "Long summary of a Biblical date. Defaults to the current day."
+        :default false]
+       ["-D"
+        "--date-brief"
+        "Short summary of a Biblical date. Defaults to the current day."
         :default false]
        ["-f"
         "--force"
@@ -197,11 +205,11 @@
         :default false]
        ["-t"
         "--today"
-        "Long summary of the current Biblical date."
+        "Long summary of today's Biblical date. (Deprecated in favor of --date.)"
         :default false]
        ["-T"
         "--today-brief"
-        "Short summary of the current Biblical date."
+        "Short summary of today's Biblical date. (Deprecated in favor of --date-brief.)"
         :default false]
        ["-v" nil
         "Verbosity level; specify multiple times to increase value."
@@ -276,7 +284,7 @@
          "       Either use just 1 integer to print the feast days of a"
          "       year, or use between 3 and 7 integers to calculate a "
          "       certain time."])
-   :70 "ERROR: You can't use both options -t and -T at the same time."
+   :70 "ERROR: You can only use one of of options -d, -D, -t, or -T at a time."
    :71 (str/join \newline
         ["ERROR: You can't use option -c with other options than "
          "       -f, -l, -L, -v, and/or -z."])
@@ -316,6 +324,8 @@
       ;;
       (and (or (> (count int-args) 2)
                (:sabbath options)
+               (:date options)
+               (:date-brief options)
                (:today options)
                (:today-brief options))
            (or (nil? (:lat options))
@@ -330,7 +340,12 @@
                (:create-config options)))
       {:exit-message (:68 exit-messages) :exit-code 68}
       ;;
-      (and (:today options) (:today-brief options))
+      (->> [:date :date-brief :today :today-brief]
+           (select-keys options)
+           vals
+           (remove false?)
+           count
+           (< 1))
       {:exit-message (:70 exit-messages) :exit-code 70}
       ;;
       (and (:create-config options)
@@ -347,13 +362,17 @@
       {:exit-message (:71 exit-messages) :exit-code 71}
       ;;
       (and (or (:include-year options) (:include-trad-year options))
-           (not (:today-brief options)))
+           (not (or (:date-brief options) (:today-brief options))))
       {:exit-message (:72 exit-messages) :exit-code 72}
       ;;
       (and (:include-year options) (:include-trad-year options))
       {:exit-message (:73 exit-messages) :exit-code 73}
       ;;
-      (and (or (:sabbath options) (:today options) (:today-brief options))
+      (and (or (:sabbath options)
+               (:date options)
+               (:date-brief options)
+               (:today options)
+               (:today-brief options))
            (<= 1 (count int-args) 2))
       {:exit-message (:74 exit-messages) :exit-code 74}
       ;;
@@ -362,9 +381,10 @@
       {:exit-message (:75 exit-messages) :exit-code 75}
       ;;
       :else
-      (assoc (select-keys options [:include-trad-year :include-year
-                                   :create-config :force :lat :lon :sabbath
-                                   :today :today-brief :verbosity :zone])
+      (assoc (select-keys options [:date :date-brief :include-trad-year
+                                   :include-year :create-config :force :lat :lon
+                                   :sabbath :today :today-brief :verbosity
+                                   :zone])
              :arguments int-args))))
 
 ;; End of command line parsing.
@@ -377,9 +397,9 @@
   (System/exit status))
 
 (defn -main [& args]
-  (let [{:keys [arguments include-trad-year include-year create-config
-                lat lon sabbath today today-brief verbosity zone exit-message
-                exit-code]}
+  (let [{:keys [arguments date date-brief include-trad-year include-year
+                create-config lat lon sabbath today today-brief verbosity zone
+                exit-message exit-code]}
         (validate-args args)]
     (when exit-message
       (exit (or exit-code 1) exit-message))
@@ -406,7 +426,7 @@
               (print-sabbath s verbosity)
               (when-not s (System/exit 1)))
             ;;
-            today-brief
+            (or date-brief today-brief)
             (print-brief-date
              lat lon d :year include-year :trad-year include-trad-year)
             ;;
@@ -429,14 +449,14 @@
             (println "The configuration file has been successfully saved.")
             (exit 65 (:65 exit-messages))))
         ;;
-        today-brief
+        (or date-brief today-brief)
         (print-brief-date lat
                           lon
                           (l/in-zone (or zone (tick/zone)) (l/now))
                           :year include-year
                           :trad-year include-trad-year)
         ;;
-        today
+        (or date today)
         (print-date verbosity lat lon (l/in-zone (or zone (tick/zone)) (l/now)))
         ;;
         :else (print-feast-days-in-year (tick/int (tick/year (l/now)))))))
