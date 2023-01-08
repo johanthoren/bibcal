@@ -87,13 +87,13 @@ double clicking bibcal.exe will do nothing useful.
 Running bibcal without any options or arguments will print a list of feast days in the current gregorian year. 
 Adding a year as an argument will print the feast days of that year.
 
-Running bibcal with the option `-T` will print a short summary of the current biblical date.
+Running bibcal with the option `-D` will print a short summary of the current biblical date.
 
-Running bibcal with the option `-t` will print a slightly longer summary of the current biblical date.
+Running bibcal with the option `-d` will print a slightly longer summary of the current biblical date.
 
 Example:
 ``` sh
-$ bibcal -T
+$ bibcal -D
 ```
 Result:
 
@@ -118,7 +118,7 @@ Traditional ISO date    5771-09-26
 Day of week             7
 Sabbath                 true
 Major feast day         2nd day of Hanukkah
-Current local time      2011-01-01 09:00:00
+Local time              2011-01-01 09:00:00
 Start of next day       2011-01-01 16:01:00
 ```
 Run with option `-v` for a more verbose output, 
@@ -137,7 +137,7 @@ Day of week             7
 Sabbath                 true
 Major feast day         2nd day of Hanukkah
 Minor feast day         false
-Current local time      2011-01-01 09:00:00
+Local time              2011-01-01 09:00:00
 Start of year           2010-04-14 09:09:00
 Start of month          2010-12-06 15:46:00
 Start of week           2010-12-25 15:59:00
@@ -258,7 +258,7 @@ U4s4wOukEsEKMlCpugj5gS0f
 ```
 ISC License
 
-Copyright (c) 2021, Johan Thorén
+Copyright (c) 2021-2023, Johan Thorén
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above

@@ -72,7 +72,7 @@
                            "Traditional ISO date    5781-01-01"
                            "Day of week             3"
                            "Minor feast day         1st day of the 1st month"
-                           "Current local time      2021-04-12 23:08:00"
+                           "Local time              2021-04-12 23:08:00"
                            "Start of next day       2021-04-13 19:06:00"]))
       (testing "2021-04-26T23:08"
         (t 2021 4 26 23 8 ["Date                    15th day of the 1st month"
@@ -82,7 +82,7 @@
                            "Day of week             3"
                            "Sabbath                 true"
                            "Major feast day         1st day of the Feast of Unleavened Bread"
-                           "Current local time      2021-04-26 23:08:00"
+                           "Local time              2021-04-26 23:08:00"
                            "Start of next day       2021-04-27 19:16:00"]))
       (testing "2021-09-09T23:08"
         (t 2021 9 9 23 8 ["Date                    3rd day of the 6th month"
@@ -90,7 +90,7 @@
                           "Traditional date        3rd of Elul"
                           "Traditional ISO date    5781-06-03"
                           "Day of week             6"
-                          "Current local time      2021-09-09 23:08:00"
+                          "Local time              2021-09-09 23:08:00"
                           "Start of next day       2021-09-10 18:51:00"]))))
   (testing "that the expected long output is printed for"
     (let [t #(is (= %6 (->> (l/zdt l/jerusalem-zone %1 %2 %3 %4 %5)
@@ -107,7 +107,7 @@
                           "Sabbath                 false"
                           "Major feast day         false"
                           "Minor feast day         false"
-                          "Current local time      2021-09-09 23:08:00"
+                          "Local time              2021-09-09 23:08:00"
                           "Start of year           2021-04-12 19:06:00"
                           "Start of month          2021-09-07 18:55:00"
                           "Start of week           2021-09-04 18:59:00"
