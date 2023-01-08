@@ -131,27 +131,6 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_status 74
 }
 
-@test "invoking bibcal with option -t" {
-    run ./bibcal -t
-    assert_status 0
-    assert_line_matches 0 "Date"
-    assert_line_matches 1 "ISO date"
-    assert_line_matches 2 "Traditional date"
-    assert_line_matches 3 "Traditional ISO date"
-    assert_line_matches 4 "Day of week"
-    assert_output_matches "Local time"
-}
-
-@test "invoking bibcal with option -t and 1 argument" {
-    run ./bibcal -t 2021
-    assert_status 74
-}
-
-@test "invoking bibcal with option -t and 2 arguments" {
-    run ./bibcal -t 2021 1
-    assert_status 74
-}
-
 @test "invoking bibcal with option -d and 4 arguments" {
     run ./bibcal -d 2021 1 4 12
     assert_status 0
@@ -166,36 +145,8 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     fail_if output_matches "Minor"
 }
 
-@test "invoking bibcal with option -t and 4 arguments" {
-    run ./bibcal -t 2021 1 4 12
-    assert_status 0
-    assert_line_matches 0 "Date"
-    assert_line_matches 1 "ISO date"
-    assert_line_matches 2 "Traditional date"
-    assert_line_matches 3 "Traditional ISO date"
-    assert_line_matches 4 "Day of week"
-    assert_line_matches 5 "Local time"
-    fail_if output_matches "Sabbath"
-    fail_if output_matches "Major"
-    fail_if output_matches "Minor"
-}
-
 @test "invoking bibcal with options -d, -v, and 4 arguments" {
     run ./bibcal -d -v 2021 1 4 12
-    assert_status 0
-    assert_line_matches 0 "Date"
-    assert_line_matches 1 "ISO date"
-    assert_line_matches 2 "Traditional date"
-    assert_line_matches 3 "Traditional ISO date"
-    assert_line_matches 4 "Day of week"
-    assert_line_matches 5 "Sabbath"
-    assert_line_matches 6 "Major"
-    assert_line_matches 7 "Minor"
-    assert_line_matches 8 "Local time"
-}
-
-@test "invoking bibcal with options -t, -v, and 4 arguments" {
-    run ./bibcal -t -v 2021 1 4 12
     assert_status 0
     assert_line_matches 0 "Date"
     assert_line_matches 1 "ISO date"
@@ -232,6 +183,60 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_line_equals 18 "Timezone                America/New_York"
 }
 
+@test "invoking bibcal with option -d and 8 arguments" {
+    run ./bibcal -d 2021 1 1 12 10 0 20 0
+    assert_status 69
+}
+
+@test "invoking bibcal with option -t" {
+    run ./bibcal -t
+    assert_status 0
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_output_matches "Local time"
+}
+
+@test "invoking bibcal with option -t and 1 argument" {
+    run ./bibcal -t 2021
+    assert_status 74
+}
+
+@test "invoking bibcal with option -t and 2 arguments" {
+    run ./bibcal -t 2021 1
+    assert_status 74
+}
+
+@test "invoking bibcal with option -t and 4 arguments" {
+    run ./bibcal -t 2021 1 4 12
+    assert_status 0
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_line_matches 5 "Local time"
+    fail_if output_matches "Sabbath"
+    fail_if output_matches "Major"
+    fail_if output_matches "Minor"
+}
+
+@test "invoking bibcal with options -t, -v, and 4 arguments" {
+    run ./bibcal -t -v 2021 1 4 12
+    assert_status 0
+    assert_line_matches 0 "Date"
+    assert_line_matches 1 "ISO date"
+    assert_line_matches 2 "Traditional date"
+    assert_line_matches 3 "Traditional ISO date"
+    assert_line_matches 4 "Day of week"
+    assert_line_matches 5 "Sabbath"
+    assert_line_matches 6 "Major"
+    assert_line_matches 7 "Minor"
+    assert_line_matches 8 "Local time"
+}
+
 @test "invoking bibcal with options -l, -L, -t, -v, and 4 arguments" {
     run ./bibcal -l 40.712778 -L -74.006111 -z America/New_York -t -v 2021 1 4 12
     assert_status 0
@@ -256,11 +261,6 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
     assert_line_equals 18 "Timezone                America/New_York"
 }
 
-@test "invoking bibcal with option -d and 8 arguments" {
-    run ./bibcal -d 2021 1 1 12 10 0 20 0
-    assert_status 69
-}
-
 @test "invoking bibcal with option -t and 8 arguments" {
     run ./bibcal -t 2021 1 1 12 10 0 20 0
     assert_status 69
@@ -273,11 +273,6 @@ load "$(pwd)/test/xyz/thoren/bats/assertion-test-helpers"
 
 @test "invoking bibcal with option -d and -Y" {
     run ./bibcal -d -Y
-    assert_status 72
-}
-
-@test "invoking bibcal with option -t and -Y" {
-    run ./bibcal -t -Y
     assert_status 72
 }
 
