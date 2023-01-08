@@ -94,16 +94,12 @@ jobs:
       - name: Make
         run: make
 
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
       - name: Move and rename binary
-        run: mv target/bibcal bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+        run: mv target/bibcal bibcal-${{ github.action_ref }}-${{ matrix.target }}
 
       - name: Compress binary
         run: |
-          tar cvzf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+          tar cvzf bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz bibcal-${{ github.action_ref }}-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
@@ -111,8 +107,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
-          path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
+          path: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
   build_macos:
     name: Build macOS
@@ -146,10 +142,6 @@ jobs:
       - name: Print the current state of the directory
         run: ls -alh
 
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
       - name: Build Native Image
         run: |
           native-image \
@@ -159,20 +151,20 @@ jobs:
           -H:+ReportExceptionStackTraces \
           --allow-incomplete-classpath \
           -jar bibcal-all.jar \
-          -H:Name=bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+          -H:Name=bibcal-${{ github.action_ref }}-${{ matrix.target }}
 
       - name: Print the current state of the directory
         run: ls -alh
 
       - name: Compress binary
         run: |
-          tar cvzf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}
+          tar cvzf bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz bibcal-${{ github.action_ref }}-${{ matrix.target }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
-          path: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
+          path: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
   build_windows:
     name: Build Windows
@@ -282,10 +274,6 @@ jobs:
         if: "!contains(matrix.target, 'windows')"
         run: ls -Ral test
 
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
-
       - name: Download build artifacts (WINDOWS)
         if: "contains(matrix.target, 'windows')"
         uses: actions/download-artifact@v3
@@ -296,15 +284,15 @@ jobs:
         if: "!contains(matrix.target, 'windows')"
         uses: actions/download-artifact@v3
         with:
-          name: bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Extract archive (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
-        run: tar xvf bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }}.tar.gz
+        run: tar xvf bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Rename binary (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
-        run: mv bibcal-${{ steps.tag.outputs.tag }}-${{ matrix.target }} bibcal
+        run: mv bibcal-${{ github.action_ref }}-${{ matrix.target }} bibcal
 
       - name: Rename binary (WINDOWS)
         if: "contains(matrix.target, 'windows')"
@@ -400,14 +388,10 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
-      release_tag: ${{ steps.tag.outputs.tag }}
+      release_tag: ${{ github.action_ref }}
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Get tag
-        id: tag
-        uses: dawidd6/action-get-tag@v1
 
       - name: Create Release
         id: create_release
@@ -415,7 +399,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
+          tag_name: ${{ github.action_ref }}
           release_name: Release ${{github.ref}}
           draft: false
           prerelease: false
@@ -443,22 +427,22 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Extract archive
         run: |
-          tar xvf bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          tar xvf bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Rename binary
         run: |
-          mv bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }} bibcal-${{ matrix.target }}
+          mv bibcal-${{ github.action_ref }}-${{ matrix.target }} bibcal-${{ matrix.target }}
 
       - name: Build DEB Package
         id: build_deb
         uses: kentik/pkg@v1.0.0-rc7
         with:
           name: bibcal
-          version: ${{ needs.create_release.outputs.release_tag }}
+          version: ${{ github.action_ref }}
           arch: x86_64
           format: deb
           package: package.yml
@@ -495,22 +479,22 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Extract archive
         run: |
-          tar xvf bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          tar xvf bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Rename binary
         run: |
-          mv bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }} bibcal-${{ matrix.target }}
+          mv bibcal-${{ github.action_ref }}-${{ matrix.target }} bibcal-${{ matrix.target }}
 
       - name: Build RPM Package
         id: build_rpm
         uses: kentik/pkg@v1.0.0-rc7
         with:
           name: bibcal
-          version: ${{ needs.create_release.outputs.release_tag }}
+          version: ${{ github.action_ref }}
           arch: x86_64
           format: rpm
           package: package.yml
@@ -643,7 +627,7 @@ jobs:
         if: "!contains(matrix.target, 'all') && !contains(matrix.target, 'windows')"
         uses: actions/download-artifact@v3
         with:
-          name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
 
       - name: Download artifact (WINDOWS)
         if: contains(matrix.target, 'windows')
@@ -694,8 +678,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
-          asset_name: bibcal-${{ needs.create_release.outputs.release_tag }}-${{ matrix.target }}.tar.gz
+          asset_path: ./bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
+          asset_name: bibcal-${{ github.action_ref }}-${{ matrix.target }}.tar.gz
           asset_content_type: application/gzip
 
       - name: Release executable (WINDOWS)
@@ -775,7 +759,7 @@ jobs:
       - name: Insert pkgver into PKGBUILD
         run: |
           sed -i \
-          "s/RELEASE_TAG/${{ needs.create_release.outputs.release_tag }}/g" \
+          "s/RELEASE_TAG/${{ github.action_ref }}/g" \
           PKGBUILD
 
       - name: Insert executable checksum into PKGBUILD
@@ -813,4 +797,4 @@ jobs:
           commit_username: ${{ secrets.AUR_USERNAME }}
           commit_email: ${{ secrets.AUR_EMAIL }}
           ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          commit_message: ${{ needs.create_release.outputs.release_tag }}
+          commit_message: ${{ github.action_ref }}
