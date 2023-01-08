@@ -160,6 +160,9 @@ jobs:
         run: |
           tar cvzf bibcal-${{ github.ref_name }}-${{ matrix.target }}.tar.gz bibcal-${{ github.ref_name }}-${{ matrix.target }}
 
+      - name: Print the SHA256SUM of the compressed archive
+        run: shasum -a 256 *.tar.gz
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -285,6 +288,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: bibcal-${{ github.ref_name }}-${{ matrix.target }}.tar.gz
+
+      - name: Print the SHA256SUM of the downloaded archive (macOS)
+        if: "contains(matrix.target, 'apple')"
+        run: shasum -a 256 *.tar.gz
 
       - name: Extract archive (NON-WINDOWS)
         if: "!contains(matrix.target, 'windows')"
